@@ -1,0 +1,840 @@
+#include "DetectWithOpticalFlow.h"
+#include <time.h>
+
+#pragma comment(lib, "opencv_ocl249.lib")
+
+const char *sdir[] = { "right", "down", "left", "up", "nothing"};
+
+/// 返回 small 是否在 large 中
+static bool rc_isin(const cv::Rect &large, const cv::Rect &small)
+{
+	return small.x > large.x && small.y > large.y && small.x+small.width < large.x+large.width &&
+		small.y+small.height < large.y+large.height;
+}
+
+DetectWithOpticalFlow::DetectWithOpticalFlow(KVConfig *cfg)
+	: Detect(cfg)
+	, of_history(cfg)
+{
+	debug2_ = 0;
+
+	gpu_ = atoi(cfg_->get_value("enable_gpu", "1")) == 1;
+	sum_ = atoi(cfg_->get_value("enable_sum", "0")) == 1;
+
+	if (debug_ == 1) {
+		debug2_ = atoi(cfg_->get_value("debug2", "0"));
+
+		if (debug2_) {
+			if (sum_) {
+				cv::namedWindow("debug_down");
+				cv::namedWindow("debug_up");
+				cv::namedWindow("debug_left");
+				cv::namedWindow("debug_right");
+			}
+			else {
+				cv::namedWindow("debug");
+			}
+		}
+	}
+
+	debug_img3_ = atoi(cfg_->get_value("debug_img3", "0")); // 保存目标光流 ..
+	debug_img4_ = atoi(cfg_->get_value("debug_img4", "0"));	// 保存每帧光流 ..
+
+	log("%s: starting...\n", __FUNCTION__);
+
+	up_tune_factor_ = atof(cfg_->get_value("up_tune_factor", "0.9"));	// 向上更大
+	lr_tune_factor_ = atof(cfg_->get_value("lr_tune_factor", "1.8"));	// 左右活动应该更大
+	down_tune_factor_ = atof(cfg_->get_value("down_tune_factor", "1.0"));
+	up_angle_ = atoi(cfg_->get_value("up_angle", "110"));				// 向上的角度范围
+
+	int ker_erode = atoi(cfg_->get_value("ker_erode", "5"));
+	int ker_dilate = atoi(cfg_->get_value("ker_dilate", "11"));
+
+	ker_ = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(ker_erode, ker_erode));
+	ker2_ = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(ker_dilate, ker_dilate));
+
+	sum_x_ = cv::Mat::zeros(video_height_, video_width_, CV_32FC1);
+	sum_y_ = cv::Mat::zeros(video_height_, video_width_, CV_32FC1);
+
+	preload_frames_ = atoi(cfg_->get_value("preload_frames", "3"));	// 缓冲的帧数，考虑人站立所需要的时间，如 700毫秒，则 10 帧帧率时，可以选择 7 帧
+	if (preload_frames_ < 1) {
+		preload_frames_ = 2;	// 最小值 ..
+	}
+
+	char def_val[64];
+	snprintf(def_val, sizeof(def_val), "%.3f", thres_dis_ * preload_frames_);
+	thres_dis_flipper_ = atof(cfg_->get_value("thres_dis_flipper", def_val)); // 翻转课堂的累计距离阈值
+
+	thres_flipped_dis_ = atof(cfg_->get_value("thres_flipped_dis", "10.0")); // 用于计算翻转课堂的活动阈值
+
+	load_flipped_polys(flipped_group_polys_);
+
+	fb_pyrscale_ = atof(cfg_->get_value("fb_pyrscale", "0.5"));
+	fb_levels_ = atoi(cfg_->get_value("fb_levels", "2"));
+	fb_winsize_ = atoi(cfg_->get_value("fb_winsize", "13"));
+	fb_iters_ = atoi(cfg_->get_value("fb_iters", "1"));
+	fb_polyn_ = atoi(cfg_->get_value("fb_polyn", "5"));
+	fb_polysigma_ = atof(cfg_->get_value("fb_polysigma", "1.1"));
+
+	if (gpu_) {
+		flow_detector_fb_ = new cv::ocl::FarnebackOpticalFlow;
+		flow_detector_fb_->flags = 0;
+		flow_detector_fb_->pyrScale = fb_pyrscale_;
+		flow_detector_fb_->numLevels = fb_levels_;
+		flow_detector_fb_->winSize = fb_winsize_;
+		flow_detector_fb_->numIters = fb_iters_;
+		flow_detector_fb_->polyN = fb_polyn_;
+		flow_detector_fb_->polySigma = fb_polysigma_;
+
+		d_gray_prev_ = cv::ocl::oclMat(video_height_, video_width_, CV_8UC1);
+		d_gray_curr_ = d_gray_prev_.clone();
+		d_first_ = true;
+
+		d_sum_x_ = cv::ocl::oclMat(video_height_, video_width_, CV_32F);
+		d_sum_x_ = 0;
+		d_sum_y_ = d_sum_x_.clone();
+
+		calc_flows = &DetectWithOpticalFlow::calc_flows_ocl;
+		calc_flow = &DetectWithOpticalFlow::calc_flow_ocl;
+	}
+	else {
+		flow_detector_fb_ = 0;
+		calc_flows = &DetectWithOpticalFlow::calc_flows_cpu;
+		calc_flow = &DetectWithOpticalFlow::calc_flow_cpu;
+	}
+
+	if (sum_) {
+		detect_00 = &DetectWithOpticalFlow::detect_with_sum;
+	}
+	else {
+		detect_00 = &DetectWithOpticalFlow::detect_with_history;
+	}
+
+	up_rc_aspect_ = atof(cfg_->get_value("up_aspect", "1.5"));
+
+	log("\tup_tune_factor=%.3f, down_tune_factor=%.3f\n", up_tune_factor_, down_tune_factor_);
+	log("\tup_angle=%d\n", up_angle_);
+	log("\tlr_tune_factor=%.3f\n", lr_tune_factor_);
+	log("\tpreload_frames=%d\n", preload_frames_);
+	log("\tthres_dis_flipper=%.3f\n", thres_dis_flipper_);
+	log("\tload flipped %u groups\n", flipped_group_polys_.size());
+	log("\tflipped distance threshold=%.3f\n", thres_flipped_dis_);
+	log("\tker for erode is %d, for dilate is %d\n", ker_erode, ker_dilate);
+	log("\tusing sum mode ? %d\n", sum_);
+	log("\tup_aspect: %.3f\n", up_rc_aspect_);
+	log("\n");
+}
+
+DetectWithOpticalFlow::~DetectWithOpticalFlow(void)
+{
+	delete flow_detector_fb_;
+}
+
+void DetectWithOpticalFlow::load_flipped_polys(std::vector<std::vector<cv::Point> > &polys)
+{
+	polys.clear();
+
+	char key[64];
+	for (int i = 1; i < 11; i++) {
+		snprintf(key, sizeof(key), "flipped_ploy_%d", i);
+		const char *cpts = cfg_->get_value(key, 0);
+		if (!cpts) {
+			break;
+		}
+
+		std::vector<cv::Point> poly;
+		char *pts = strdup(cpts);	// px,py;px,py; ...
+		char *p = strtok(pts, ";");
+		while (p) {
+			int px, py;
+			if (sscanf(p, "%d,%d", &px, &py) == 2) {
+				poly.push_back(cv::Point(px, py));
+			}
+
+			p = strtok(0, ";");
+		}
+
+		free(pts);
+
+		polys.push_back(poly);	//
+	}
+}
+
+void DetectWithOpticalFlow::calc_flows_cpu(cv::Mat &p0, cv::Mat &p1, cv::Mat &distance, cv::Mat &angles)
+{
+	cv::Mat flow;
+	cv::calcOpticalFlowFarneback(p0, p1, flow, fb_pyrscale_, fb_levels_, fb_winsize_, fb_iters_, fb_polyn_, fb_polysigma_, 0);
+
+	std::vector<cv::Mat> xy;
+	cv::split(flow, xy);
+	
+	cv::add(sum_x_, xy[0], sum_x_), cv::add(sum_y_, xy[1], sum_y_);
+	saved_x_.push_back(xy[0]), saved_y_.push_back(xy[1]);
+
+	if (saved_x_.size() > preload_frames_) {
+		cv::subtract(sum_x_, saved_x_.front(), sum_x_);
+		cv::subtract(sum_y_, saved_y_.front(), sum_y_);
+
+		saved_x_.pop_front();
+		saved_y_.pop_front();
+	}
+
+	cv::cartToPolar(sum_x_, sum_y_, distance, angles, true);
+}
+
+bool DetectWithOpticalFlow::get_flow(const cv::Mat &gray, cv::ocl::oclMat &dx, cv::ocl::oclMat &dy)
+{
+	if (d_first_) {
+		d_first_ = false;
+
+		d_gray_prev_.upload(gray);
+		cv::Mat zero = cv::Mat::zeros(gray.rows, gray.cols, CV_32F);
+		dx.upload(zero), dy.upload(zero);
+
+		return false;
+	}
+	else {
+		d_gray_curr_.upload(gray);
+		(*flow_detector_fb_)(d_gray_prev_, d_gray_curr_, dx, dy);		
+		cv::ocl::swap(d_gray_curr_, d_gray_prev_);
+
+		return true;
+	}
+}
+
+void DetectWithOpticalFlow::calc_flows_ocl(cv::Mat &p0, cv::Mat &p1, cv::Mat &distance, cv::Mat &angles)
+{
+	cv::ocl::oclMat dx, dy;
+	get_flow(p1, dx, dy);
+
+	cv::ocl::add(d_sum_x_, dx, d_sum_x_), cv::ocl::add(d_sum_y_, dy, d_sum_y_);
+	d_saved_x_.push_back(dx), d_saved_y_.push_back(dy);
+
+	if (d_saved_x_.size() > preload_frames_) {
+		cv::ocl::subtract(d_sum_x_, d_saved_x_.front(), d_sum_x_);
+		cv::ocl::subtract(d_sum_y_, d_saved_y_.front(), d_sum_y_);
+
+		d_saved_x_.pop_front(), d_saved_y_.pop_front();
+	}
+
+	cv::ocl::cartToPolar(d_sum_x_, d_sum_y_, d_distance_, d_angle_, true);
+	d_distance_.download(distance), d_angle_.download(angles);
+}
+
+void DetectWithOpticalFlow::calc_flow_ocl(cv::Mat &p0, cv::Mat &p1, cv::Mat &distance, cv::Mat &angles)
+{
+	cv::ocl::oclMat dx, dy;
+	get_flow(p1, dx, dy);
+
+	cv::ocl::cartToPolar(dx, dy, d_distance_, d_angle_, true);
+	d_distance_.download(distance), d_angle_.download(angles);
+}
+
+void DetectWithOpticalFlow::calc_flow_cpu(cv::Mat &p0, cv::Mat &p1, cv::Mat &distance, cv::Mat &angles)
+{
+	cv::Mat flow;
+	cv::calcOpticalFlowFarneback(p0, p1, flow, fb_pyrscale_, fb_levels_, fb_winsize_, fb_iters_, fb_polyn_, fb_polysigma_, 0);
+
+	std::vector<cv::Mat> xy;
+	cv::split(flow, xy);
+	
+	cv::cartToPolar(xy[0], xy[1], distance, angles, true);
+}
+
+void DetectWithOpticalFlow::rgb_from_dis_ang(const cv::Mat &distance, const cv::Mat &angles, cv::Mat &rgb)
+{
+	// 显示 hsv 图像
+	cv::Mat hsv;
+	cv::Mat tmp_dis = distance.clone();
+	cv::Mat tmp_ang = angles.clone();
+
+	double minVal, maxVal;
+	cv::Point minPt, maxPt;
+	cv::minMaxLoc(tmp_dis, &minVal, &maxVal, &minPt, &maxPt);
+	tmp_dis.convertTo(tmp_dis, -1, 1.0 / maxVal);
+
+	cv::Mat chs[3];
+	chs[0] = tmp_ang;
+	chs[1] = cv::Mat::ones(tmp_ang.size(), CV_32F);
+	chs[2] = tmp_dis;
+	cv::merge(chs, 3, hsv);
+
+	cv::cvtColor(hsv, rgb, cv::COLOR_HSV2BGR);	// rgb： 32FC3
+	cv::minMaxLoc(rgb, &minVal, &maxVal);
+	rgb.convertTo(rgb, CV_8UC3, 255.0/(maxVal - minVal), -minVal * 255.0/(maxVal - minVal));	// rgb: 8UC3
+
+	cv::circle(rgb, maxPt, 2, cv::Scalar(255, 255, 255), 2);
+}
+
+void DetectWithOpticalFlow::apply_threshold(const cv::Mat &dis, double thres, cv::Mat &bin)
+{
+	cv::Mat dis_th = dis.clone();
+
+	cv::Rect far_rc(0, 0, dis.cols, dis.rows * far_ratio_);		// 远端使用 of3_thres_far_， 近处使用 of3_thres_
+	cv::Rect near_rc(0, far_rc.height, dis.cols, dis.rows - far_rc.height);
+
+	cv::Mat far_s = dis(far_rc), near_s = dis(near_rc);
+	cv::Mat far_d = dis_th(far_rc), near_d = dis_th(near_rc);
+
+	cv::threshold(far_s, far_d, thres_dis_far_, 100.0, cv::THRESH_TOZERO);
+	cv::threshold(near_s, near_d, thres_dis_, 100.0, cv::THRESH_TOZERO);
+
+	dis_th.convertTo(bin, CV_8U);
+}
+
+static std::string type2str(int type) 
+{
+	std::string r;
+
+	uchar depth = type & CV_MAT_DEPTH_MASK;
+	uchar chans = 1 + (type >> CV_CN_SHIFT);
+
+	switch ( depth ) {
+	case CV_8U:  r = "8U"; break;
+	case CV_8S:  r = "8S"; break;
+	case CV_16U: r = "16U"; break;
+	case CV_16S: r = "16S"; break;
+	case CV_32S: r = "32S"; break;
+	case CV_32F: r = "32F"; break;
+	case CV_64F: r = "64F"; break;
+	default:     r = "User"; break;
+	}
+
+	r += "C";
+	r += (chans+'0');
+
+	return r;
+}
+
+static void _draw_line(cv::Mat &origin, const cv::Point &from, float dis, float ang)
+{
+	ang = (360 - ang) * M_PI / 180;
+	cv::Point to(from.x + dis*cos(ang), from.y - dis*sin(ang));
+	cv::line(origin, from, to, cv::Scalar(0, 255, 0));
+	cv::circle(origin, from, 2, cv::Scalar(0, 255, 255), 1);
+}
+
+void DetectWithOpticalFlow::draw_optical_flows(cv::Mat &origin, const cv::Mat &dis, const cv::Mat &ang)
+{
+	/** 在 origin 中画出光流方向和大小
+	 */
+	//int xstep = 6, ystep = 6;
+	//for (int y = 0; y < dis.rows; y += ystep) {
+	//	const float *pd = dis.ptr<float>(y);
+	//	const float *pa = ang.ptr<float>(y);
+	//	for (int x = 0; x < dis.cols; x += xstep) {
+	//		if (pd[x] > 2) {
+	//			_draw_line(origin, cv::Point(x, y), pd[x], pa[x]);
+	//		}
+	//	}
+	//}
+}
+
+/** “或”历史光流，腐蚀膨胀，找轮廓，如果大于面积阈值，则认为是个目标 ... 
+ */
+std::vector<DetectWithOpticalFlow::FindTargetResult> 
+	DetectWithOpticalFlow::find_targets(cv::Mat &(DetectWithOpticalFlow::History::*func)(int)const, 
+									    double area_factor, int n, cv::Mat &debug_sum)
+{
+	std::vector<FindTargetResult> rcs;
+	cv::Mat &sum = of_history.sum();
+	sum = (of_history.*func)(0).clone();	// 不能修改历史..
+
+	for (int i = 1; i <= n; i++) {
+		sum |= (of_history.*func)(i); // 逐帧或
+	}
+
+	if (debug_img3_) {
+		debug_sum = sum.clone();
+	}
+
+	//cv::blur(sum, sum, cv::Size(3, 3));
+	cv::erode(sum, sum, ker_);
+	cv::dilate(sum, sum, ker2_);
+
+	std::vector<std::vector<cv::Point> > contours;
+	cv::findContours(sum, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
+
+	for (std::vector<std::vector<cv::Point> >::const_iterator it = contours.begin(); it != contours.end(); ++it) {
+		/** FIXME:	轮廓面积，但是目标不是刚性的，所以满足光流阈值的往往不是很规则的，所以这个面积可能会忽略掉很多..
+					采用凸多边形的面积..
+
+			2015/7/14: 使用外接矩形的面积 ...
+		 */
+		std::vector<cv::Point> hull;
+		cv::convexHull(*it, hull);
+
+		double area = cv::contourArea(hull);
+		cv::Rect brc;
+		try {
+			brc = cv::boundingRect(hull);	// 轮廓外接矩形 ..
+		}
+		catch (...) {
+			continue;
+		}
+
+		//cv::Point center(brc.x+brc.width/2, brc.y+brc.height/2);
+		//int y = center.y;
+		int y = brc.y+brc.height;
+		if (y < 0) y = 0;
+		if (y >= video_height_) y = video_height_-1;
+		double fy = factor_y_tables_[y];
+		double area_th = thres_area_ * fy * fy;	 // 面积么，使用系数..
+
+		if (rc_isin(area_max_rect_, brc)) {
+			area_th = thres_area_ * max_rect_factor_ * max_rect_factor_ * area_factor;
+		}
+		
+		if (area > area_th * area_factor) {
+			FindTargetResult r;
+			r.brc = brc;
+			r.area = area;
+			r.area_th = area_th * area_factor;
+			r.fy = fy;
+
+			rcs.push_back(r);
+		}
+	}
+
+	return rcs;
+}
+
+class RectAndDir
+{
+public:
+	RectAndDir(const cv::Rect &rc, int dir)
+	{
+		this->rc = rc;
+		this->dir = dir;
+	}
+
+	cv::Rect rc;
+	int dir;	// 0 right, 1 down, 2 left, 3 up
+};
+
+static int check_cross_area_append(std::vector<RectAndDir> &rds, const RectAndDir &rd)
+{
+	int ret = 0;
+	/** 检查 rd 在 rds 中是否有重合的..
+			如有重合，则检查哪个矩形大？保留大的，删除小的..
+
+		return 0 已经添加，1 有重合，删除旧的，-1 有重合，保留旧的...
+	 */
+
+	std::vector<RectAndDir>::iterator it = rds.begin();
+	while (it != rds.end()) {
+		if (is_cross(it->rc, rd.rc)) {
+			if (it->rc.area() > rd.rc.area()) {
+				ret = -1;
+				break;
+			}
+			else {
+				it = rds.erase(it);
+				ret = 1;
+				continue;
+			}
+		}
+		++it;
+	}
+
+	if (ret >= 0) {
+		rds.push_back(rd);
+	}
+
+	return ret;
+}
+
+/**	计算连续帧的稠密光流，转化为极坐标后，分别保存四个方向的光流距离，
+	合并每个方向 preload_frames 帧历史，如果是有效运动，照理说，应该形成
+	大块活动区域
+
+	如果不同方向的历史和有重叠，则使用较大快的方向为准
+ */
+std::vector<cv::Rect> DetectWithOpticalFlow::detect_with_history(size_t cnt, cv::Mat &origin, cv::Mat &gray_prev, cv::Mat &gray_curr, cv::vector<int> &dirs)
+{
+	std::vector<RectAndDir> rds;
+	cv::Mat debug_img; // 累积光流结果 ..
+
+	cv::Mat distance, angle, distance_origin;
+	(this->*calc_flow)(gray_prev, gray_curr, distance, angle);
+	if (debug2_) {
+		distance_origin = distance.clone();
+	}
+
+	apply_threshold(distance, thres_dis_, distance);
+	
+#if 0
+	std::vector<cv::Rect> objs = find_clusters(distance);
+	for (size_t i = 0; i < objs.size(); i++) {
+		cv::rectangle(origin_, objs[i], cv::Scalar(0,0,255));
+	}
+#endif // 
+
+	update_history(distance, angle);
+
+	std::vector<FindTargetResult> ups = find_targets(&History::up, up_tune_factor_, preload_frames_-1, debug_img);
+	cv::Mat m0;
+	bool show = false, hsv = false;
+
+	if (debug_img3_) {
+		for (size_t i = 0; i < ups.size(); i++) {
+			char fname[128];
+			for (size_t f = 0; f < preload_frames_; f++) {
+				snprintf(fname, sizeof(fname), "detlog/up_%u_%d_%d.jpg", cnt, i, preload_frames_-f);
+				cv::Mat m = of_history.up(f)(ups[i].brc);
+				cv::imwrite(fname, m);
+			}
+
+			snprintf(fname, sizeof(fname), "detlog/up_%d_%d_sum.jpg", cnt, i);
+			cv::Mat sum = debug_img(ups[i].brc);
+			cv::imwrite(fname, sum);
+		}
+	}
+
+	//if (ups.size() > 0) {
+	//	log("<%u>: UP: found %u\n", cnt, ups.size());
+	//}
+	for (size_t i = 0; i < ups.size(); i++) {
+		int rc = check_cross_area_append(rds, RectAndDir(ups[i].brc, 3));
+		//log("\t[%d, %d, %d, %d], fy=%.3f, area=%.0f, area_ths=%.0f, %s\n",
+		//	ups[i].brc.x, ups[i].brc.y, ups[i].brc.width, ups[i].brc.height, ups[i].fy, ups[i].area, ups[i].area_th,
+		//	rc < 0 ? "discard" : rc == 0 ? "append" : "replaced");
+		show = rc >= 0;
+	}
+
+	if (debug2_ && show) {
+		show_history(ups, &History::up, m0);
+		cv::imshow("debug_up", m0);
+		hsv = true;
+	}
+
+	show = false;
+	std::vector<FindTargetResult> downs = find_targets(&History::down, down_tune_factor_, preload_frames_-1, debug_img);
+	//if (downs.size() > 0) {
+	//	log("<%u>: DOWN: found %u\n", cnt, downs.size());
+	//}
+	for (size_t i = 0; i < downs.size(); i++) {
+		int rc = check_cross_area_append(rds, RectAndDir(downs[i].brc, 1));
+		//log("\t[%d, %d, %d, %d], fy=%.3f, area=%.0f, area_ths=%.0f, %s\n",
+		//	downs[i].brc.x, downs[i].brc.y, downs[i].brc.width, downs[i].brc.height, downs[i].fy, downs[i].area, downs[i].area_th,
+		//	rc < 0 ? "discard" : rc == 0 ? "append" : "replaced");
+		show = rc >= 0;
+	}
+
+	if (debug2_ && show) {
+		show_history(downs, &History::down, m0);
+		cv::imshow("debug_down", m0);
+		hsv = true;
+	}
+
+	show = false;
+	std::vector<FindTargetResult> lefts = find_targets(&History::left, lr_tune_factor_, preload_frames_-1, debug_img);
+	for (size_t i = 0; i < lefts.size(); i++) {
+		show = check_cross_area_append(rds, RectAndDir(lefts[i].brc, 2)) >= 0;
+	}
+
+	if (debug2_ && show) {
+		show_history(lefts, &History::left, m0);
+		cv::imshow("debug_left", m0);
+		hsv = true;
+	}
+
+	show = false;
+	std::vector<FindTargetResult> rights = find_targets(&History::right, lr_tune_factor_, preload_frames_-1, debug_img);
+	for (size_t i = 0; i < rights.size(); i++) {
+		show = check_cross_area_append(rds, RectAndDir(rights[i].brc, 0)) >= 0;
+	}
+
+	if (debug2_ && show) {
+		show_history(rights, &History::right, m0);
+		cv::imshow("debug_right", m0);
+		hsv = true;
+	}
+
+	if (debug2_ && hsv) {
+		cv::Mat rgb;
+		rgb_from_dis_ang(distance_origin, angle, rgb);
+
+		cv::Scalar colors[] = { cv::Scalar(0, 0, 255), cv::Scalar(0, 255, 0), cv::Scalar(255, 0, 0), cv::Scalar(255, 255, 255) };
+		for (size_t i = 0; i < rds.size(); i++) {
+			cv::rectangle(rgb, rds[i].rc, colors[rds[i].dir], 1);
+		}
+
+		cv::imshow("debug", rgb);
+
+		if (debug_img4_) {
+			char fname[128];
+			snprintf(fname, sizeof(fname), "detlog/of_%u.jpg", cnt);
+			cv::imwrite(fname, rgb);
+		}
+	}
+
+	dirs.clear();
+	std::vector<cv::Rect> rcs;
+	for (size_t i = 0; i < rds.size(); i++) {
+		if (rds[i].dir == 3) {
+			// 向上时，如果 brc 是比较扁的，则认为不是站立
+			if (rds[i].rc.width > rds[i].rc.height * up_rc_aspect_) {
+				log("<%d>: up_rc_aspect NOT matched: rc=(%d,%d,  %d,%d)\n", 
+					cnt, rds[i].rc.x, rds[i].rc.y, rds[i].rc.width, rds[i].rc.height);
+				continue;
+			}
+		}
+
+		rcs.push_back(rds[i].rc);
+		dirs.push_back(rds[i].dir);
+	}
+
+	return rcs;
+}
+
+std::vector<cv::Rect> DetectWithOpticalFlow::detect_with_sum(size_t cnt, cv::Mat &origin, cv::Mat &gray_prev, cv::Mat &gray_curr, cv::vector<int> &dirs)
+{
+	/** 累积每个位置的光流差值，连续N帧，再取距离阈值Y，再检查大于阈值的面积的大小 */
+	dirs.clear();
+	cv::Mat distance, angles, distance_origin;
+
+	// 得到光流的极坐标表示
+	(this->*calc_flows)(gray_prev, gray_curr, distance_origin, angles);
+
+	cv::Mat m_c;
+	apply_threshold(distance_origin, thres_dis_flipper_, m_c);
+
+	// 简单的腐蚀膨胀一下
+	cv::blur(m_c, m_c, cv::Size(3, 3));
+	cv::erode(m_c, m_c, ker_);
+	cv::dilate(m_c, m_c, ker2_);
+
+	// 查找轮廓
+	std::vector<std::vector<cv::Point> > contours;
+	cv::findContours(m_c, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
+
+	// “剧烈”活动区域
+	std::vector<cv::Rect> rcs;
+	std::vector<double> areas;
+	std::vector<double> areas_th;
+	std::vector<cv::Point> centers;
+
+	for (std::vector<std::vector<cv::Point> >::const_iterator it = contours.begin(); it != contours.end(); ++it) {
+		/** FIXME:	轮廓面积，但是目标不是刚性的，所以满足光流阈值的往往不是很规则的，所以这个面积可能会忽略掉很多
+					采用凸多边形的面积 ？
+		 */
+		std::vector<cv::Point> hull;
+		cv::convexHull(*it, hull);
+
+		double area = cv::contourArea(hull);
+		cv::Rect brc;
+		try {
+			brc = cv::boundingRect(hull);
+		}
+		catch (...) {
+			continue;
+		}
+
+		cv::Point center(brc.x+brc.width/2, brc.y+brc.height/2); // 外接矩形的中心
+		//int y = center.y;
+		int y = brc.y + brc.height;
+		if (y < 0) y = 0;
+		if (y >= video_height_) y = video_height_-1;
+		double fy = factor_y_tables_[y];
+		double area_th = thres_area_ * fy * fy;	 // 面积么，使用系数的平方
+
+		// FIXME: 看视频发现，普遍的：人站立时的光流累积距离比left, right, down 的要小，所以首先判断光流方向，然后使用不同的阈值
+		DIR dir = get_dir(angles, center, brc, origin);
+		if (dir == DIR_UP) {
+			area_th *= up_tune_factor_;	// 向上判断面积更小
+		}
+
+		// FIXME：对于左右阈值，应该适当增加
+		if (dir == DIR_LEFT || dir == DIR_RIGHT) {
+			area_th *= lr_tune_factor_;
+		}
+
+		// FIXME: 对于坐下，可能需要修改
+		if (dir == DIR_DOWN) {
+			area_th *= down_tune_factor_;
+		}
+		
+		if (area >= area_th) {	// 面积阈值
+			rcs.push_back(brc);
+			dirs.push_back(dir);
+			areas.push_back(area);
+			areas_th.push_back(area_th);
+			centers.push_back(center);
+		}
+	}
+
+	return rcs;
+}
+
+double DetectWithOpticalFlow::get_roi_flow_sum(const cv::Mat &distance, const std::vector<cv::Point> &roi, cv::Mat &rgb)
+{
+	// 计算 roi 内的平均距离
+	// FIXME: 此时简单的计算外接矩形内的平均，照理说应该计算roi中的才对
+	if (roi.size() > 3) {
+		cv::Rect brc = cv::boundingRect(roi);
+		cv::Mat m = distance(brc);
+
+		double sum = 0.;
+		int n = 0;
+		for (int i = 0; i < m.rows; i++) {
+			const float *pr = m.ptr<float>(i);
+
+			for (int j = 0;j < m.cols; j++) {
+				double v = pr[j];
+				if (v > thres_flipped_dis_) {
+					sum += v;
+					n++;
+				}
+			}
+		}
+
+		if (n == 0) {
+			return -1.0;
+		}
+
+		if (debug2_) {
+			char buf[64];
+			snprintf(buf, sizeof(buf), "%d, %.3f", n, sum / n);
+			cv::putText(rgb, buf, brc.tl(), cv::FONT_HERSHEY_PLAIN, 1.0, cv::Scalar(255, 255, 255));
+			cv::rectangle(rgb, brc, cv::Scalar(255, 255, 255));
+		}
+	
+		return sum / n;
+	}
+	else {
+		return -1.0;
+	}
+}
+
+int DetectWithOpticalFlow::detect0(size_t cnt, cv::Mat &origin, cv::Mat &gray_prev, cv::Mat &gray_curr)
+{
+	/** 翻转课堂模式的探测，polys 为多个区域，分别计算每个区域内的光流累计量，选择最大的，返回该位置号
+	 */
+	cv::Mat distance, angles;
+	(this->*calc_flows)(gray_prev, gray_curr, distance, angles);
+
+	// 每行除以系数，这样差不多就距离上统一 ..
+	for (int i = 0; i < distance.rows; i++) {
+		cv::Rect roi(0, i, distance.cols, 1); // 每次一行
+		cv::Mat m(distance, roi);
+		double ry = 1.0 / factor_y_tables_[i];
+		m *= ry;
+	}
+
+	cv::Mat rgb;	// 为了方便调试 ....
+	if (debug2_) {
+		rgb_from_dis_ang(distance, angles, rgb);	// 将填充rgb，后面用于 imshow(..., rgb) 显示
+	}
+
+	double max = -0.5;
+	int idx = -1;
+
+	// 此时得到 sum_x_, sum_y_
+	// 计算每个 polys 封闭区域中的
+	for (size_t i = 0; i < flipped_group_polys_.size(); i++) {
+		double v = get_roi_flow_sum(distance, flipped_group_polys_[i], rgb);
+		if (v > max) {
+			max = v;
+			idx = i;
+		}
+	}
+
+	if (debug2_) {
+		if (idx > -1) {
+			cv::Rect brc = cv::boundingRect(flipped_group_polys_[idx]);
+			cv::rectangle(rgb, brc, cv::Scalar(0, 0, 255));	// 明显显示
+		}
+		
+		if (!sum_) {
+			cv::imshow("debug", rgb);
+		}
+	}
+
+	return idx;
+}
+
+DetectWithOpticalFlow::DIR DetectWithOpticalFlow::get_dir(const cv::Mat &angles,
+	const cv::Point &pt, const cv::Rect &boundingRect, cv::Mat &origin, const cv::Scalar &color)
+{
+	/// 返回 pt 周围 9 个点的平均方向
+	int x = pt.x, y = pt.y;
+
+	if (x <= 0) x = 1;
+	if (x+1 >= angles.cols) x = angles.cols - 2;
+	if (y <= 0) y = 1;
+	if (y+1 >= angles.rows) y = angles.rows - 2;
+
+	double angle = angles.ptr<float>(y)[x];
+	angle += angles.ptr<float>(y-1)[x];
+	angle += angles.ptr<float>(y+1)[x];
+	angle += angles.ptr<float>(y-1)[x-1];
+	angle += angles.ptr<float>(y)[x-1];
+	angle += angles.ptr<float>(y+1)[x-1];
+	angle += angles.ptr<float>(y-1)[x+1];
+	angle += angles.ptr<float>(y)[x+1];
+	angle += angles.ptr<float>(y+1)[x+1];
+	angle /= 9.0;
+
+	int i = (int)angle;		// angle： [0..359)， 分成四个方向，但向上可以更严谨一点，比如向上60°，而不是90°
+							// angle 顺时针旋转，0 为right，90 为 down，180 为 left, 270 为 up
+	int dir_idx = DIR_DOWN;	// 默认 down
+	int up_half = up_angle_ / 2;
+	int up_min = 270 - up_half, up_max = 270 + up_half;
+	if (i >= up_min && i <= up_max) {
+		dir_idx = DIR_UP;
+	}
+	else if (i >= 45 && i <= 135) {
+		dir_idx = DIR_DOWN;
+	}
+	else if (i > 135 && i < up_min) {
+		dir_idx = DIR_LEFT;
+	}
+	else {
+		dir_idx = DIR_RIGHT;
+	}
+
+	return (DIR)dir_idx;
+}
+
+// 根据dir的角度[0..360)，将dis中的距离填充到target中 ..
+void DetectWithOpticalFlow::update_history0(const cv::Mat &dis, const cv::Mat &dir,
+	cv::Mat &target, int from, int to, int from2, int to2)
+{
+	assert(dis.type() == target.type() && dis.type() == CV_8U);
+	assert(dis.size() == target.size());
+
+	for (int r = 0; r < dis.rows; r++) {
+		const float *p = dir.ptr<float>(r);
+		const unsigned char *q = dis.ptr<unsigned char>(r);
+		unsigned char *t = target.ptr<unsigned char>(r);
+		for (int c = 0; c < dis.cols; c++) {
+			if ((*p >= from && *p < to) || (*p >= from2 && *p < to2)) {
+				*t = *q;
+			}
+			else {
+				*t = 0;
+			}
+
+			q++, p++, t++;
+		}
+	}
+}
+
+void DetectWithOpticalFlow::update_history(const cv::Mat &dis, const cv::Mat &dir)
+{
+	int up_half = up_angle_ / 2;
+	int up_min = 270 - up_half, up_max = 270 + up_half;
+
+	update_history0(dis, dir, of_history.down(0), 45, 135);	// 
+	update_history0(dis, dir, of_history.left(0), 135, up_min);
+	update_history0(dis, dir, of_history.up(0), up_min, up_max);
+	update_history0(dis, dir, of_history.right(0), up_max, 360, 0, 45);
+
+#if 0
+	cv::Mat &all = of_history.all(0);
+	dis.copyTo(all);
+#endif
+
+	++of_history;
+}

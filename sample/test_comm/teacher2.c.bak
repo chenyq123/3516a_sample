@@ -1,0 +1,17 @@
+#include "teacher2.h"
+int frame(int height, int width, int type, char* data)
+{
+    int i,j,num=0;
+    CvMat *pm = cvCreateMatHeader(height, width, type);
+    //cvInitMatHeader(pm, height, width, type, data);
+    pm->data.ptr = data;
+#if 0
+    for(i=0;i<=width-1;i++)
+       // if((unsigned char)pm->data.ptr[i] > (unsigned char)30) num++;
+       printf("%d ",data[i]);
+    printf("\n");
+#endif
+    num = cvCountNonZero(pm);
+    cvReleaseMat(&pm);
+    return num;
+}

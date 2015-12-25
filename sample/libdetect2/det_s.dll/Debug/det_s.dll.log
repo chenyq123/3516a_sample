@@ -1,0 +1,229 @@
+﻿生成启动时间为 2015/12/24 12:50:20。
+     1>项目“D:\work\lubo2\移植\det_s.dll\det_s.dll.vcxproj”在节点 2 上(build 个目标)。
+     1>C:\Windows\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets(1395,5): warning : The referenced project '..\..\..\..\image_trace\libkvconfig\libkvconfig.vcxproj' does not exist.
+     1>C:\Windows\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets(1395,5): warning : The referenced project '..\..\..\libptz\libptz.vcxproj' does not exist.
+     1>InitializeBuildStatus:
+         正在对“Debug\det_s.dll.unsuccessfulbuild”执行 Touch 任务。
+       ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt DetectMotionTempl.cpp DetectWithCT.cpp DetectWithOF.cpp DetectWithOF2.cpp DetectWithOF3.cpp DetectWithOF4.cpp DetectWithOF5.cpp DetectWithOpticalFlow.cpp SkinMask.cpp detect.cpp main.cpp objdet.cpp
+         objdet.cpp
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(28): warning C4251: “KVConfig::kvs_”: class“std::map<_Kty,_Ty>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Kty=std::string,
+                     _Ty=std::string
+                 ]
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2653: “ost”: 不是类或命名空间名称
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2146: 语法错误: 缺少“;”(在标识符“cs_”的前面)
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(30): warning C4251: “KVConfig::filename_”: class“std::basic_string<_Elem,_Traits,_Ax>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Ax=std::allocator<char>
+                 ]
+     1>d:\work\lubo2\移植\det_s.dll\objdet.cpp(32): warning C4244: “参数”: 从“const double”转换到“int”，可能丢失数据
+     1>d:\work\lubo2\移植\det_s.dll\objdet.cpp(32): warning C4244: “参数”: 从“const double”转换到“int”，可能丢失数据
+     1>d:\work\lubo2\移植\det_s.dll\objdet.cpp(40): warning C4244: “/=”: 从“const double”转换到“int”，可能丢失数据
+     1>d:\work\lubo2\移植\det_s.dll\objdet.cpp(40): warning C4244: “/=”: 从“const double”转换到“int”，可能丢失数据
+     1>d:\work\lubo2\移植\det_s.dll\objdet.cpp(41): warning C4244: “/=”: 从“const double”转换到“int”，可能丢失数据
+     1>d:\work\lubo2\移植\det_s.dll\objdet.cpp(41): warning C4244: “/=”: 从“const double”转换到“int”，可能丢失数据
+         main.cpp
+     1>d:\work\lubo2\移植\libimagesource\image_source.h(13): fatal error C1083: 无法打开包括文件:“libswscale/swscale.h”: No such file or directory
+         detect.cpp
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(28): warning C4251: “KVConfig::kvs_”: class“std::map<_Kty,_Ty>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Kty=std::string,
+                     _Ty=std::string
+                 ]
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2653: “ost”: 不是类或命名空间名称
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2146: 语法错误: 缺少“;”(在标识符“cs_”的前面)
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(30): warning C4251: “KVConfig::filename_”: class“std::basic_string<_Elem,_Traits,_Ax>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Ax=std::allocator<char>
+                 ]
+     1>d:\work\lubo2\移植\det_s.dll\detect.h(9): fatal error C1083: 无法打开包括文件:“cc++/thread.h”: No such file or directory
+         SkinMask.cpp
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(28): warning C4251: “KVConfig::kvs_”: class“std::map<_Kty,_Ty>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Kty=std::string,
+                     _Ty=std::string
+                 ]
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2653: “ost”: 不是类或命名空间名称
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2146: 语法错误: 缺少“;”(在标识符“cs_”的前面)
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(30): warning C4251: “KVConfig::filename_”: class“std::basic_string<_Elem,_Traits,_Ax>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Ax=std::allocator<char>
+                 ]
+         DetectWithOpticalFlow.cpp
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(28): warning C4251: “KVConfig::kvs_”: class“std::map<_Kty,_Ty>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Kty=std::string,
+                     _Ty=std::string
+                 ]
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2653: “ost”: 不是类或命名空间名称
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2146: 语法错误: 缺少“;”(在标识符“cs_”的前面)
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(30): warning C4251: “KVConfig::filename_”: class“std::basic_string<_Elem,_Traits,_Ax>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Ax=std::allocator<char>
+                 ]
+     1>d:\work\lubo2\移植\det_s.dll\detect.h(9): fatal error C1083: 无法打开包括文件:“cc++/thread.h”: No such file or directory
+         DetectWithOF5.cpp
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(28): warning C4251: “KVConfig::kvs_”: class“std::map<_Kty,_Ty>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Kty=std::string,
+                     _Ty=std::string
+                 ]
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2653: “ost”: 不是类或命名空间名称
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2146: 语法错误: 缺少“;”(在标识符“cs_”的前面)
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(30): warning C4251: “KVConfig::filename_”: class“std::basic_string<_Elem,_Traits,_Ax>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Ax=std::allocator<char>
+                 ]
+     1>d:\work\lubo2\移植\det_s.dll\detect.h(9): fatal error C1083: 无法打开包括文件:“cc++/thread.h”: No such file or directory
+         DetectWithOF4.cpp
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(28): warning C4251: “KVConfig::kvs_”: class“std::map<_Kty,_Ty>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Kty=std::string,
+                     _Ty=std::string
+                 ]
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2653: “ost”: 不是类或命名空间名称
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2146: 语法错误: 缺少“;”(在标识符“cs_”的前面)
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(30): warning C4251: “KVConfig::filename_”: class“std::basic_string<_Elem,_Traits,_Ax>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Ax=std::allocator<char>
+                 ]
+     1>d:\work\lubo2\移植\det_s.dll\detect.h(9): fatal error C1083: 无法打开包括文件:“cc++/thread.h”: No such file or directory
+         DetectWithOF3.cpp
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(28): warning C4251: “KVConfig::kvs_”: class“std::map<_Kty,_Ty>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Kty=std::string,
+                     _Ty=std::string
+                 ]
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2653: “ost”: 不是类或命名空间名称
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2146: 语法错误: 缺少“;”(在标识符“cs_”的前面)
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(30): warning C4251: “KVConfig::filename_”: class“std::basic_string<_Elem,_Traits,_Ax>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Ax=std::allocator<char>
+                 ]
+     1>d:\work\lubo2\移植\det_s.dll\detect.h(9): fatal error C1083: 无法打开包括文件:“cc++/thread.h”: No such file or directory
+         DetectWithOF2.cpp
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(28): warning C4251: “KVConfig::kvs_”: class“std::map<_Kty,_Ty>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Kty=std::string,
+                     _Ty=std::string
+                 ]
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2653: “ost”: 不是类或命名空间名称
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2146: 语法错误: 缺少“;”(在标识符“cs_”的前面)
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(30): warning C4251: “KVConfig::filename_”: class“std::basic_string<_Elem,_Traits,_Ax>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Ax=std::allocator<char>
+                 ]
+     1>d:\work\lubo2\移植\det_s.dll\detect.h(9): fatal error C1083: 无法打开包括文件:“cc++/thread.h”: No such file or directory
+         DetectWithOF.cpp
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(28): warning C4251: “KVConfig::kvs_”: class“std::map<_Kty,_Ty>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Kty=std::string,
+                     _Ty=std::string
+                 ]
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2653: “ost”: 不是类或命名空间名称
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2146: 语法错误: 缺少“;”(在标识符“cs_”的前面)
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(30): warning C4251: “KVConfig::filename_”: class“std::basic_string<_Elem,_Traits,_Ax>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Ax=std::allocator<char>
+                 ]
+     1>d:\work\lubo2\移植\det_s.dll\detect.h(9): fatal error C1083: 无法打开包括文件:“cc++/thread.h”: No such file or directory
+         DetectWithCT.cpp
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(28): warning C4251: “KVConfig::kvs_”: class“std::map<_Kty,_Ty>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Kty=std::string,
+                     _Ty=std::string
+                 ]
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2653: “ost”: 不是类或命名空间名称
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2146: 语法错误: 缺少“;”(在标识符“cs_”的前面)
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(30): warning C4251: “KVConfig::filename_”: class“std::basic_string<_Elem,_Traits,_Ax>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Ax=std::allocator<char>
+                 ]
+     1>d:\work\lubo2\移植\det_s.dll\detect.h(9): fatal error C1083: 无法打开包括文件:“cc++/thread.h”: No such file or directory
+         DetectMotionTempl.cpp
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(28): warning C4251: “KVConfig::kvs_”: class“std::map<_Kty,_Ty>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Kty=std::string,
+                     _Ty=std::string
+                 ]
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2653: “ost”: 不是类或命名空间名称
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C2146: 语法错误: 缺少“;”(在标识符“cs_”的前面)
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(29): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+     1>d:\work\lubo2\移植\libkvconfig\kvconfig.h(30): warning C4251: “KVConfig::filename_”: class“std::basic_string<_Elem,_Traits,_Ax>”需要有 dll 接口由 class“KVConfig”的客户端使用
+                 with
+                 [
+                     _Elem=char,
+                     _Traits=std::char_traits<char>,
+                     _Ax=std::allocator<char>
+                 ]
+     1>d:\work\lubo2\移植\det_s.dll\detect.h(9): fatal error C1083: 无法打开包括文件:“cc++/thread.h”: No such file or directory
+         正在生成代码...
+     1>已完成生成项目“D:\work\lubo2\移植\det_s.dll\det_s.dll.vcxproj”(build 个目标)的操作 - 失败。
+
+生成失败。
+
+已用时间 00:00:18.06
