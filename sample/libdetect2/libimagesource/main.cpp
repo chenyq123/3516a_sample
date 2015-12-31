@@ -10,7 +10,7 @@
 
 #if SUPPORT_MORN
 #	include "VideoSourceForMorn.h"
-#endif 
+#endif
 
 #include "cJSON.h"
 
@@ -29,7 +29,7 @@ struct imgsrc_t
 	VideoSourceFFmpeg *ffmpeg_;
 #if SUPPORT_MORN
 	VideoSourceForMorn *vsm_;
-#endif 
+#endif
 
 public:
 	imgsrc_t(const char *url, const imgsrc_format *fmt)
@@ -75,7 +75,7 @@ public:
 
 			ip_ = new VideoSourceFromIPCam(ip, fmt);
 		}
-#endif 
+#endif
 		else if (!strncmp(url, "dshow://", 8)) {
 			dshow_ = new VideoSourceFordshow(fmt, url);
 		}
@@ -102,7 +102,7 @@ public:
 #if 0
 		else if (ip_)
 			delete(ip_);
-#endif 
+#endif
 #if SUPPORT_MORN
 		else if (vsm_)
 			delete(vsm_);
@@ -121,13 +121,13 @@ public:
 			return ffmpeg_->next_img();
 		}
 #if SUPPORT_YUANSDK
-		else if (yuan_) 
+		else if (yuan_)
 			return yuan_->next_img();
 #endif
 #if 0
 		else if (ip_)
 			return ip_->next_img();
-#endif 
+#endif
 #if SUPPORT_MORN
 		else if (vsm_)
 			return vsm_->next_img();

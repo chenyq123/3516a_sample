@@ -15,16 +15,16 @@ KVConfig::~KVConfig(void)
 
 bool KVConfig::has_key(const char *key)
 {
-	ost::MutexLock al(cs_);
+	//ost::MutexLock al(cs_);
 
 	return get_value(key) != 0;
 }
 
 bool KVConfig::del_key(const char *key)
 {
-	ost::MutexLock al(cs_);
+	//ost::MutexLock al(cs_);
 
-	KVS::const_iterator itf = kvs_.find(key);
+	KVS::iterator itf = kvs_.find(key);
 	if (itf != kvs_.end()) {
 		kvs_.erase(itf);
 		return true;
@@ -35,7 +35,7 @@ bool KVConfig::del_key(const char *key)
 
 const char *KVConfig::get_value(const char *key, const char *def)
 {
-	ost::MutexLock al(cs_);
+	//ost::MutexLock al(cs_);
 
 	KVS::const_iterator itf = kvs_.find(key);
 	if (itf != kvs_.end())
@@ -45,7 +45,7 @@ const char *KVConfig::get_value(const char *key, const char *def)
 
 std::vector<std::string> KVConfig::keys()
 {
-	ost::MutexLock al(cs_);
+	//ost::MutexLock al(cs_);
 
 	std::vector<std::string> ks;
 	KVS::const_iterator it;
@@ -57,7 +57,7 @@ std::vector<std::string> KVConfig::keys()
 
 int KVConfig::set_value(const char *key, const char *value)
 {
-	ost::MutexLock al(cs_);
+	//ost::MutexLock al(cs_);
 
 	KVS::iterator itf = kvs_.find(key);
 	if (itf == kvs_.end()) {
@@ -86,7 +86,7 @@ int KVConfig::set_value(const char *key, int v)
 
 int KVConfig::save_as(const char *filename)
 {
-	ost::MutexLock al(cs_);
+	//ost::MutexLock al(cs_);
 	std::string tmp;
 
 	if (!filename) {
@@ -112,24 +112,24 @@ int KVConfig::reload()
 
 	load_from_file(filename_.c_str());
 
-	std::string tmp = filename_ + ".session";
-	load_from_file(tmp.c_str());
+//	std::string tmp = filename_ + ".session";
+//	load_from_file(tmp.c_str());
 	return 0;
 }
 
 void KVConfig::clear()
 {
-	ost::MutexLock al(cs_);
+	//ost::MutexLock al(cs_);
 	kvs_.clear();
 }
 
 void KVConfig::load_from_file(const char *filename)
 {
-	ost::MutexLock al(cs_);
+	//ost::MutexLock al(cs_);
 
 	FILE *fp = fopen(filename, "r");
 	if (!fp) {
-		//fprintf(stderr, "ERR: %s: can't open file '%s'\n", __FUNCTION__, filename);
+		fprintf(stderr, "ERR: %s: can't open file '%s'\n", __FUNCTION__, filename);
 		return;
 	}
 

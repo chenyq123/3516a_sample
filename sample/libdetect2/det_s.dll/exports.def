@@ -1,9 +1,0 @@
-EXPORTS
-	det_open
-	det_close
-	det_detect
-	det_set_param
-	det_enable_gpu
-	det_set_flipped_mode
-
-	det_source_stats
