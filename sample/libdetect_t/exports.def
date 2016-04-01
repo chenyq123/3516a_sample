@@ -1,0 +1,6 @@
+LIBRARY libdetect_t.dll
+
+EXPORTS
+        det_open
+		det_close
+		det_detect

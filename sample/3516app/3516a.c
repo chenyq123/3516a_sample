@@ -24,7 +24,7 @@ const VPSS_CHN VpssChn = 0;
 const VPSS_GRP SendVencGrp = 0;
 const VPSS_CHN SendVencChn = 0;
 
-const VENC_CHN SnapVencChn = 1;
+const VENC_CHN SnapVencChn = 2;
 const VENC_GRP SnapVencGrp = 1;
 
 const VI_DEV ViDev = 0;

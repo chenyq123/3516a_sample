@@ -1,5 +1,4 @@
 #include"blackboard_detect.h"
-#include <cstdio>
 
 
 BlackboardDetecting::BlackboardDetecting(KVConfig *cfg)
@@ -49,6 +48,174 @@ BlackboardDetecting::BlackboardDetecting(KVConfig *cfg)
 BlackboardDetecting::~BlackboardDetecting()
 {
 }
+
+//void BlackboardDetecting::creat_buffer(IplImage *image)
+//{
+//	buffer = (IplImage**)malloc(sizeof(buffer[0])*N);
+//	//buffer = new IplImage*[N];
+//	for(int i = 0;i<N;i++)
+//	{
+//		buffer[i]= cvCreateImage(cvSize(image->width,image->height),IPL_DEPTH_8U,1);
+//		cvSetZero(buffer[i]);
+//	}
+//}
+////**************************两帧差分法***********************************
+////输入：img//当前图像;
+////输出：silh//灰度图（当前帧图像和保存的上一帧图像相减后图像）
+////buflen设为2：表示连续两帧之间做帧差；设为3：表示隔一帧做帧差;
+//void BlackboardDetecting:: two_frame_method(IplImage*img,IplImage*silh)
+//{
+//	cvCvtColor(img,buffer[buflen-1],CV_BGR2GRAY);
+//	cvAbsDiff(buffer[buflen-1],buffer[0],silh);
+//	for(int i = 0;i<buflen-1;i++)
+//	{
+//		cvCopy(buffer[i+1],buffer[i]);
+//	}
+//	cvThreshold( silh, silh, diff_threshold, 255, CV_THRESH_BINARY );
+//	cvSmooth(silh,silh,CV_MEDIAN,3,0,0,0);
+//
+//	/*IplImage* pyr=cvCreateImage(cvSize((silh->width&-2)/2,(silh->height&-2)/2),IPL_DEPTH_8U,1);
+//	cvPyrDown(silh,pyr,7);
+//	cvDilate(pyr,pyr,0,1);
+//	cvPyrUp(pyr,silh,7);
+//	cvReleaseImage(&pyr);*/
+//
+//	cv::dilate((Mat)silh, (Mat)silh, cv::Mat());
+//	cv::erode((Mat)silh,(Mat)silh, cv::Mat());
+//	cv::erode((Mat)silh, (Mat)silh, cv::Mat());
+//	cv::dilate((Mat)silh, (Mat)silh, cv::Mat(),cv::Point(-1,-1),2);
+//}
+//
+////******************矩形按面积由大到小排序的（比较函数）******************
+////输入：Rect a 和 Rect b;
+////输出：当a的面积小于b的面积时输出1;
+//int BlackboardDetecting::cmp_func_area(const CvRect&a,const CvRect&b)
+//{
+//
+//	return (a.width*a.height)>(b.width*b.height);
+//
+//}
+//
+////**************************两矩形框进行融合******************************
+////输入：两个矩形a、b;
+////返回：两个矩形融合之后的矩形框;
+//CvRect BlackboardDetecting::merge_rect(CvRect a,CvRect b)
+//{
+//	CvRect rect_new;
+//	int small_x = a.x;
+//	int small_y = a.y;
+//	int big_x = a.x+a.width;
+//	int big_y = a.y+a.height;
+//	if(b.x<small_x)
+//		small_x=b.x;
+//	if(b.y<small_y)
+//		small_y=b.y;
+//	if(b.x+b.width>big_x)
+//		big_x=b.x+b.width;
+//	if(b.y+b.height>big_y)
+//		big_y=b.y+b.height;
+//	rect_new = cvRect(small_x,small_y,big_x-small_x,big_y-small_y);
+//	return rect_new;
+//}
+//
+////*****************************运动区域融合*******************************
+////输入：seq:运动矩形序列 ，image:图像;
+////输出：seq:融合之后的运动矩形序列;
+//void BlackboardDetecting::rect_fusion(std::vector<cv::Rect> &seq,IplImage *image)
+//{
+//	//对运动框先按面积大小进行排序，由大到小;
+//	std::sort(seq.begin(),seq.end(),cmp_func_area);
+//	CvRect rect_i;
+//	CvRect rect_j;
+//	int num = 0;int interval = merge_interval;
+//	for(;;)
+//	{
+//		std::vector<cv::Rect>::iterator it1;
+//		std::vector<cv::Rect>::iterator it2;
+//		num=0;
+//		for(it1 = seq.begin();it1!= seq.end();)
+//		{
+//			for(it2 = it1+1;it2!= seq.end();)
+//			{
+//				rect_i = *it1;
+//				rect_j = *it2;
+//				if(rect_i.x>(rect_j.x+rect_j.width+interval)||(rect_i.x+rect_i.width+interval)<rect_j.x
+//					||rect_i.y>(rect_j.y+rect_j.height+interval)||(rect_i.y+rect_i.height+interval)<rect_j.y)
+//				{
+//					it2++;
+//					continue;
+//				}
+//				else//当矩形框之间有交集时进行融合;
+//				{
+//					*it1 = merge_rect(rect_i,rect_j);
+//					it2 = seq.erase(it2);
+//					num++;
+//				}
+//			}
+//			it1++;
+//		}
+//		//当所有矩形框之间不可再融合时停止循环;
+//		if(num==0)
+//		{
+//			//重新按面积排序;
+//			std::sort(seq.begin(),seq.end(),cmp_func_area);
+//			break;
+//		}
+//
+//	}
+//
+//}
+//
+////*****************************帧差法*************************************
+//bool BlackboardDetecting:: frame_difference_method (IplImage *image,std::vector<cv::Rect> &rect_vector)
+//{
+//	bool has_rect = false;
+//
+//	CvMemStorage *siln_contours_storage = NULL;
+//	CvSeq *siln_contours_seq=NULL;
+//	if(!siln_contours_storage)
+//	{
+//		siln_contours_storage=cvCreateMemStorage(0);
+//		siln_contours_seq=cvCreateSeq(0,sizeof(CvSeq),sizeof(CvContour),siln_contours_storage);
+//	}
+//	else
+//		cvClearMemStorage(siln_contours_storage);
+//	CvSize size = cvSize(image->width,image->height);
+//	IplImage* silh=NULL;
+//	silh=cvCreateImage(size,IPL_DEPTH_8U,1);
+//	if(!buffer)
+//	{
+//		creat_buffer(image);
+//	}
+//	two_frame_method(image,silh);
+//	cvShowImage("帧差法",silh);
+//	//查找轮廓;
+//	cvFindContours(silh,siln_contours_storage,&siln_contours_seq,sizeof(CvContour),
+//		CV_RETR_EXTERNAL,CV_CHAIN_APPROX_SIMPLE,cvPoint(0,0));
+//	for(;siln_contours_seq;siln_contours_seq=siln_contours_seq->h_next)
+//	{
+//		CvRect rect = ((CvContour*)siln_contours_seq)->rect;//子类转换为父类例子;
+//		if(rect.x<0||rect.y<0||rect.x+rect.width>image->width||rect.y+rect.height>image->height)
+//			continue;
+//		if(rect.width*rect.height<100)//太小的矩形框排除;
+//			continue;
+//		rect_vector.push_back(rect);
+//
+//	}
+//	//对矩形框按照面积从大到小进行排序,并进行融合;
+//	if(rect_vector.size()>1)
+//	{
+//		rect_fusion(rect_vector,image);
+//	}
+//	cvReleaseMemStorage(&siln_contours_storage);
+//	cvReleaseImage(&silh);
+//	if(rect_vector.size()>0)
+//	{
+//		has_rect = true;
+//	}
+//   return has_rect;
+//}
+
 
 
 
@@ -219,14 +386,12 @@ void BlackboardDetecting::luv_method(const Mat &img,Mat bg,std::vector<Rect> &r)
 	}
 
 	r=refineSegments2(img, luv_m, fgimg,merge_interval,min_area,max_area);
-
 	if(atoi(cfg_->get_value("debug","0"))>0)
 	{
 		//imshow("bg_luv_fgimg",fgimg);
 		imshow("bg_luv_m_temp",luv_m_temp);
 		waitKey(1);
 	}
-
 
 }
 
@@ -236,19 +401,24 @@ bool BlackboardDetecting::one_frame_bd(Mat img, vector < Rect > &r)
 {
 	bool has_rect = false;
 	Mat fgmask;
+    printf("line=%d\n",__LINE__);
 	bg_model(img, fgmask, learning_rate);	//update_bg_model ? -1 : 0
 	Mat bg;//获得的背景图像
+    printf("line=%d\n",__LINE__);
 	bg_model.getBackgroundImage(bg);
+    printf("line=%d\n",__LINE__);
 	if (atoi(cfg_->get_value("debug", "0")) > 0)
 	{
 	    imshow("bg_background image", bg);
 	    waitKey(1);
 	}
+    printf("line=%d\n",__LINE__);
 	luv_method(img,bg,r);
 	if(r.size()>0)
 	{
 		has_rect = true;
 	}
+    printf("line=%d\n",__LINE__);
 	return has_rect;
 }
 
@@ -321,6 +491,73 @@ void BlackboardDetecting::do_mask(Mat &img)
 	}
 }
 
+////填充二值化图像的掩码区 ;
+//bool BlackboardDetecting::build_mask_internal(const char *key, Mat& img)
+//{
+//	bool masked = false;
+//
+//	const char *pts = cfg_->get_value(key, "0");
+//	std::vector < Point > points;
+//
+//	if (pts) {
+//		char *data = strdup(pts);
+//		char *p = strtok(data, ";");
+//		while (p) {
+//			// 每个Point 使"x,y" 格式 ;
+//			int x, y;
+//			if (sscanf(p, "%d,%d", &x, &y) == 2) {
+//				CvPoint pt = { x, y };
+//				points.push_back(pt);
+//			}
+//
+//			p = strtok(0, ";");
+//		}
+//		free(data);
+//	}
+//
+//	if (points.size() > 3) {
+//		int n = points.size();
+//		const Point **pts =
+//		    (const Point **) alloca(sizeof(const Point *) * points.size());
+//		for (int i = 0; i < n; i++) {
+//			pts[i] = &points[i];
+//		}
+//		fillPoly(img, pts, &n, 1, CV_RGB(255, 255, 255));
+//		masked = true;
+//	}
+//
+//	return masked;
+//}
+//
+////获得掩码二值化图像（这个应该在初始化时操作） ;
+//Mat BlackboardDetecting::build_mask(const char *key, const char *key2)
+//{
+//	/** 从 cfg 中的参数，创建 mask */
+//	//CvSize size = {video_width_, video_height_};
+//	Size size(video_width_, video_height_);
+//	Mat img; img.create(size,CV_8UC3);
+//
+//	if (!ismask_)
+//		img.setTo(0);
+//
+//	if (key) {
+//		ismask_ = build_mask_internal(key, img);
+//	}
+//
+//	if (key2) {
+//		build_mask_internal(key2, img);
+//	}
+//	return img;
+//}
+//
+////输入原始图像，返回掩码后的图像;
+//void BlackboardDetecting::do_mask(Mat &img)
+//{
+//	if (ismask_)		//是否填充完毕 ;
+//	{
+//		bitwise_and(img, img_mask_, img);
+//	}
+//}
 
 //获得标定区的所有点;
 std::vector<cv::Point> BlackboardDetecting::load_roi(const char *pts)
@@ -384,7 +621,6 @@ cv::Rect BlackboardDetecting::get_point_rect(std::vector<cv::Point> pt)
 	min_y = pt[0].y;
 	max_y = pt[pt.size()-1].y;
 	rect = Rect(min_x,min_y,(max_x-min_x),(max_y-min_y));
-    //printf("video_width:%d,video_height:%d\n",video_width_,video_height_);
 	rect &= Rect(0,0,video_width_,video_height_);
 	return rect;
 }

@@ -140,16 +140,12 @@ SENSOR_LIBS += $(REL_LIB)/lib_iniparser.a
 
 COMMON_DIR:=$(PWD)/../common
 TEST_COMM_DIR :=$(PWD)/../test_comm
-DETECT_COMM_DIR :=$(PWD)/../libdetect_t
-DET_COMM_DIR :=$(PWD)/../libdetect2/det
-KVCONFIG_COMM_DIR :=$(PWD)/../libdetect2/libkvconfig
+CJSON_COMM_DIR := /root/cJSON
 
 INC_FLAGS := -I$(COMMON_DIR)
 INC_FLAGS += -I$(REL_INC)
 INC_FLAGS += -I$(TEST_COMM_DIR)
-INC_FLAGS += -I$(DETECT_COMM_DIR)
-INC_FLAGS += -I$(DET_COMM_DIR)
-INC_FLAGS += -I$(KVCONFIG_COMM_DIR)
+INC_FLAGS += -I$(CJSON_COMM_DIR)
 INC_FLAGS += -I$(SDK_PATH)/mpp/component/acodec
 
 ifeq ($(MPP_BUILD), y)
@@ -217,11 +213,6 @@ COMM_OBJ := $(COMM_SRC:%.c=%.o)
 TEST_COMM_SRC := $(wildcard $(TEST_COMM_DIR)/*.c)
 TEST_COMM_OBJ := $(TEST_COMM_SRC:%.c=%.o)
 
-DETECT_COMM_SRC := $(wildcard $(DETECT_COMM_DIR)/*.cpp)
-DETECT_COMM_OBJ := $(DETECT_COMM_SRC:%.cpp=%.o)
 
-DET_COMM_SRC := $(wildcard $(DET_COMM_DIR)/*.cpp)
-DET_COMM_OBJ := $(DET_COMM_SRC:%.cpp=%.o)
-
-KVCONFIG_COMM_SRC := $(wildcard $(KVCONFIG_COMM_DIR)/*.cpp)
-KVCONFIG_COMM_OBJ := $(KVCONFIG_COMM_SRC:%.cpp=%.o)
+CJSON_COMM_SRC := $(wildcard $(CJSON_COMM_DIR)/*.c)
+CJSON_COMM_OBJ := $(CJSON_COMM_SRC:%.c=%.o)

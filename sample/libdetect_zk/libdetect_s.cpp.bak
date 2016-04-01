@@ -1,0 +1,110 @@
+//#include <iostream>
+//#include "windows.h"
+//#include "stdafx.h"
+#include "libdetect_s.h"
+//#include "../KVConfig.h"
+//#include "../zk_student_detect_2/zk_sd2.h"
+//#include "../libimagesource/image_source.h"
+#include "StudentTrack.h"
+
+#include <opencv2/opencv.hpp>
+
+CStudentTrack sdop;
+
+//std::string result;
+
+struct det_t
+{
+    int t;
+};
+
+det_t kkk;
+
+det_t *det_open(const char *cfg_name)
+{
+    char filename[200];
+    sprintf(filename,cfg_name);
+    //sdop.setdebug(true);
+    sdop.setdebug(false);
+    sdop.setduration(30);
+    sdop.readconfig(filename);
+    sdop.start();
+    return &kkk;
+}
+
+void det_close(det_t *ctx)
+{
+
+    return;
+}
+
+/*
+{
+"stamp":12345, "rect":[{"x":0,"y":0,"width":100,"height":100},{"x":0,"y":0,"width":100,"height":100}]
+}
+*/
+
+const int _buf_size = 4096;
+static char *_buf = (char*)malloc(_buf_size);
+const char *_pre = "{ \"stamp\":1234567, \"rect\":[";
+
+
+//const char *det_detect(det_t *ctx, zifImage *img)
+const char *det_detect(det_t *ctx, cv::Mat &frame)
+{
+    //cv::Mat frame(img->height, img->width, CV_8UC3, img->data[0],
+    //  img->stride[0]);
+    sdop.process(frame);
+    //cout<<aaa<<" .. "<<ppp<<endl;
+
+//  return "{\"stamp\":54321,\"rect\":[]}";
+
+    //result = "{";
+    //result += "\"stamp\":54322121, \"rect\": [";
+    strcpy(_buf, _pre);
+    bool first = true;
+
+    std::vector<upStudentTarget>::iterator it = sdop.up_students.begin();
+    while( it != sdop.up_students.end())
+    {
+        if(it->tag==0){
+
+            if (!first)
+            {
+                //result += ", ";
+                strcat(_buf, ",");
+            }
+            printf("x=%d,y=%d,width:%d,height:%d\n",it->position.x,it->position.y,it->position.width,it->position.height);
+            char tmp[128];
+            int x = 480*it->position.x/480;
+            int y = 270*it->position.y/360;
+            int w = 480*it->position.width/480;
+            int h = 270*it->position.height/360;
+            //sprintf(_buf, "{\"x\":%d, \"y\":%d, \"width\":%d, \"height\":%d}", x, y, w, h);
+            sprintf(tmp,  "{\"x\":%d, \"y\":%d, \"width\":%d, \"height\":%d}", x, y, w, h);
+
+            //result += buf;
+
+            strcat(_buf, tmp);
+
+
+            first = false;
+        }
+        ++it;
+    }
+    //result += "]}";
+    strcat(_buf, " ]}");
+    return _buf;
+    //return result.c_str();
+
+}
+
+void det_stop(det_t *ctx)
+{
+
+}
+
+void det_set_param(det_t *ctx, double area_p, double up_p, double down_p)
+{
+
+}

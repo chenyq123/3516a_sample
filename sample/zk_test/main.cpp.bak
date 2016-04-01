@@ -1,0 +1,913 @@
+#include "studentDetectOP.h"
+#include <iostream>
+#include "windows.h"
+#include "StudentTrack.h"
+
+#include <opencv2/opencv.hpp>
+#include "opencv2/legacy/legacy.hpp"
+
+#include "opencv2/video/tracking.hpp"
+#include "opencv2/highgui/highgui.hpp"
+
+using namespace std;
+using namespace cv;
+
+#define AV_PIX_FMT_RGB24 3
+typedef struct imgsrc_t imgsrc_t;
+
+typedef struct imgsrc_format
+{
+	int fmt;
+	int width;
+	int height;
+	double fps;
+} imgsrc_format;
+
+
+typedef struct zifImage 
+{
+	int fmt_type;
+	int width;
+	int height;
+	unsigned char *data[4];
+	int stride[4];
+
+	double stamp;
+
+	void *internal_ptr;
+} zifImage;
+
+typedef void *(*PFN_open)(const char*, const imgsrc_format*);
+typedef void (*PFN_close)(void*);
+typedef zifImage*(*PFN_next)(void *);
+typedef void (*PFN_free)(void*, zifImage*);
+
+
+HMODULE dll = LoadLibrary("libimagesource.dll");
+void * ctx = NULL;
+
+PFN_open func_open = (PFN_open)GetProcAddress(dll, "imgsrc_open");
+PFN_close func_close = (PFN_close)GetProcAddress(dll, "imgsrc_close");
+PFN_next func_next = (PFN_next)GetProcAddress(dll, "imgsrc_next");
+PFN_free func_free = (PFN_free)GetProcAddress(dll, "imgsrc_free");
+
+typedef struct det_t det_t;
+
+typedef char* (*det_detect)(det_t *ctx, zifImage *img);
+HINSTANCE handle ;
+det_detect funPtr;
+
+bool bGetFrame=false;
+bool bOverThread=false;
+Mat img,img2;
+
+long t1,t2,t3,t4,t5,t6,t7,t8,t9;
+long flowcount;
+
+const char *pcascadeName = "D:\\OpenCV\\sources\\data\\haarcascades\\haarcascade_frontalface_alt.xml";   
+const char *pImageName = "d:\\ttt.bmp";  
+
+//跟踪线程
+DWORD WINAPI TrackFunc(LPVOID pParam) 
+	{
+	bGetFrame=false;
+	bOverThread=false;
+
+	//studentDetectOP sdop(Size(480, 270), 30);	
+	//根据标定程序添加, 此处随便写了一个;
+	//sdop.add_student_ref(studentReference(Rect(10, 10, 100, 100), 1, 400, Size(480, 270)));
+
+
+
+	CStudentTrack sdop;
+	sdop.setduration(30);
+	sdop.setdebug(true);
+	sdop.start();
+
+	/*handle =LoadLibrary("libdetect_s.dll"); 
+	funPtr = (det_detect)GetProcAddress(handle,"det_detect");*/
+	long aaa=0;
+	while(true)
+	{
+		if(bGetFrame)
+		{
+			//long t=
+			sdop.process(img);
+			/*aaa++;
+			zifImage zi;
+			zi.width=1280;
+			zi.height=720;
+			zi.data[0]=img.data;
+			zi.stride[0]=1280*3;
+			char *ppp=funPtr(NULL,&zi);
+
+			cout<<aaa<<" .. "<<ppp<<endl;*/
+
+			bGetFrame=false;
+
+			t1=sdop.t1;
+			t2=sdop.t2;
+			t3=sdop.t3;
+			t4=sdop.t4;
+			t5=sdop.t5;
+			t6=sdop.t6;
+			t7=sdop.t7;
+			t8=sdop.t8;
+
+
+			t9=GetTickCount()-sdop.tt;
+
+
+			flowcount=sdop.flowcount;
+
+			/*for (int i = 0; i < sdop.up_students.size(); i++)
+			{
+			  rectangle(img, sdop.up_students[i].position, Scalar(0, 0, 255), 2);
+			}*/		
+			//imshow("imgSample", img);
+			//waitKey(1);
+		}
+	
+		if(bOverThread)
+			break;
+		else
+			Sleep(2);
+	}
+
+			
+	return 1 ;//*/
+}
+
+
+void openavi(char* argv)
+{
+	//const std::string videoStreamAddress = "rtsp://192.168.12.18/av0_0";
+
+	bool bcopy=false;
+	VideoCapture vc;//("E:/tan/zx/768x576.avi");
+	vc.open(argv);
+	//vc.open(videoStreamAddress);
+	bool is_open = vc.isOpened();
+
+	Mat frame;
+
+	int frameToStart=1;//
+	//frameToStart=170;//第一个人站起
+	//frameToStart=1630;
+	//frameToStart=1760;//坐下
+	//frameToStart=2450;
+
+	//frameToStart=4900;
+
+	//frameToStart=5600;
+
+	//frameToStart=6500;
+
+	//frameToStart=8900;
+
+	//frameToStart=300;
+
+	vc.set( CV_CAP_PROP_POS_FRAMES,frameToStart);
+
+	::CreateThread(NULL, 0, TrackFunc, NULL, NULL, NULL);
+
+
+	while (true)
+	{
+		frameToStart++;
+		long l1 = GetTickCount();
+		vc >> frame;
+		if (frame.empty())
+		{
+			break;
+		}
+
+		//if
+		
+		//resize(frame, img2, Size(480, 270));
+		//resize(frame, img2, Size(WIDTH, HEIGHT));
+		bcopy=false;
+		if(bGetFrame==false){
+			bcopy=true;
+			frame.copyTo(img);	
+			//sdop.process(frame);
+			bGetFrame=true;
+		}		
+		
+		//imshow("img", frame);
+		//waitKey(30);
+		Sleep(70);
+		long l2 = GetTickCount();
+		if(bcopy)
+		 cout<<frameToStart<<","<<l2-l1<<","<<flowcount<<",,,,,,,,,"<<"t1="<<t1<<";t2="<<t2<<";t3="<<t3<<";t4="<<t4<<";t5="<<t5<<";t6="<<t6<<";t7="<<t7<<";t8="<<t8<<";t9="<<t9<<endl;
+		else
+			cout<<frameToStart<<","<<l2-l1<<","<<flowcount<<"                                                         ++++++++"<<endl;
+	}
+	bOverThread=true;
+}
+
+void rtsp()
+{
+	imgsrc_format fmt;
+	fmt.fmt = AV_PIX_FMT_RGB24;
+	fmt.fps = 1.0; // 
+	fmt.width = 960;
+	fmt.height = 540;
+
+	ctx = func_open("rtsp://192.168.95.100/av0_0", &fmt);
+
+	Mat frame;
+	bool bcopy=false;
+	int frameToStart=1;//25*120;
+	::CreateThread(NULL, 0, TrackFunc, NULL, NULL, NULL);
+
+	if (ctx == NULL)
+	{
+		//打开视频源失败
+	}
+	while(1)
+	{
+		long l1 = GetTickCount();
+
+		zifImage *imgzif = func_next(ctx);
+		if (imgzif == NULL)
+		{
+			continue;
+		}
+		//zifImage2IplImage();
+		////cv det
+		cv::Mat frame(imgzif->height, imgzif->width, CV_8UC3, imgzif->data[0],
+		imgzif->stride[0]);
+
+		//resize(frame, img2, Size(WIDTH, HEIGHT));
+		bcopy=false;
+		if(bGetFrame==false){
+			bcopy=true;
+			img2.copyTo(img);			
+			bGetFrame=true;
+		}		
+		
+		imshow("img", img2);
+		waitKey(30);
+		long l2 = GetTickCount();
+		if(bcopy)
+		 cout<<frameToStart<<","<<l2-l1<<",,,,,,,,,"<<endl;
+		else
+			cout<<frameToStart<<","<<l2-l1<<endl;
+	
+
+		func_free(ctx, imgzif);
+	}
+}
+
+inline bool isFlowCorrect(Point2f u)
+{
+    return !cvIsNaN(u.x) && !cvIsNaN(u.y) && fabs(u.x) < 1e9 && fabs(u.y) < 1e9;
+}
+
+static Vec3b computeColor(float fx, float fy)
+{
+    static bool first = true;
+
+    // relative lengths of color transitions:
+    // these are chosen based on perceptual similarity
+    // (e.g. one can distinguish more shades between red and yellow
+    //  than between yellow and green)
+    const int RY = 15;
+    const int YG = 6;
+    const int GC = 4;
+    const int CB = 11;
+    const int BM = 13;
+    const int MR = 6;
+    const int NCOLS = RY + YG + GC + CB + BM + MR;
+    static Vec3i colorWheel[NCOLS];
+
+    if (first)
+    {
+        int k = 0;
+
+        for (int i = 0; i < RY; ++i, ++k)
+            colorWheel[k] = Vec3i(255, 255 * i / RY, 0);
+
+        for (int i = 0; i < YG; ++i, ++k)
+            colorWheel[k] = Vec3i(255 - 255 * i / YG, 255, 0);
+
+        for (int i = 0; i < GC; ++i, ++k)
+            colorWheel[k] = Vec3i(0, 255, 255 * i / GC);
+
+        for (int i = 0; i < CB; ++i, ++k)
+            colorWheel[k] = Vec3i(0, 255 - 255 * i / CB, 255);
+
+        for (int i = 0; i < BM; ++i, ++k)
+            colorWheel[k] = Vec3i(255 * i / BM, 0, 255);
+
+        for (int i = 0; i < MR; ++i, ++k)
+            colorWheel[k] = Vec3i(255, 0, 255 - 255 * i / MR);
+
+        first = false;
+    }
+
+    const float rad = sqrt(fx * fx + fy * fy);
+    const float a = atan2(-fy, -fx) / (float)CV_PI;
+
+    const float fk = (a + 1.0f) / 2.0f * (NCOLS - 1);
+    const int k0 = static_cast<int>(fk);
+    const int k1 = (k0 + 1) % NCOLS;
+    const float f = fk - k0;
+
+    Vec3b pix;
+
+    for (int b = 0; b < 3; b++)
+    {
+        const float col0 = colorWheel[k0][b] / 255.f;
+        const float col1 = colorWheel[k1][b] / 255.f;
+
+        float col = (1 - f) * col0 + f * col1;
+
+        if (rad <= 1)
+            col = 1 - rad * (1 - col); // increase saturation with radius
+        else
+            col *= .75; // out of range
+
+        pix[2 - b] = static_cast<uchar>(255.f * col);
+    }
+
+    return pix;
+}
+
+static void drawOpticalFlow(const Mat_<Point2f>& flow, Mat& dst, float maxmotion = -1)
+{
+    dst.create(flow.size(), CV_8UC3);
+    dst.setTo(Scalar::all(0));
+
+    // determine motion range:
+    float maxrad = maxmotion;
+
+    if (maxmotion <= 0)
+    {
+        maxrad = 1;
+        for (int y = 0; y < flow.rows; ++y)
+        {
+            for (int x = 0; x < flow.cols; ++x)
+            {
+                Point2f u = flow(y, x);
+
+                if (!isFlowCorrect(u))
+                    continue;
+
+                maxrad = max(maxrad, sqrt(u.x * u.x + u.y * u.y));
+            }
+        }
+    }
+
+    for (int y = 0; y < flow.rows; ++y)
+    {
+        for (int x = 0; x < flow.cols; ++x)
+        {
+            Point2f u = flow(y, x);
+
+            if (isFlowCorrect(u))
+                dst.at<Vec3b>(y, x) = computeColor(u.x / maxrad, u.y / maxrad);
+        }
+    }
+}
+
+static void writeOpticalFlowToFile(const Mat_<Point2f>& flow, const string& fileName)
+{
+    static const char FLO_TAG_STRING[] = "PIEH";
+
+    ofstream file(fileName.c_str(), ios_base::binary);
+
+    file << FLO_TAG_STRING;
+
+    file.write((const char*) &flow.cols, sizeof(int));
+    file.write((const char*) &flow.rows, sizeof(int));
+
+    for (int i = 0; i < flow.rows; ++i)
+    {
+        for (int j = 0; j < flow.cols; ++j)
+        {
+            const Point2f u = flow(i, j);
+
+            file.write((const char*) &u.x, sizeof(float));
+            file.write((const char*) &u.y, sizeof(float));
+        }
+    }
+}
+
+void DetectAndMark()  
+{  
+    // load the Haar classifier    
+    CvHaarClassifierCascade *pHaarClassCascade;    
+    pHaarClassCascade = (CvHaarClassifierCascade*)cvLoad(pcascadeName);    
+    
+    //load the test image    
+    IplImage *pSrcImage = cvLoadImage(pImageName, CV_LOAD_IMAGE_UNCHANGED);  
+    IplImage *pGrayImage = cvCreateImage(cvGetSize(pSrcImage), IPL_DEPTH_8U, 1);    
+    if(pSrcImage == NULL || pGrayImage == NULL)  
+    {  
+         printf("can't load image!\n");  
+         return;  
+    }  
+    cvCvtColor(pSrcImage, pGrayImage, CV_BGR2GRAY);    
+    
+    if (pHaarClassCascade != NULL && pSrcImage != NULL && pGrayImage != NULL)    
+    {           
+        const static CvScalar colors[] =     
+        {    
+            CV_RGB(0,0,255),  
+            CV_RGB(0,128,255),  
+            CV_RGB(0,255,255),  
+            CV_RGB(0,255,0),  
+            CV_RGB(255,128,0),  
+            CV_RGB(255,255,0),  
+            CV_RGB(255,0,0),  
+            CV_RGB(255,0,255)   
+        };    
+    
+        CvMemStorage *pcvMemStorage = cvCreateMemStorage(0);    
+        cvClearMemStorage(pcvMemStorage);    
+  
+        //detect the face    
+        int TimeStart, TimeEnd;    
+        TimeStart = GetTickCount();    
+        CvSeq *pcvSeqFaces = cvHaarDetectObjects(pGrayImage, pHaarClassCascade, pcvMemStorage);    
+        TimeEnd = GetTickCount();    
+    
+        printf("the number of faces: %d\nSpending Time: %d ms\n", pcvSeqFaces->total, TimeEnd - TimeStart);    
+            
+        //mark the face     
+        for(int i = 0; i <pcvSeqFaces->total; i++)    
+        {    
+            CvRect* r = (CvRect*)cvGetSeqElem(pcvSeqFaces, i);    
+            CvPoint center;    
+            int radius;    
+            center.x = cvRound((r->x + r->width * 0.5));    
+            center.y = cvRound((r->y + r->height * 0.5));    
+            radius = cvRound((r->width + r->height) * 0.25);    
+            cvCircle(pSrcImage, center, radius, colors[i % 8], 2);    
+        }    
+        cvReleaseMemStorage(&pcvMemStorage);    
+    }    
+        
+    const char *pstrWindowsTitle = "FaceDetect Demo";    
+    cvNamedWindow(pstrWindowsTitle, CV_WINDOW_AUTOSIZE);    
+    cvShowImage(pstrWindowsTitle, pSrcImage);    
+    
+    cvWaitKey(0);    
+    
+    cvDestroyWindow(pstrWindowsTitle);    
+    cvReleaseImage(&pSrcImage);     
+    cvReleaseImage(&pGrayImage);    
+}  
+
+
+void detectAndDisplay(  )
+{
+
+//String face_cascade_name = "haarcascade_frontalface_alt.xml";
+	String face_cascade_name = "header_18_18_lbp.xml";
+CascadeClassifier face_cascade;
+string window_name = "Face detection";
+
+	//-- 1. Load the cascade
+ //if(!face_cascade.load( pcascadeName ) ){ printf("--(!)Error loading\n"); return ; };
+if(!face_cascade.load( face_cascade_name ) ){ printf("--(!)Error loading\n"); return ; };
+ //-- 2. Read the image
+ IplImage* img = cvLoadImage(pImageName, CV_LOAD_IMAGE_COLOR);
+ Mat frame(img);
+ //-- 3. Apply the classifier to the frame
+
+ std::vector<Rect> faces;
+ Mat frame_gray;
+
+ cvtColor( frame, frame_gray, CV_BGR2GRAY );
+ equalizeHist( frame_gray, frame_gray );
+ //-- Detect faces
+ double t = (double)cvGetTickCount();
+ face_cascade.detectMultiScale( frame_gray, faces, 1.1, 2, 0|CV_HAAR_SCALE_IMAGE, Size(16, 16) );
+ t = (double)cvGetTickCount() - t; 
+ printf("%gms\n", t/((double)cvGetTickFrequency()*1000.0));
+
+ for( size_t i = 0; i < faces.size(); i++ )
+ {
+ Point center( faces[i].x + faces[i].width/2, faces[i].y + faces[i].height/2 ); 
+ printf("Found a face at (%d, %d)\n", center.x, center.y);
+ ellipse( frame, center, Size( faces[i].width/2, faces[i].height/2), 0, 0, 360, Scalar( 255, 255, 255 ), 2, 8, 0 );
+ }
+ //-- Show what you got
+ imshow( window_name, frame );
+
+  waitKey();
+ cvDestroyWindow(window_name.c_str());
+ cvReleaseImage(&img);
+}
+
+bool has_faces(const cv::Mat &origin, std::vector<cv::Rect> &faces)
+{
+	/** 检测 img 中，是否包含“人脸” */
+	String face_cascade_name = "haarcascade_frontalface_alt.xml";
+	CascadeClassifier face_cascade;
+	//face_cascade
+	//if (!loaded_) {
+	//	return false;
+	//}
+
+	const double dx = 2.0, dy = 2.0;
+
+	cv::Mat gray;
+	cv::cvtColor(origin, gray, cv::COLOR_BGR2GRAY);
+	cv::resize(gray, gray, cv::Size(gray.cols * dx, gray.rows * dy));	//
+	//det_faces_.detectMultiScale(gray, faces); // , 1.1, 3, 0, cv::Size(18, 18));
+
+	for (std::vector<cv::Rect>::iterator it = faces.begin(); it != faces.end(); ++it) {
+	//	if (debug2_) {
+			cv::rectangle(gray, *it, cv::Scalar(255, 255, 255));
+	//	}
+
+		it->x /= dx, it->y /= dy;
+		it->width /= dx, it->height /= dy;
+	}
+
+	//if (debug2_) {
+		cv::imshow("recognize", gray);
+	//}
+
+	return !faces.empty();
+}
+
+
+void Mog2()
+{
+	VideoCapture video("D:\\lubo2\\学生录像和配置文件\\5_2.mp4");  
+    Mat frame,mask,thresholdImage,input, output,bg,cur_gray,pre_gray,imgdiff,imgsobel;  
+    //video>>frame;  
+	int framenum=0;
+    BackgroundSubtractorMOG bgSubtractor; //20,16,true 
+      
+    while(true){  
+		framenum++;
+        video>>frame;  
+		resize(frame, input, Size(540,460));
+		cv::cvtColor(input, cur_gray, CV_BGR2GRAY);
+        //++frameNum;  
+		//Sobel(cur_gray,imgsobel,CV_8U,1,1,3);
+        bgSubtractor(cur_gray,mask,0.01);  
+		//bgSubtractor.getBackgroundImage(bg);
+        //cout<<frameNum<<endl;  
+		Sobel(cur_gray,imgsobel,CV_8U,1,1,1);
+		//threshold(imgsobel, imgsobel,30, 255, cv::THRESH_BINARY);//30是经验值
+		//cv::dilate(mask, mask, cv::Mat(),cv::Point(-1,-1), 1);
+		//// 腐蚀
+  //      cv::erode(mask, mask, cv::Mat(),cv::Point(-1,-1), 2);
+
+  //      // 膨胀
+  //      cv::dilate(mask, mask, cv::Mat(),cv::Point(-1,-1), 2);
+		if(framenum>1)
+		{
+			cv::absdiff(pre_gray, cur_gray,imgdiff);
+			threshold(imgdiff, imgdiff,30, 255, cv::THRESH_BINARY);//30是经验值
+
+			//cv::dilate(imgdiff, imgdiff, cv::Mat(),cv::Point(-1,-1), 1);
+			//// 腐蚀
+			//cv::erode(imgdiff, imgdiff, cv::Mat(),cv::Point(-1,-1), 2);
+
+			//// 膨胀
+			//cv::dilate(imgdiff, imgdiff, cv::Mat(),cv::Point(-1,-1), 2);
+
+			imshow("imgdiff",imgdiff);  
+			 waitKey(1); 
+		}
+
+		
+
+		 imshow("cur_gray",cur_gray);  
+        waitKey(1);  
+        imshow("mask",mask);  
+        waitKey(1);  
+		imshow("imgsobel",imgsobel);  
+        waitKey(1);  
+		std::swap(cur_gray, pre_gray);
+		// imshow("bg",bg);  
+       // waitKey(1); 
+    }  
+    
+}
+
+void MogTan()
+{
+	VideoCapture video("D:\\lubo2\\123.mp4");  
+    Mat frame,mask,thresholdImage,input,preinput, output,bg,cur_gray,pre_gray,imgdiff,imgsobel,cur_r,cur_b,cur_g,pre_r,pre_g,pre_b;  
+    //video>>frame;  
+	int framenum=0;
+    //BackgroundSubtractorMOG bgSubtractor; //20,16,true 
+    video>>frame;  
+	int w=540;
+	int h=360;
+		
+    while(true){  
+		framenum++;
+        video>>frame;  
+		resize(frame, input, Size(540,360));
+		if(framenum<2){
+			std::swap(input, preinput);
+			continue;
+		}
+
+		cur_g.create(h, w, CV_8UC3);
+
+		IplImage *curframe=&IplImage(input);
+		IplImage *preframe=&IplImage(preinput);
+
+		IplImage *pGrayImage = cvCreateImage(cvGetSize(curframe), IPL_DEPTH_8U,3); 
+
+		cvAbsDiff(curframe,preframe,pGrayImage);
+
+		const double start = (double)getTickCount();
+		cv::cvtColor(input, cur_gray, CV_BGR2GRAY);
+
+		/*cur_r.create(h, w, CV_8UC1);
+		cur_g.create(h, w, CV_8UC1);
+		cur_b.create(h, w, CV_8UC1);
+
+		Mat out[]={cur_b,cur_g,cur_r};*/
+
+		//split(input, out);
+
+		const double timeSec = (getTickCount() - start) / getTickFrequency();
+		cout << "MogTan : " << timeSec << " sec" << endl;
+
+
+		imshow("input",input);  
+        waitKey(1);  		
+//		imshow("pGrayImage",pGrayImage);  
+//        waitKey(1);  
+		//imshow("g",cur_g);  
+		//waitKey(1);
+		//imshow("b",cur_b);  
+		//waitKey(1);
+		//imshow("cur_gray",cur_gray);  
+		//waitKey(1);
+		std::swap(input, preinput);
+
+		/*std::swap(cur_r, pre_r);
+		std::swap(cur_g, pre_g);
+		std::swap(cur_b, pre_b);*/
+	}
+}
+
+void OpticalFlowFarneback()
+{
+	VideoCapture video("D:\\lubo2\\123.mp4");  
+    Mat frame,mask,thresholdImage,input, output,bg,cur_gray,pre_gray,imgdiff,imgsobel,imgdiffforflow,flowleft,flowright;  
+    //video>>frame;  
+	int framenum=0;
+      
+    while(true){  
+		framenum++;
+        video>>frame;  
+		resize(frame, input, Size(480,270));
+		cv::cvtColor(input, cur_gray, CV_BGR2GRAY);
+		if(framenum<2){
+			std::swap(cur_gray, pre_gray);
+			continue;
+		}
+
+		cv::Mat flow,cflow;
+
+		const double start = (double)getTickCount();
+
+		
+
+		cv::calcOpticalFlowFarneback(pre_gray, cur_gray, flow, 0.5, 3, 15, 3, 5, 1.2, 0);
+
+		const double timeSec = (getTickCount() - start) / getTickFrequency();
+		cout << "OpticalFlowFarneback : " << timeSec << " sec" << endl;
+
+
+		/*cv::Mat yflow, xflow;
+		yflow.create(flow.rows, flow.cols, CV_32FC1);
+		xflow.create(flow.rows, flow.cols, CV_32FC1);
+		cv::Mat out[] = {xflow, yflow};
+		int ch[] = {0, 0, 1, 1};
+		mixChannels(&flow, 1,  out, 2, ch, 2);
+		cv::Mat result;
+		threshold(yflow, result,1.0, 255, cv::THRESH_BINARY);
+		result.convertTo(result, CV_8UC1);*/
+
+		cvtColor(pre_gray, cflow, CV_GRAY2RGB);
+   
+		   for (int y = 0; y < cflow.rows; y += 2 )
+		   {
+			for (int x = 0; x < cflow.cols; x += 2)
+			{
+			 Point2f fxy = flow.at<Point2f>(y, x);
+			 if(abs(fxy.x)>1 || abs(fxy.y)>1)
+				line(cflow, Point(x, y), Point(cvRound(x+fxy.x), cvRound(y+fxy.y)), CV_RGB(0,255,0));
+			 //circle(cflow, Point(x,y), 2, CV_RGB(255, 0, 0), -1);
+			}
+		   }
+
+		imshow("OpticalFlowFarneback", cflow);
+		waitKey(1); 
+		imshow("input", input);
+		waitKey(1); 
+		std::swap(cur_gray, pre_gray);
+	}
+}
+
+void  OpticalFlow()
+{
+	VideoCapture video("D:\\lubo2\\学生录像和配置文件\\5_2.mp4");  
+    Mat frame,mask,thresholdImage,input, output,bg,cur_gray,pre_gray,imgdiff,imgsobel,imgdiffforflow,flowleft,flowright;  
+    //video>>frame;  
+	int framenum=0;
+      
+    while(true){  
+		framenum++;
+        video>>frame;  
+		resize(frame, input, Size(540,360));
+		cv::cvtColor(input, cur_gray, CV_BGR2GRAY);
+		if(framenum<2){
+			std::swap(cur_gray, pre_gray);
+			continue;
+		}
+
+		cv::Mat flowX,flowY;
+		//cvCalcOpticalFlowBM(pre_gray,cur_gray,Size(10,10),flowX,flowY,
+
+		std::swap(cur_gray, pre_gray);
+	}
+}
+
+void OpticalFlowHS()
+{
+	//VideoCapture video("D:\\lubo2\\学生录像和配置文件\\5_2.mp4");  
+	VideoCapture video("D:\\lubo2\\123.mp4"); 
+	Mat frame,mask,thresholdImage,input, output,bg,cur_gray,pre_gray,imgdiff,imgsobel,imgdiffforflow,flowleft,flowright;  
+    //video>>frame;  
+	IplImage *src_img1=NULL, *src_img2=NULL, *dst_img1=NULL, *dst_img2=NULL;
+	int framenum=0;
+	CvTermCriteria criteria = cvTermCriteria (CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, 10, 0.1);
+     cvNamedWindow ("ImageHS", 1);
+    while(true){  
+		framenum++;
+        video>>frame;  
+		resize(frame, input, Size(320,180));
+		cv::cvtColor(input, cur_gray, CV_BGR2GRAY);
+		if(framenum<2){
+			std::swap(cur_gray, pre_gray);
+			continue;
+		}
+
+		IplImage *curframe=&IplImage(cur_gray);
+		IplImage *preframe=&IplImage(pre_gray);
+
+		IplImage *dst_img2 =&IplImage(input);
+
+		int cols = curframe->width;
+		int rows = curframe->height;
+
+		IplImage* velx = cvCreateImage(cvGetSize(curframe), IPL_DEPTH_32F,1);
+		IplImage* vely = cvCreateImage(cvGetSize(curframe), IPL_DEPTH_32F,1);
+
+		const double start = (double)getTickCount();
+		//cvCalcOpticalFlowHS(preframe,curframe,0,velx,vely,10.0,criteria);
+		const double timeSec = (getTickCount() - start) / getTickFrequency();
+		cout << "cvCalcOpticalFlowHS : " << timeSec << " sec" << endl;
+
+		for (int i = 0; i < cols; i ++) {
+			for (int j = 0; j < rows; j ++) {
+				int dx = (int) cvGetReal2D (velx, j, i);
+				int dy = (int) cvGetReal2D (vely, j, i);
+				if ((5<abs(dx))|| (5<abs(dy)))
+					cvLine (dst_img2, cvPoint (i, j), cvPoint (i + dx, j + dy), CV_RGB (255, 0, 0), 1, CV_AA, 0);
+			}
+		}
+
+    
+    cvShowImage ("ImageHS", dst_img2);
+	waitKey(20);  
+
+		std::swap(cur_gray, pre_gray);
+	}
+}
+
+void OpticalFlowDual()//2s多
+{
+	VideoCapture video("D:\\lubo2\\学生录像和配置文件\\5_2.mp4");  
+    Mat frame,mask,thresholdImage,input, output,bg,cur_gray,pre_gray,imgdiff,imgsobel,imgdiffforflow,flowleft,flowright;  
+    //video>>frame;  
+	int framenum=0;
+      Mat_<Point2f> flow;
+	   Ptr<DenseOpticalFlow> tvl1 = createOptFlow_DualTVL1();
+	   Mat out;
+    while(true){  
+		framenum++;
+        video>>frame;  
+		resize(frame, input, Size(320,180));
+		cv::cvtColor(input, cur_gray, CV_BGR2GRAY);
+		if(framenum<2){
+			std::swap(cur_gray, pre_gray);
+			continue;
+		}
+
+		
+   
+
+    const double start = (double)getTickCount();
+    tvl1->calc(pre_gray, cur_gray, flow);
+    const double timeSec = (getTickCount() - start) / getTickFrequency();
+    cout << "calcOpticalFlowDual_TVL1 : " << timeSec << " sec" << endl;
+
+    
+    drawOpticalFlow(flow, out);
+
+    imshow("Flow", out);
+
+		waitKey(1);
+		
+		std::swap(cur_gray, pre_gray);
+	}
+}
+
+void OpticalFlowSF()//超级慢，一个图都没运算出来
+{
+	VideoCapture video("D:\\lubo2\\学生录像和配置文件\\5_2.mp4");  
+    Mat frame,mask,thresholdImage,input, output,bg,cur_gray,pre_gray,imgdiff,imgsobel,imgdiffforflow,flowleft,flowright;  
+    //video>>frame;  
+	int framenum=0;
+      
+    while(true){  
+		framenum++;
+        video>>frame;  
+		resize(frame, input, Size(320,180));
+		//cv::cvtColor(input, cur_gray, CV_BGR2GRAY);
+		if(framenum<2){
+			std::swap(input, output);
+			continue;
+		}
+
+		int size = 16;
+		cv::Mat lastFrame, curframe, flow;
+		curframe = cv::Mat(size, size, CV_8UC3);
+		curframe.copyTo(lastFrame);
+
+		//cv::Mat flow;
+		calcOpticalFlowSF(lastFrame,curframe,flow,2,2,4);
+
+		Mat xy[2];
+		split(flow, xy);
+
+		//calculate angle and magnitude
+		Mat magnitude, angle;
+		cartToPolar(xy[0], xy[1], magnitude, angle, true);
+
+		//translate magnitude to range [0;1]
+		double mag_max;
+		minMaxLoc(magnitude, 0, &mag_max);
+		magnitude.convertTo(magnitude, -1, 1.0/mag_max);
+
+		//build hsv image
+		Mat _hsv[3], hsv;
+		_hsv[0] = angle;
+		_hsv[1] = Mat::ones(angle.size(), CV_32F);
+		_hsv[2] = magnitude;
+		merge(_hsv, 3, hsv);
+
+		//convert to BGR and show
+		Mat bgr;//CV_32FC3 matrix
+		cvtColor(hsv, bgr, COLOR_HSV2BGR);
+		imshow("flow", bgr);
+		waitKey(1);
+
+
+
+		std::swap(input, output);
+	}
+}
+
+int main(int argc, char *argv[])
+{
+	//detectAndDisplay();
+
+	//DetectAndMark();
+
+	openavi(argv[1]);
+
+	//OpticalFlowSF();
+
+	//OpticalFlowHS();
+
+	//OpticalFlowFarneback();
+
+	//OpticalFlowDual();
+
+	//rtsp();
+
+	//Mog2();
+
+	//MogTan();
+
+	return 0;
+}

@@ -1,0 +1,121 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ALIGN_BACK	vi_bayerdump.c	40;"	d	file:
+CHECK_RET	rc_attr.c	30;"	d	file:
+CHECK_RET	vpss_attr.c	34;"	d	file:
+CHECK_RET	vpss_attr2.c	37;"	d	file:
+COMM_SYS_Mmap	vi_bayerdump.c	/^HI_VOID* COMM_SYS_Mmap(HI_U32 u32PhyAddr, HI_U32 u32Size)$/;"	f
+COMM_SYS_Mmap	vi_dump.c	/^HI_VOID* COMM_SYS_Mmap(HI_U32 u32PhyAddr, HI_U32 u32Size)$/;"	f
+COMM_SYS_Munmap	vi_bayerdump.c	/^HI_S32 COMM_SYS_Munmap(HI_VOID* pVirAddr, HI_U32 u32Size)$/;"	f
+COMM_SYS_Munmap	vi_dump.c	/^HI_S32 COMM_SYS_Munmap(HI_VOID* pVirAddr, HI_U32 u32Size)$/;"	f
+DIS_STATS_NUM	vi_dump.c	98;"	d	file:
+DUMP_MEMBUF_S	vou_chn_dump.c	/^} DUMP_MEMBUF_S;$/;"	t	typeref:struct:hiDUMP_MEMBUF_S	file:
+DUMP_MEMBUF_S	vpss_src_dump.c	/^} DUMP_MEMBUF_S;$/;"	t	typeref:struct:hiDUMP_MEMBUF_S	file:
+INC_FLAGS	Makefile	/^INC_FLAGS := -I$(REL_INC)$/;"	m
+ISP_DEBUG_Exit	isp_debug.c	/^HI_S32 ISP_DEBUG_Exit(HI_VOID)$/;"	f
+ISP_DEBUG_HandleSig	isp_debug.c	/^HI_VOID ISP_DEBUG_HandleSig(HI_S32 s32SigNo)$/;"	f
+MAX_FRM_CNT	vi_bayerdump.c	36;"	d	file:
+MAX_FRM_CNT	vi_dump.c	23;"	d	file:
+MAX_FRM_CNT	vou_chn_dump.c	19;"	d	file:
+MAX_FRM_CNT	vou_screen_dump.c	18;"	d	file:
+MAX_FRM_WIDTH	vi_bayerdump.c	37;"	d	file:
+MAX_FRM_WIDTH	vi_dump.c	24;"	d	file:
+MEM_DEV_CLOSE	vi_bayerdump.c	59;"	d	file:
+MEM_DEV_CLOSE	vi_dump.c	44;"	d	file:
+MEM_DEV_OPEN	vi_bayerdump.c	46;"	d	file:
+MEM_DEV_OPEN	vi_dump.c	31;"	d	file:
+OBJ	Makefile	/^OBJ  := $(SRC:%.c=%.o)$/;"	m
+PARAM_FILE	Makefile	/^     PARAM_FILE:=..\/Makefile.param$/;"	m
+SAMPLE_MISC_GETVB	vi_dump.c	/^HI_S32 SAMPLE_MISC_GETVB(VIDEO_FRAME_INFO_S* pstOutFrame, VIDEO_FRAME_INFO_S* pstInFrame,$/;"	f
+SAMPLE_MISC_ViDump	vi_dump.c	/^HI_S32 SAMPLE_MISC_ViDump(VI_CHN ViChn, HI_U32 u32Cnt)$/;"	f
+SAMPLE_MISC_VoDump	vou_chn_dump.c	/^HI_S32 SAMPLE_MISC_VoDump(VO_DEV VoDev, VO_CHN VoChn, HI_U32 u32Cnt)$/;"	f
+SAMPLE_MISC_VoDump	vou_screen_dump.c	/^HI_S32 SAMPLE_MISC_VoDump(VO_LAYER VoLayer, HI_U32 u32Cnt)$/;"	f
+SAMPLE_MISC_VpssDump	vpss_chn_dump.c	/^HI_VOID* SAMPLE_MISC_VpssDump(VPSS_GRP Grp, VPSS_CHN Chn, HI_U32 u32FrameCnt, HI_U32 u32Width, HI_U32 u32Height, HI_U32 u32PixelFormat)$/;"	f
+SAMPLE_MISC_VpssDumpSrcImage	vpss_src_dump.c	/^HI_S32 SAMPLE_MISC_VpssDumpSrcImage(VPSS_GRP Grp)$/;"	f
+SAMPLE_VI_BackupAttr	vi_dump.c	/^HI_S32 SAMPLE_VI_BackupAttr(VI_CHN ViChn)$/;"	f
+SAMPLE_VI_RestoreAttr	vi_dump.c	/^HI_S32 SAMPLE_VI_RestoreAttr(VI_CHN ViChn)$/;"	f
+SNS	Makefile	/^SNS:=$(MAKECMDGOALS)$/;"	m
+SNS	Makefile	/^SNS:=mn34220$/;"	m
+SRC	Makefile	/^SRC  := $(wildcard *.c)$/;"	m
+TARGET	Makefile	/^TARGET := $(OBJ:%.o=%)$/;"	m
+USAGE_HELP	rc_attr.c	18;"	d	file:
+USAGE_HELP	vpss_attr.c	19;"	d	file:
+USAGE_HELP	vpss_attr2.c	21;"	d	file:
+Useage	isp_debug.c	/^static inline HI_VOID Useage(HI_VOID)$/;"	f	file:
+VALUE_BETWEEN	aenc_dump.c	19;"	d	file:
+VALUE_BETWEEN	ai_dump.c	19;"	d	file:
+VALUE_BETWEEN	vpss_chn_dump.c	18;"	d	file:
+VALUE_BETWEEN	vpss_src_dump.c	19;"	d	file:
+VI_DIS_STATS_S	vi_dump.c	/^} VI_DIS_STATS_S;$/;"	t	typeref:struct:hiVI_DIS_STATS_S	file:
+VI_DumpBayer	vi_bayerdump.c	/^HI_S32 VI_DumpBayer(VI_DEV ViDev, HI_U32 u32Nbit, HI_U32 u32Cnt, HI_S32 s32VcNum)$/;"	f
+VO_CHECK_RET	vo_video_csc_config.c	35;"	d	file:
+afp	isp_debug.c	/^FILE*    afp[3]         = {HI_NULL};$/;"	v
+apVirtAddr	isp_debug.c	/^HI_VOID* apVirtAddr[3]  = {HI_NULL};    \/* virt addr mmap *\/$/;"	v
+apVitAddr	isp_debug.c	/^HI_VOID* apVitAddr[3]   = {HI_NULL};    \/* virt addr malloc memory *\/$/;"	v
+as32HDelta	vi_dump.c	/^    HI_S32 as32HDelta[DIS_STATS_NUM];$/;"	m	struct:hiVI_DIS_STATS_S	file:
+as32HMv	vi_dump.c	/^    HI_S32 as32HMv[DIS_STATS_NUM];$/;"	m	struct:hiVI_DIS_STATS_S	file:
+as32HSad	vi_dump.c	/^    HI_S32 as32HSad[DIS_STATS_NUM];$/;"	m	struct:hiVI_DIS_STATS_S	file:
+as32VDelta	vi_dump.c	/^    HI_S32 as32VDelta[DIS_STATS_NUM];$/;"	m	struct:hiVI_DIS_STATS_S	file:
+as32VMv	vi_dump.c	/^    HI_S32 as32VMv[DIS_STATS_NUM];$/;"	m	struct:hiVI_DIS_STATS_S	file:
+as32VSad	vi_dump.c	/^    HI_S32 as32VSad[DIS_STATS_NUM];$/;"	m	struct:hiVI_DIS_STATS_S	file:
+au32PhyAddr	isp_debug.c	/^HI_U32  au32PhyAddr[3]  = {0};$/;"	v
+au32Size	isp_debug.c	/^HI_U32  au32Size[3]     = {0};$/;"	v
+hBlock	vou_chn_dump.c	/^    VB_BLK  hBlock;$/;"	m	struct:hiDUMP_MEMBUF_S	file:
+hBlock	vpss_src_dump.c	/^    VB_BLK  hBlock;$/;"	m	struct:hiDUMP_MEMBUF_S	file:
+hPool	vou_chn_dump.c	/^    VB_POOL hPool;$/;"	m	struct:hiDUMP_MEMBUF_S	file:
+hPool	vpss_src_dump.c	/^    VB_POOL hPool;$/;"	m	struct:hiDUMP_MEMBUF_S	file:
+hiDUMP_MEMBUF_S	vou_chn_dump.c	/^typedef struct hiDUMP_MEMBUF_S$/;"	s	file:
+hiDUMP_MEMBUF_S	vpss_src_dump.c	/^typedef struct hiDUMP_MEMBUF_S$/;"	s	file:
+hiVI_DIS_STATS_S	vi_dump.c	/^typedef struct hiVI_DIS_STATS_S$/;"	s	file:
+main	aenc_dump.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+main	ai_dump.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+main	isp_debug.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+main	rc_attr.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+main	vi_bayerdump.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+main	vi_dump.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+main	vo_video_csc_config.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+main	vou_chn_dump.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+main	vou_screen_dump.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+main	vpss_attr.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+main	vpss_attr2.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+main	vpss_chn_dump.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+main	vpss_src_dump.c	/^HI_S32 main(int argc, char* argv[])$/;"	f
+memclose	vou_chn_dump.c	/^HI_VOID memclose()$/;"	f
+memclose	vou_screen_dump.c	/^HI_VOID memclose()$/;"	f
+memmap	vou_chn_dump.c	/^void* memmap( HI_U32 u32PhyAddr, HI_U32 u32Size )$/;"	f
+memmap	vou_screen_dump.c	/^void* memmap( HI_U32 u32PhyAddr, HI_U32 u32Size )$/;"	f
+memopen	vou_chn_dump.c	/^HI_S32 memopen( void )$/;"	f
+memopen	vou_screen_dump.c	/^HI_S32 memopen( void )$/;"	f
+memunmap	vou_chn_dump.c	/^HI_S32 memunmap(HI_VOID* pVirAddr, HI_U32 u32Size )$/;"	f
+memunmap	vou_screen_dump.c	/^HI_S32 memunmap(HI_VOID* pVirAddr, HI_U32 u32Size )$/;"	f
+pVirAddr	vou_chn_dump.c	/^    HI_U8*   pVirAddr;$/;"	m	struct:hiDUMP_MEMBUF_S	file:
+pVirAddr	vpss_src_dump.c	/^    HI_U8*   pVirAddr;$/;"	m	struct:hiDUMP_MEMBUF_S	file:
+s32Mdev	vou_chn_dump.c	/^    HI_S32  s32Mdev;$/;"	m	struct:hiDUMP_MEMBUF_S	file:
+s32Mdev	vpss_src_dump.c	/^    HI_S32  s32Mdev;$/;"	m	struct:hiDUMP_MEMBUF_S	file:
+s_s32MemDev	vi_bayerdump.c	/^static HI_S32 s_s32MemDev = -1;$/;"	v	file:
+s_s32MemDev	vi_dump.c	/^static HI_S32 s_s32MemDev = -1;$/;"	v	file:
+s_s32MemDev	vou_chn_dump.c	/^static HI_S32 s_s32MemDev = 0;$/;"	v	file:
+s_s32MemDev	vou_screen_dump.c	/^static HI_S32 s_s32MemDev = 0;$/;"	v	file:
+sample_bayer_dump	vi_bayerdump.c	/^int sample_bayer_dump(VIDEO_FRAME_S* pVBuf, HI_U32 u32Nbit, FILE* pfd)$/;"	f
+sample_yuv_dump	vou_chn_dump.c	/^void sample_yuv_dump(VIDEO_FRAME_S* pVBuf, FILE* pfd)$/;"	f
+sample_yuv_dump	vou_screen_dump.c	/^void sample_yuv_dump(VIDEO_FRAME_S* pVBuf, FILE* pfd)$/;"	f
+sample_yuv_dump	vpss_chn_dump.c	/^void sample_yuv_dump(VIDEO_FRAME_S* pVBuf, FILE* pfd)$/;"	f
+sample_yuv_dump	vpss_src_dump.c	/^void sample_yuv_dump(VIDEO_FRAME_S* pVBuf, FILE* pfd)$/;"	f
+stChnAttrBackup	vi_dump.c	/^VI_CHN_ATTR_S stChnAttrBackup;$/;"	v
+u32HMotion	vi_dump.c	/^    HI_U32 u32HMotion;$/;"	m	struct:hiVI_DIS_STATS_S	file:
+u32HOffset	vi_dump.c	/^    HI_U32 u32HOffset;$/;"	m	struct:hiVI_DIS_STATS_S	file:
+u32PhyAddr	vou_chn_dump.c	/^    HI_U32  u32PhyAddr;$/;"	m	struct:hiDUMP_MEMBUF_S	file:
+u32PhyAddr	vpss_src_dump.c	/^    HI_U32  u32PhyAddr;$/;"	m	struct:hiDUMP_MEMBUF_S	file:
+u32PoolId	vou_chn_dump.c	/^    HI_U32  u32PoolId;$/;"	m	struct:hiDUMP_MEMBUF_S	file:
+u32PoolId	vpss_src_dump.c	/^    HI_U32  u32PoolId;$/;"	m	struct:hiDUMP_MEMBUF_S	file:
+u32VMotion	vi_dump.c	/^    HI_U32 u32VMotion;$/;"	m	struct:hiVI_DIS_STATS_S	file:
+u32VOffset	vi_dump.c	/^    HI_U32 u32VOffset;$/;"	m	struct:hiVI_DIS_STATS_S	file:
+usage	vi_bayerdump.c	/^void usage(void)$/;"	f
+usage	vo_video_csc_config.c	/^HI_VOID usage(HI_VOID)$/;"	f
+vi_dump_save_one_dis	vi_dump.c	/^void vi_dump_save_one_dis(VI_CHN ViChn, VIDEO_FRAME_S* pVBuf)$/;"	f
+vi_dump_save_one_frame	vi_dump.c	/^void vi_dump_save_one_frame(VIDEO_FRAME_S* pVBuf, FILE* pfd)$/;"	f
+vo_video_csc_config	vo_video_csc_config.c	/^HI_S32 vo_video_csc_config(HI_U32 u32LayerId, HI_U32 enCscMatrix, HI_U32 u32Luma, HI_U32 u32Contrast, HI_U32 u32Hue, HI_U32 u32Satuature, HI_U32 u32Gain)$/;"	f

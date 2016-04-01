@@ -1,0 +1,146 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+DOWN	Detect.h	/^	DOWN,$/;"	e	enum:Dir
+Detect	Detect.cpp	/^Detect::Detect(KVConfig *cfg)$/;"	f	class:Detect
+Detect	Detect.h	/^class Detect$/;"	c
+DetectWithOf	DetectWithOf.cpp	/^DetectWithOf::DetectWithOf(KVConfig *cfg)$/;"	f	class:DetectWithOf
+DetectWithOf	DetectWithOf.h	/^class DetectWithOf : public Detect$/;"	c
+DiffMotion	DiffMotion.h	/^	explicit DiffMotion(KVConfig *cfg)$/;"	f	class:DiffMotion
+DiffMotion	DiffMotion.h	/^class DiffMotion$/;"	c
+Dir	Detect.h	/^enum Dir$/;"	g
+DirDesc	Detect.h	/^static const char *DirDesc[] =$/;"	v
+E_NotEnoughDistance	DetectWithOf.h	/^		E_NotEnoughDistance,$/;"	e	enum:DetectWithOf::__anon1
+E_NotEnoughLayers	DetectWithOf.h	/^		E_NotEnoughLayers,$/;"	e	enum:DetectWithOf::__anon1
+E_NotEnoughPaths	DetectWithOf.h	/^		E_NotEnoughPaths,$/;"	e	enum:DetectWithOf::__anon1
+E_OK	DetectWithOf.h	/^		E_OK,$/;"	e	enum:DetectWithOf::__anon1
+LEFT	Detect.h	/^	LEFT,$/;"	e	enum:Dir
+NONE	Detect.h	/^	NONE,$/;"	e	enum:Dir
+ObjectDetect	ObjectDetect.cpp	/^ObjectDetect::ObjectDetect(KVConfig *cfg)$/;"	f	class:ObjectDetect
+ObjectDetect	ObjectDetect.h	/^class ObjectDetect$/;"	c
+PATH	Target.h	/^	typedef PTS PATH;$/;"	t	class:Target
+PTS	Target.h	/^	typedef std::vector<cv::Point2f> PTS;	\/\/ 相对一层的特征点 ...$/;"	t	class:Target
+RCS	Detect.h	/^	typedef std::vector<cv::Rect> RCS;$/;"	t	class:Detect
+RIGHT	Detect.h	/^	RIGHT,$/;"	e	enum:Dir
+STANDUPS	Detect.h	/^	typedef std::vector<Standup> STANDUPS;$/;"	t	class:Detect
+Source	Source.h	/^	explicit Source(KVConfig *cfg, const char *url0)$/;"	f	class:Source
+Source	Source.h	/^class Source$/;"	c
+Standup	Detect.h	/^	struct Standup$/;"	s	class:Detect
+Target	Target.cpp	/^Target::Target()$/;"	f	class:Target
+Target	Target.h	/^class Target$/;"	c
+UP	Detect.h	/^	UP,$/;"	e	enum:Dir
+_USE_MATH_DEFINES	DetectWithOf.h	3;"	d
+a_dis_	DetectWithOf.h	/^	double a_dis_[4], b_dis_[4];	\/\/ $/;"	m	class:DetectWithOf
+a_width_	DetectWithOf.h	/^	double a_width_, b_width_;		\/\/ 宽度的直线方程系数 ...$/;"	m	class:DetectWithOf
+b_dis_	DetectWithOf.h	/^	double a_dis_[4], b_dis_[4];	\/\/ $/;"	m	class:DetectWithOf
+b_width_	DetectWithOf.h	/^	double a_width_, b_width_;		\/\/ 宽度的直线方程系数 ...$/;"	m	class:DetectWithOf
+brc_	Target.h	/^	cv::Rect brc_;	\/\/ 轨迹外框 ...$/;"	m	class:Target
+build_mask	Detect.h	/^	bool build_mask(cv::Mat &mask)$/;"	f	class:Detect
+build_result	main.cpp	/^static const char *build_result(const std::vector<cv::Rect> &rcs)$/;"	f	file:
+calc_angle	DetectWithOf.h	/^	inline double calc_angle(const cv::Point2f &p1, const cv::Point2f &p2) const$/;"	f	class:DetectWithOf
+cc_	ObjectDetect.h	/^	cv::CascadeClassifier cc_;$/;"	m	class:ObjectDetect
+cfg_	Detect.h	/^	KVConfig *cfg_;$/;"	m	class:Detect
+cfg_	Target.h	/^	KVConfig *cfg_;$/;"	m	class:Target
+check_paths	Target.cpp	/^void Target::check_paths(double stamp)$/;"	f	class:Target
+cnt_	Detect.h	/^	size_t cnt_;$/;"	m	class:Detect
+cnt_	DiffMotion.h	/^	int cnt_;$/;"	m	class:DiffMotion
+debug_	Detect.h	/^	bool debug_;$/;"	m	class:Detect
+debug_draw_path	Target.cpp	/^void Target::debug_draw_path(cv::Mat &rgb, const Target::PATH &path, cv::Scalar &color) const$/;"	f	class:Target
+debug_draw_paths	Target.cpp	/^void Target::debug_draw_paths(cv::Mat &rgb, cv::Scalar &color) const$/;"	f	class:Target
+descr	Target.h	/^	std::string descr() const$/;"	f	class:Target
+detect	Detect.cpp	/^void Detect::detect(const cv::Mat &origin, Detect::RCS &standups)$/;"	f	class:Detect
+detect	DetectWithOf.cpp	/^void DetectWithOf::detect(Detect::RCS &motions, std::vector<Dir> &dirs)$/;"	f	class:DetectWithOf
+detect	ObjectDetect.cpp	/^std::vector<cv::Rect> ObjectDetect::detect(const cv::Mat &gray, const cv::Rect &roi)$/;"	f	class:ObjectDetect
+diff_threshold_	DiffMotion.h	/^	int diff_threshold_;$/;"	m	class:DiffMotion
+diffs_	DiffMotion.h	/^	std::deque<cv::Mat> diffs_;$/;"	m	class:DiffMotion
+distance	Target.h	/^	static inline double distance(const PATH &path)$/;"	f	class:Target
+distance	utils.h	/^inline double distance(const cv::Point2f &p1, const cv::Point2f &p2)$/;"	f
+dm_	DetectWithOf.h	/^	DiffMotion dm_;$/;"	m	class:DetectWithOf
+enable_od	Detect.h	/^		bool enable_od;		\/\/ 是否启用对象识别 ...$/;"	m	struct:Detect::Standup
+enabled	ObjectDetect.h	/^	bool enabled() const $/;"	f	class:ObjectDetect
+estimate	DetectWithOf.cpp	/^int DetectWithOf::estimate(const Target &target, cv::Rect &pos, Dir &dir) const$/;"	f	class:DetectWithOf
+face	Detect.h	/^		cv::Rect face;		\/\/ 如果启用对象识别，则为 ...$/;"	m	struct:Detect::Standup
+far_dis_	DetectWithOf.h	/^	float far_dis_[4], near_dis_[4];	\/\/ 四个方向的距离阈值 ...$/;"	m	class:DetectWithOf
+far_width_	DetectWithOf.h	/^	float far_width_, near_width_;	\/\/ 帧差矩形的中心y的宽度阈值，如果小于该值，则认为帧差矩形太小了 ...$/;"	m	class:DetectWithOf
+far_y_	DetectWithOf.h	/^	float far_y_, near_y_;	\/\/ 根据 y 轴 ...$/;"	m	class:DetectWithOf
+find_crossed_target	Detect.h	/^	STANDUPS::iterator find_crossed_target(const cv::Rect &motion)$/;"	f	class:Detect
+find_matched_target	DetectWithOf.h	/^	std::vector<Target>::iterator find_matched_target(const cv::Rect &rc)	\/\/ 找到与 rc 相交的 target ...$/;"	f	class:DetectWithOf
+first_rc_	Target.h	/^	cv::Rect first_rc_, last_rc_;	\/\/ 起始位置，最后一层的跟踪点的外接 ...$/;"	m	class:Target
+g2l	Target.h	/^	inline void g2l(PTS &pts, const cv::Point &tl) const$/;"	f	class:Target
+get_motions	DiffMotion.h	/^	std::vector<cv::Rect> get_motions(const cv::Mat &prev_gray, const cv::Mat &next_gray)$/;"	f	class:DiffMotion
+get_path	Target.h	/^	PATH get_path(int idx) const$/;"	f	class:Target
+get_path	Target.h	/^	PATH get_path(int idx, int from_layer, int to_layer) const$/;"	f	class:Target
+get_path_cnt	Target.h	/^	inline int get_path_cnt() const$/;"	f	class:Target
+get_sorted_paths	Target.h	/^	std::vector<PATH> get_sorted_paths() const$/;"	f	class:Target
+get_sorted_paths	Target.h	/^	std::vector<PATH> get_sorted_paths(int from, int to) const$/;"	f	class:Target
+gray_curr_	Detect.h	/^	cv::Mat gray_prev_, gray_curr_;		\/\/ 两帧灰度图，便于使用帧差法 ...$/;"	m	class:Detect
+gray_prev_	Detect.h	/^	cv::Mat gray_prev_, gray_curr_;		\/\/ 两帧灰度图，便于使用帧差法 ...$/;"	m	class:Detect
+height	Source.h	/^	int width, height;$/;"	m	class:Source
+id_	Target.h	/^	int id_;$/;"	m	class:Target
+init	Target.cpp	/^bool Target::init(KVConfig *cfg, int id, const cv::Rect &roi, const cv::Mat &curr_gray, double stamp)$/;"	f	class:Target
+is_crossed	Target.cpp	/^bool Target::is_crossed(const cv::Rect &rc) const$/;"	f	class:Target
+is_opened	Source.h	/^	bool is_opened() const$/;"	f	class:Source
+is_stopped	Target.cpp	/^bool Target::is_stopped() const$/;"	f	class:Target
+ker_dilate_	DiffMotion.h	/^	cv::Mat ker_erode_, ker_dilate_;$/;"	m	class:DiffMotion
+ker_erode_	DiffMotion.h	/^	cv::Mat ker_erode_, ker_dilate_;$/;"	m	class:DiffMotion
+l2g	Target.h	/^	inline void l2g(PTS &pts, const cv::Point &tl) const$/;"	f	class:Target
+last_rc_	Target.h	/^	cv::Rect first_rc_, last_rc_;	\/\/ 起始位置，最后一层的跟踪点的外接 ...$/;"	m	class:Target
+layers	Target.h	/^	inline int layers() const$/;"	f	class:Target
+layers_	Target.h	/^	std::vector<PTS> layers_;				\/\/ 对应多层的特征点 ...$/;"	m	class:Target
+loaded_	ObjectDetect.h	/^	bool loaded_;$/;"	m	class:ObjectDetect
+log	Detect.h	/^	void(*log)(const char *fmt, ...);$/;"	m	class:Detect
+log_dummy	utils.h	/^inline void log_dummy(const char *fmt, ...)$/;"	f
+log_file	utils.h	/^inline void log_file(const char *fmt, ...)$/;"	f
+log_init	Detect.h	/^	void(*log_init)(const char *fname);$/;"	m	class:Detect
+log_init_dummy	utils.h	/^inline void log_init_dummy(const char *fname = 0)$/;"	f
+log_init_file	utils.h	/^inline void log_init_file(const char *fname = 0)$/;"	f
+long_timed_targets_	DetectWithOf.h	/^	std::vector<Target> long_timed_targets_;	\/\/ 测试：长时间跟踪目标，看看效果 ...$/;"	m	class:DetectWithOf
+main	main.cpp	/^int main(int argc, char **argv)$/;"	f
+mask_	Detect.h	/^	cv::Mat mask_;$/;"	m	class:Detect
+masked_	Detect.h	/^	bool masked_;$/;"	m	class:Detect
+max_duration_	Detect.h	/^	double max_duration_;	\/\/ “站立”目标最大持续时间，超时，则强制认为坐下 ...$/;"	m	class:Detect
+near_dis_	DetectWithOf.h	/^	float far_dis_[4], near_dis_[4];	\/\/ 四个方向的距离阈值 ...$/;"	m	class:DetectWithOf
+near_width_	DetectWithOf.h	/^	float far_width_, near_width_;	\/\/ 帧差矩形的中心y的宽度阈值，如果小于该值，则认为帧差矩形太小了 ...$/;"	m	class:DetectWithOf
+near_y_	DetectWithOf.h	/^	float far_y_, near_y_;	\/\/ 根据 y 轴 ...$/;"	m	class:DetectWithOf
+next	Source.h	/^	cv::Mat next()$/;"	f	class:Source
+next_tid_	DetectWithOf.h	/^	int next_tid_;		\/\/ Target ID$/;"	m	class:DetectWithOf
+now	Detect.h	/^	double now() const$/;"	f	class:Detect
+od_	Detect.h	/^	ObjectDetect *od_;$/;"	m	class:Detect
+op_bigger_dis	Target.h	/^	static bool op_bigger_dis(const PATH &p1, const PATH &p2)$/;"	f	class:Target
+opened_	Source.h	/^	bool opened_;$/;"	m	class:Source
+origin_	Detect.h	/^	cv::Mat origin_;$/;"	m	class:Detect
+outer_	Target.h	/^	cv::Rect outer_;	\/\/ 全局外边框 ...$/;"	m	class:Target
+polyfit_line	DetectWithOf.h	/^	inline void polyfit_line(const cv::Point2f &p1, const cv::Point2f &p2, double &a, double &b) const$/;"	f	class:DetectWithOf
+pos	Detect.h	/^		cv::Rect pos;		\/\/ $/;"	m	struct:Detect::Standup
+pos	Target.h	/^	inline cv::Rect pos() const$/;"	f	class:Target
+pos2str	utils.h	/^inline std::string pos2str(const cv::Rect &rc)$/;"	f
+remove_path	Target.h	/^	void remove_path(size_t idx)$/;"	f	class:Target
+reset	Detect.cpp	/^void Detect::reset()$/;"	f	class:Detect
+reset	DetectWithOf.cpp	/^void DetectWithOf::reset()$/;"	f	class:DetectWithOf
+reset	DiffMotion.h	/^	void reset()$/;"	f	class:DiffMotion
+send_dr	main.cpp	/^static void send_dr(SOCKET sock, const char *ip, int port, const char *info)$/;"	f	file:
+src_	Source.h	/^	imgsrc_t *src_;$/;"	m	class:Source
+stamp	Detect.h	/^		double stamp;		\/\/ 确认时间戳 ...$/;"	m	struct:Detect::Standup
+stamp_	Detect.h	/^	double stamp_;$/;"	m	class:Detect
+stamp_	Target.h	/^	double stamp_;$/;"	m	class:Target
+standups_	Detect.h	/^	STANDUPS standups_;$/;"	m	class:Detect
+sum_motions	DiffMotion.h	/^	std::vector<cv::Rect> sum_motions() const$/;"	f	class:DiffMotion
+targets_	DetectWithOf.h	/^	std::vector<Target> targets_;	\/\/ 活动目标 ...$/;"	m	class:DetectWithOf
+too_small	DetectWithOf.cpp	/^bool DetectWithOf::too_small(const cv::Rect &rc) const$/;"	f	class:DetectWithOf
+track	Target.cpp	/^bool Target::track(const cv::Mat &prev, const cv::Mat &curr, double stamp)$/;"	f	class:Target
+up_angle_	DetectWithOf.h	/^	int up_angle_;		\/\/ $/;"	m	class:DetectWithOf
+vc_	Source.h	/^	cv::VideoCapture vc_;$/;"	m	class:Source
+wait	Source.h	/^	int wait() const$/;"	f	class:Source
+waiting	Detect.h	/^		bool waiting;		\/\/ 等待以避免后续的误判 ...$/;"	m	struct:Detect::Standup
+waiting_	Detect.h	/^	double waiting_;		\/\/ 目标坐下后，等待一段时间，再相应此处的活动 ...$/;"	m	class:Detect
+width	Source.h	/^	int width, height;$/;"	m	class:Source
+zifImage2IplImage	Source.h	/^	static IplImage *zifImage2IplImage(zifImage *img)$/;"	f	class:Source
+~Detect	Detect.cpp	/^Detect::~Detect()$/;"	f	class:Detect
+~DetectWithOf	DetectWithOf.cpp	/^DetectWithOf::~DetectWithOf()$/;"	f	class:DetectWithOf
+~DiffMotion	DiffMotion.h	/^	~DiffMotion()$/;"	f	class:DiffMotion
+~ObjectDetect	ObjectDetect.cpp	/^ObjectDetect::~ObjectDetect()$/;"	f	class:ObjectDetect
+~Source	Source.h	/^	~Source()$/;"	f	class:Source
+~Target	Target.cpp	/^Target::~Target()$/;"	f	class:Target

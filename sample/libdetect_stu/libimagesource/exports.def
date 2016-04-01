@@ -1,0 +1,10 @@
+EXPORTS
+	imgsrc_open
+	imgsrc_close
+	imgsrc_next
+	imgsrc_free
+
+	imgsrc_open_json
+
+	imgsrc_pause
+	imgsrc_resume

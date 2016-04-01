@@ -1,0 +1,193 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+ARRAYNUM	ImageArry.h	5;"	d
+AddNewImage	ImageArry.cpp	/^bool CImageArry::AddNewImage(cv::Mat icolorimage)$/;"	f	class:CImageArry
+AddUpstudent	StudentTrack.cpp	/^void CStudentTrack::AddUpstudent(cv::Rect rc,cv::Rect p0,cv::Rect p1,cv::Rect p2)$/;"	f	class:CStudentTrack
+CC	Makefile	/^CC := arm-hisiv300-linux-g++$/;"	m
+CFLAGS	Makefile	/^CFLAGS := -I $(INC_PATH)$/;"	m
+CFileTan	FileTan.cpp	/^CFileTan::CFileTan(void)$/;"	f	class:CFileTan
+CFileTan	FileTan.h	/^class CFileTan$/;"	c
+CImageArry	ImageArry.cpp	/^CImageArry::CImageArry(void)$/;"	f	class:CImageArry
+CImageArry	ImageArry.h	/^class CImageArry$/;"	c
+CONDIDATECOUNT	StudentTrack.h	18;"	d
+CStudentTrack	StudentTrack.cpp	/^CStudentTrack::CStudentTrack(void)$/;"	f	class:CStudentTrack
+CStudentTrack	StudentTrack.h	/^class CStudentTrack$/;"	c
+GetTickCount	StudentTrack.cpp	/^unsigned long GetTickCount()$/;"	f
+GetValue	FileTan.cpp	/^string CFileTan::GetValue(string key)$/;"	f	class:CFileTan
+HI_OPENCV_H	hi_opencv.h	2;"	d
+INC_PATH	Makefile	/^INC_PATH := \/root\/3516a\/Hi3516A_SDK_V1.0.4.0\/mpp\/include\/$/;"	m
+IVE_LIBS	Makefile	/^IVE_LIBS := $(REL_LIB)\/libive.a$/;"	m
+InitAndFlow	StudentTrack.cpp	/^bool CStudentTrack::InitAndFlow()$/;"	f	class:CStudentTrack
+MPI_LIBS	Makefile	/^MPI_LIBS := $(REL_LIB)\/libmpi.a$/;"	m
+MaxRect	StudentTrack.h	/^    cv::Rect MaxRect,MinRect;$/;"	m	class:CStudentTrack
+MinRect	StudentTrack.h	/^    cv::Rect MaxRect,MinRect;$/;"	m	class:CStudentTrack
+OBJ	Makefile	/^OBJ = $(SRC:%.cpp=%.o)$/;"	m
+OPENCV_FLAGS	Makefile	/^OPENCV_FLAGS := -lpthread -lrt `pkg-config --libs --cflags hisiv100-opencv`$/;"	m
+REL_LIB	Makefile	/^REL_LIB := \/root\/3516a\/Hi3516A_SDK_V1.0.4.0\/mpp\/lib$/;"	m
+SRC	Makefile	/^SRC = $(wildcard *.cpp)$/;"	m
+SetMask	ImageArry.cpp	/^bool CImageArry::SetMask(std::vector<cv::Point> maskpoints)$/;"	f	class:CImageArry
+TickCount	ImageArry.cpp	/^unsigned long TickCount()$/;"	f
+_buf	libdetect_s.cpp	/^static char *_buf = (char*)malloc(_buf_size);$/;"	v	file:
+_buf_size	libdetect_s.cpp	/^const int _buf_size = 4096;$/;"	v
+_libdetect_s_h_	libdetect_s.h	2;"	d
+_pre	libdetect_s.cpp	/^const char *_pre = "{ \\"stamp\\":1234567, \\"rect\\":[";$/;"	v
+bdebugsaveimage	StudentTrack.h	/^    bool bdebugsaveimage;$/;"	m	class:CStudentTrack
+bg_model	StudentTrack.h	/^    cv::BackgroundSubtractorMOG *bg_model;$/;"	m	class:CStudentTrack
+calcLKOpticalFlow	StudentTrack.cpp	/^void calcLKOpticalFlow(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> prepoint, vector<Point2f> &nextpoint, vector<uchar> &state)$/;"	f
+checkDownStudentByArea	StudentTrack.cpp	/^void CStudentTrack::checkDownStudentByArea()$/;"	f	class:CStudentTrack
+checkDownStudentByFlow	StudentTrack.cpp	/^void CStudentTrack::checkDownStudentByFlow(cv::Mat mat)$/;"	f	class:CStudentTrack
+checkDownStudentNormal	StudentTrack.cpp	/^void CStudentTrack::checkDownStudentNormal()$/;"	f	class:CStudentTrack
+checkHead	StudentTrack.cpp	/^bool CStudentTrack::checkHead(cv::Mat img1,cv::Mat img2,cv::Mat img3,int headwidth,int upheight,cv::Mat img4,cv::Mat img5,cv::Mat img6)$/;"	f	class:CStudentTrack
+checkMoveStudentByFlow	StudentTrack.cpp	/^void CStudentTrack::checkMoveStudentByFlow(cv::Mat mat)$/;"	f	class:CStudentTrack
+checkupOnlyUpflow	StudentTrack.cpp	/^bool CStudentTrack::checkupOnlyUpflow(cv::Rect rc)$/;"	f	class:CStudentTrack
+checkupStudentSave	StudentTrack.cpp	/^bool CStudentTrack::checkupStudentSave(cv::Rect rc)$/;"	f	class:CStudentTrack
+checkupfg	StudentTrack.cpp	/^bool CStudentTrack::checkupfg(cv::Rect p0,cv::Rect p1,cv::Rect p2,cv::Rect p)$/;"	f	class:CStudentTrack
+checkupstudent	StudentTrack.cpp	/^void CStudentTrack::checkupstudent(cv::Mat mat)$/;"	f	class:CStudentTrack
+cur_color	StudentTrack.h	/^    cv::Mat cur_color;$/;"	m	class:CStudentTrack
+cur_gray	StudentTrack.h	/^    cv::Mat cur_gray;$/;"	m	class:CStudentTrack
+curgray	StudentTrack.h	/^    cv::Mat pregray2,pregray,curgray;\/\/站起来之前的灰度图$/;"	m	struct:upStudentTarget
+data	libdetect_s.h	/^    unsigned char *data[4];$/;"	m	struct:zifImage
+deletecount	StudentTrack.h	/^    int deletecount;\/\/删除倒数，只有在tag>0时才有效，为0时就删除，不为0时每次处理减一$/;"	m	struct:upStudentTarget
+det_close	libdetect_s.cpp	/^void det_close(det_t *ctx)$/;"	f
+det_detect	libdetect_s.cpp	/^const char *det_detect(det_t *ctx, cv::Mat &frame)$/;"	f
+det_open	libdetect_s.cpp	/^det_t *det_open(const char *cfg_name)$/;"	f
+det_set_param	libdetect_s.cpp	/^void det_set_param(det_t *ctx, double area_p, double up_p, double down_p)$/;"	f
+det_stop	libdetect_s.cpp	/^void det_stop(det_t *ctx)$/;"	f
+det_t	libdetect_s.cpp	/^struct det_t$/;"	s	file:
+det_t	libdetect_s.h	/^typedef struct det_t det_t;$/;"	t	typeref:struct:det_t
+down_student_candidates	StudentTrack.h	/^    std::vector<cv::Rect> down_student_candidates[CONDIDATECOUNT];$/;"	m	class:CStudentTrack
+fgmask	StudentTrack.h	/^    cv::Mat fgmask,imgdiff;$/;"	m	class:CStudentTrack
+fileTan	StudentTrack.h	/^    CFileTan fileTan;$/;"	m	class:CStudentTrack
+float_to_s25q7	StudentTrack.cpp	/^unsigned int float_to_s25q7(float num)$/;"	f
+flowcount	StudentTrack.h	/^    long flowcount;$/;"	m	class:CStudentTrack
+flowdown	StudentTrack.h	/^    cv::Mat flowup,flowdown;$/;"	m	class:CStudentTrack
+flowdownbw	StudentTrack.h	/^    cv::Mat flowupbw,flowdownbw;\/\/上下光流二值化图$/;"	m	class:CStudentTrack
+flowimg	StudentTrack.h	/^    cv::Mat flowimg;\/\/叠加光流的彩色图像$/;"	m	class:CStudentTrack
+flowleft	StudentTrack.h	/^    cv::Mat flowleft,flowright;$/;"	m	class:CStudentTrack
+flowmove	StudentTrack.h	/^    cv::Mat flowmove;$/;"	m	class:CStudentTrack
+flowright	StudentTrack.h	/^    cv::Mat flowleft,flowright;$/;"	m	class:CStudentTrack
+flowup	StudentTrack.h	/^    cv::Mat flowup,flowdown;$/;"	m	class:CStudentTrack
+flowupbw	StudentTrack.h	/^    cv::Mat flowupbw,flowdownbw;\/\/上下光流二值化图$/;"	m	class:CStudentTrack
+fmt_type	libdetect_s.h	/^    int fmt_type;$/;"	m	struct:zifImage
+frameNum	StudentTrack.h	/^    int frameNum;$/;"	m	class:CStudentTrack
+getAvrFlowDis	StudentTrack.cpp	/^int  CStudentTrack::getAvrFlowDis(cv::Rect p0)$/;"	f	class:CStudentTrack
+getAvrFlowDis	StudentTrack.cpp	/^int  CStudentTrack::getAvrFlowDis(cv::Rect p0,cv::Rect p1,cv::Rect p2,int i1,int i2,int i3)$/;"	f	class:CStudentTrack
+getHeight	ImageArry.cpp	/^int CImageArry::getHeight()$/;"	f	class:CImageArry
+getMaxFlowDis	StudentTrack.cpp	/^int  CStudentTrack::getMaxFlowDis(cv::Rect p0)$/;"	f	class:CStudentTrack
+getMaxFlowDis	StudentTrack.cpp	/^int  CStudentTrack::getMaxFlowDis(cv::Rect p0,cv::Rect p1,cv::Rect p2,int i1,int i2,int i3)$/;"	f	class:CStudentTrack
+getMaxRect	StudentTrack.cpp	/^cv::Rect CStudentTrack::getMaxRect(cv::Rect r1,cv::Rect r2)$/;"	f	class:CStudentTrack
+getMinArea	StudentTrack.cpp	/^int CStudentTrack::getMinArea(cv::Rect r)$/;"	f	class:CStudentTrack
+getNewCondidate	StudentTrack.cpp	/^int CStudentTrack::getNewCondidate()$/;"	f	class:CStudentTrack
+getNewCondidatedown	StudentTrack.cpp	/^int CStudentTrack::getNewCondidatedown()$/;"	f	class:CStudentTrack
+getPreCondidate	StudentTrack.cpp	/^int CStudentTrack::getPreCondidate(int prenum)$/;"	f	class:CStudentTrack
+getPreCondidatedown	StudentTrack.cpp	/^int CStudentTrack::getPreCondidatedown(int prenum)$/;"	f	class:CStudentTrack
+getWidth	ImageArry.cpp	/^int CImageArry::getWidth()$/;"	f	class:CImageArry
+haveSameRect	StudentTrack.cpp	/^bool CStudentTrack::haveSameRect(cv::Rect r1,cv::Rect r2)$/;"	f	class:CStudentTrack
+height	libdetect_s.h	/^    int height;$/;"	m	struct:zifImage
+height_input	StudentTrack.h	/^    int height_input,width_input;$/;"	m	class:CStudentTrack
+hi_AllocCacheU8C1	hi_opencv.cpp	/^HI_S32 hi_AllocCacheU8C1(IVE_IMAGE_S *pstImage, HI_U16 u16Stride,HI_U16 u16Width, HI_U16 u16Height)$/;"	f
+hi_CopyDataToIveImageU8C1	hi_opencv.cpp	/^void hi_CopyDataToIveImageU8C1(Mat Src, IVE_IMAGE_S *pstDst)$/;"	f
+hi_CopyDataToMatU8C1	hi_opencv.cpp	/^void hi_CopyDataToMatU8C1(IVE_IMAGE_S *pstSrc, Mat &Dst)$/;"	f
+hi_CreateIveImageU8C1	StudentTrack.cpp	/^HI_S32 hi_CreateIveImageU8C1(IVE_IMAGE_S *pstImage, HI_U16 u16width, HI_U16 u16height)$/;"	f
+hi_absdiff	hi_opencv.cpp	/^void hi_absdiff(Mat src1, Mat src2, Mat &dst)$/;"	f
+hi_dilate	hi_opencv.cpp	/^void hi_dilate(Mat Src, Mat &Dst, Mat element, Point anchor, int iterations)$/;"	f
+hi_erode	hi_opencv.cpp	/^void hi_erode(Mat Src, Mat &Dst, Mat element, Point anchor, int iterations)$/;"	f
+hi_threshold	hi_opencv.cpp	/^double hi_threshold(Mat src, Mat &dst, double thresh, double maxval, int type)$/;"	f
+ican_head	StudentTrack.h	/^    int ican_head;$/;"	m	class:CStudentTrack
+ican_head_down	StudentTrack.h	/^    int ican_head_down;$/;"	m	class:CStudentTrack
+imageArry	StudentTrack.h	/^    CImageArry imageArry;$/;"	m	class:CStudentTrack
+imagecolor	ImageArry.h	/^	cv::Mat imagecolor[ARRAYNUM];\/\/缩小后的彩图$/;"	m	class:CImageArry
+imagecolorflow	ImageArry.h	/^	cv::Mat imagecolorflow[ARRAYNUM];\/\/缩小后的彩图$/;"	m	class:CImageArry
+imagecoo	ImageArry.h	/^	cv::Mat imagecoo[ARRAYNUM];\/\/最原始图像$/;"	m	class:CImageArry
+imagefg	ImageArry.h	/^	cv::Mat imagefg[ARRAYNUM];\/\/背景建模后获取的前景图像$/;"	m	class:CImageArry
+imageflowdown	ImageArry.h	/^	cv::Mat imageflowdown[ARRAYNUM];\/\/坐下来的光流$/;"	m	class:CImageArry
+imageflowleft	ImageArry.h	/^	cv::Mat imageflowleft[ARRAYNUM];$/;"	m	class:CImageArry
+imageflowright	ImageArry.h	/^	cv::Mat imageflowright[ARRAYNUM];$/;"	m	class:CImageArry
+imageflowup	ImageArry.h	/^	cv::Mat imageflowup[ARRAYNUM];\/\/站起来的光流(目的地)$/;"	m	class:CImageArry
+imageflowupdown	ImageArry.h	/^	cv::Mat imageflowupdown[ARRAYNUM];\/\/累计幁的上下光流，单幁光流点 膨胀 加进来，减去最早那幁的光流，试一下 只记录上升  和 上升下降混合 的情况$/;"	m	class:CImageArry
+imageflowupdowncur	ImageArry.h	/^	cv::Mat imageflowupdowncur[ARRAYNUM];$/;"	m	class:CImageArry
+imageflowupfrom	ImageArry.h	/^	cv::Mat imageflowupfrom[ARRAYNUM];\/\/站起来的光流(源地)$/;"	m	class:CImageArry
+imagegray	ImageArry.h	/^	cv::Mat imagegray[ARRAYNUM];\/\/缩小后的灰度图$/;"	m	class:CImageArry
+imagegraycoo	ImageArry.h	/^	cv::Mat imagegraycoo[ARRAYNUM];\/\/原始图像灰度图$/;"	m	class:CImageArry
+imgdiff	StudentTrack.h	/^    cv::Mat fgmask,imgdiff;$/;"	m	class:CStudentTrack
+imgdiffforflow	StudentTrack.h	/^    cv::Mat imgdiffforflow;$/;"	m	class:CStudentTrack
+inFile	FileTan.h	/^	ifstream inFile; $/;"	m	class:CFileTan
+internal_ptr	libdetect_s.h	/^    void *internal_ptr;$/;"	m	struct:zifImage
+is_debug	StudentTrack.h	/^    bool is_debug;$/;"	m	class:CStudentTrack
+ishowtmp	StudentTrack.h	/^    int ishowtmp;$/;"	m	class:CStudentTrack
+kkk	libdetect_s.cpp	/^det_t kkk;$/;"	v
+mAddImageCount	ImageArry.h	/^	long mAddImageCount;$/;"	m	class:CImageArry
+mHeigth	ImageArry.h	/^	int mHeigth;$/;"	m	class:CImageArry
+mIndex	ImageArry.h	/^	int mIndex;$/;"	m	class:CImageArry
+mWidth	ImageArry.h	/^	int mWidth;$/;"	m	class:CImageArry
+mask_on	ImageArry.h	/^	bool mask_on;$/;"	m	class:CImageArry
+mask_points	StudentTrack.h	/^    std::vector<cv::Point> mask_points;$/;"	m	class:CStudentTrack
+maskcolor	ImageArry.h	/^	cv::Mat maskcolor;$/;"	m	class:CImageArry
+min_student_area	StudentTrack.h	/^    int min_student_area;\/\/寻找光流的区域 最小面积10*10$/;"	m	class:CStudentTrack
+modelBG	StudentTrack.h	/^    cv::Mat modelBG;$/;"	m	class:CStudentTrack
+move_student	StudentTrack.h	/^    std::vector<cv::Rect> move_student[CONDIDATECOUNT];\/\/用来判断 是否 学生走开$/;"	m	class:CStudentTrack
+newindex	ImageArry.cpp	/^int CImageArry::newindex()$/;"	f	class:CImageArry
+pos0	StudentTrack.h	/^    cv::Rect pos0,pos1,pos2;\/\/产生该区域 起作用的连续三幁图像的区域，0 最新 1 前一幁 2 前2幁$/;"	m	struct:upStudentTarget
+pos1	StudentTrack.h	/^    cv::Rect pos0,pos1,pos2;\/\/产生该区域 起作用的连续三幁图像的区域，0 最新 1 前一幁 2 前2幁$/;"	m	struct:upStudentTarget
+pos2	StudentTrack.h	/^    cv::Rect pos0,pos1,pos2;\/\/产生该区域 起作用的连续三幁图像的区域，0 最新 1 前一幁 2 前2幁$/;"	m	struct:upStudentTarget
+position	StudentTrack.h	/^    cv::Rect position;\/\/目标区域$/;"	m	struct:upStudentTarget
+pre_gray	StudentTrack.h	/^    cv::Mat pre_gray;$/;"	m	class:CStudentTrack
+pregray	StudentTrack.h	/^    cv::Mat pregray2,pregray,curgray;\/\/站起来之前的灰度图$/;"	m	struct:upStudentTarget
+pregray2	StudentTrack.h	/^    cv::Mat pregray2,pregray,curgray;\/\/站起来之前的灰度图$/;"	m	struct:upStudentTarget
+preindex	ImageArry.cpp	/^int CImageArry::preindex(int prenum)$/;"	f	class:CImageArry
+process	StudentTrack.cpp	/^void CStudentTrack::process(const cv::Mat& img_color)$/;"	f	class:CStudentTrack
+readFile	FileTan.cpp	/^bool CFileTan::readFile(char* fileName)$/;"	f	class:CFileTan
+readconfig	StudentTrack.cpp	/^void CStudentTrack::readconfig( char *cfg_name)$/;"	f	class:CStudentTrack
+readyDeleteUpstudent	StudentTrack.cpp	/^void CStudentTrack::readyDeleteUpstudent(std::vector<upStudentTarget>::iterator &it,int itag,int ideletecount)$/;"	f	class:CStudentTrack
+s25q7_to_float	StudentTrack.cpp	/^float s25q7_to_float(unsigned int num)$/;"	f
+s9q7_to_float	StudentTrack.cpp	/^float s9q7_to_float(unsigned short num)$/;"	f
+saveimage	StudentTrack.cpp	/^void CStudentTrack::saveimage()$/;"	f	class:CStudentTrack
+sdop	libdetect_s.cpp	/^CStudentTrack sdop;$/;"	v
+setParam	StudentTrack.cpp	/^void CStudentTrack::setParam(int yfirst,int standupareafirst,int widthfirst,int ylast,int standuparealast,int widthlast)$/;"	f	class:CStudentTrack
+set_maskpoint	StudentTrack.cpp	/^void CStudentTrack::set_maskpoint(cv::Point p)$/;"	f	class:CStudentTrack
+setdebug	StudentTrack.cpp	/^void CStudentTrack::setdebug(bool b)$/;"	f	class:CStudentTrack
+setduration	StudentTrack.cpp	/^void CStudentTrack::setduration(int sec)$/;"	f	class:CStudentTrack
+showDebug	StudentTrack.cpp	/^void CStudentTrack::showDebug()$/;"	f	class:CStudentTrack
+showStudenttmp	StudentTrack.cpp	/^void CStudentTrack::showStudenttmp()$/;"	f	class:CStudentTrack
+showStudentup	StudentTrack.cpp	/^void CStudentTrack::showStudentup()$/;"	f	class:CStudentTrack
+showposcount	StudentTrack.h	/^    int showposcount;$/;"	m	struct:upStudentTarget
+splitvalue	StudentTrack.h	/^    float splitvalue;$/;"	m	class:CStudentTrack
+stamp	libdetect_s.h	/^    double stamp;$/;"	m	struct:zifImage
+standuparea_first	StudentTrack.h	/^    int standuparea_first,standuparea_last;$/;"	m	class:CStudentTrack
+standuparea_last	StudentTrack.h	/^    int standuparea_first,standuparea_last;$/;"	m	class:CStudentTrack
+start	StudentTrack.cpp	/^void CStudentTrack::start()$/;"	f	class:CStudentTrack
+stride	libdetect_s.h	/^    int stride[4];$/;"	m	struct:zifImage
+t	libdetect_s.cpp	/^    int t;$/;"	m	struct:det_t	file:
+t1	StudentTrack.h	/^    long tt,t1,t2,t3,t4,t5,t6,t7,t8;\/\/记录消耗时间$/;"	m	class:CStudentTrack
+t2	StudentTrack.h	/^    long tt,t1,t2,t3,t4,t5,t6,t7,t8;\/\/记录消耗时间$/;"	m	class:CStudentTrack
+t3	StudentTrack.h	/^    long tt,t1,t2,t3,t4,t5,t6,t7,t8;\/\/记录消耗时间$/;"	m	class:CStudentTrack
+t4	StudentTrack.h	/^    long tt,t1,t2,t3,t4,t5,t6,t7,t8;\/\/记录消耗时间$/;"	m	class:CStudentTrack
+t5	StudentTrack.h	/^    long tt,t1,t2,t3,t4,t5,t6,t7,t8;\/\/记录消耗时间$/;"	m	class:CStudentTrack
+t6	StudentTrack.h	/^    long tt,t1,t2,t3,t4,t5,t6,t7,t8;\/\/记录消耗时间$/;"	m	class:CStudentTrack
+t7	StudentTrack.h	/^    long tt,t1,t2,t3,t4,t5,t6,t7,t8;\/\/记录消耗时间$/;"	m	class:CStudentTrack
+t8	StudentTrack.h	/^    long tt,t1,t2,t3,t4,t5,t6,t7,t8;\/\/记录消耗时间$/;"	m	class:CStudentTrack
+tag	StudentTrack.h	/^    int tag;\/\/0 站起区域有效 1 时间到而取消 2 有连续坐下光流取消  3 有光流面积取消  4 有连续移动的光流离开该区域$/;"	m	struct:upStudentTarget
+tickcount	StudentTrack.h	/^    long tickcount;\/\/创建时的时间戳$/;"	m	struct:upStudentTarget
+tt	StudentTrack.h	/^    long tt,t1,t2,t3,t4,t5,t6,t7,t8;\/\/记录消耗时间$/;"	m	class:CStudentTrack
+tvl1	StudentTrack.h	/^    cv::Ptr<cv::DenseOpticalFlow> tvl1;$/;"	m	class:CStudentTrack
+upStudentTarget	StudentTrack.h	/^struct upStudentTarget$/;"	s
+up_student_candidates	StudentTrack.h	/^    std::vector<cv::Rect> up_student_candidates[CONDIDATECOUNT];$/;"	m	class:CStudentTrack
+up_student_duration	StudentTrack.h	/^    int up_student_duration;\/\/起立的学生 时长 内，不坐下来 就当做 已经坐下来，ms为单位$/;"	m	class:CStudentTrack
+up_students	StudentTrack.h	/^    std::vector<upStudentTarget> up_students;\/\/站起来的区域$/;"	m	class:CStudentTrack
+up_studentsSave	StudentTrack.h	/^    std::vector<upStudentTarget> up_studentsSave;\/\/站起来的区域 保留，用于判断该区域 不允许1秒内有个上升的光流，排除 学生做下来后，往后仰，会产生 上升的光流$/;"	m	class:CStudentTrack
+up_studentsTmp	StudentTrack.h	/^    std::vector<upStudentTarget> up_studentsTmp;\/\/临时用于展示临时变量$/;"	m	class:CStudentTrack
+width	libdetect_s.h	/^    int width;$/;"	m	struct:zifImage
+width_first	StudentTrack.h	/^    int width_first,width_last;$/;"	m	class:CStudentTrack
+width_input	StudentTrack.h	/^    int height_input,width_input;$/;"	m	class:CStudentTrack
+width_last	StudentTrack.h	/^    int width_first,width_last;$/;"	m	class:CStudentTrack
+y_firstline	StudentTrack.h	/^    int y_firstline,y_lastline;$/;"	m	class:CStudentTrack
+y_lastline	StudentTrack.h	/^    int y_firstline,y_lastline;$/;"	m	class:CStudentTrack
+zifImage	libdetect_s.h	/^typedef struct zifImage$/;"	s
+zifImage	libdetect_s.h	/^} zifImage;$/;"	t	typeref:struct:zifImage
+~CFileTan	FileTan.cpp	/^CFileTan::~CFileTan(void)$/;"	f	class:CFileTan
+~CImageArry	ImageArry.cpp	/^CImageArry::~CImageArry(void)$/;"	f	class:CImageArry
+~CStudentTrack	StudentTrack.cpp	/^CStudentTrack::~CStudentTrack(void)$/;"	f	class:CStudentTrack

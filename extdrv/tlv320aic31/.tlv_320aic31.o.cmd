@@ -1,0 +1,1 @@
+cmd_/home/pub/temp/platform_ipc/mpp/extdrv/hi3516a/tlv320aic31/tlv_320aic31.o := arm-hisiv300-linux-ld -EL    -r -o /home/pub/temp/platform_ipc/mpp/extdrv/hi3516a/tlv320aic31/tlv_320aic31.o /home/pub/temp/platform_ipc/mpp/extdrv/hi3516a/tlv320aic31/tlv320aic31.o 

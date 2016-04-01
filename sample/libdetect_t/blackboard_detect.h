@@ -2,9 +2,10 @@
 #ifndef _blackboard_detect_h_
 #define _blackboard_detect_h_
 
-#include<opencv2/opencv.hpp>
+#include<opencv2/opencv1.hpp>
 #include<time.h>
 #include "KVConfig.h"
+#include <cstdio>
 using namespace cv;
 using namespace std;
 

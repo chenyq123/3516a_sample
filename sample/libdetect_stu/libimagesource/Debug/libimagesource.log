@@ -1,0 +1,43 @@
+﻿生成启动时间为 2015/3/27 16:48:40。
+     1>项目“D:\libimagesource\libimagesource.vcxproj”在节点 2 上(build 个目标)。
+     1>C:\Windows\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets(1422,5): warning : The referenced project '..\libkvconfig\libkvconfig.vcxproj' does not exist.
+     1>InitializeBuildStatus:
+         正在创建“Debug\libimagesource.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D LIBIMAGESOURCE_EXPORTS /D SUPPORT_IPCAM /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TC /analyze- /errorReport:prompt cJSON.c
+         cJSON.c
+     1>d:\libimagesource\cjson.c(125): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : 参见“sprintf”的声明
+     1>d:\libimagesource\cjson.c(132): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : 参见“sprintf”的声明
+     1>d:\libimagesource\cjson.c(133): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : 参见“sprintf”的声明
+     1>d:\libimagesource\cjson.c(134): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : 参见“sprintf”的声明
+     1>d:\libimagesource\cjson.c(242): warning C4996: 'sprintf': This function or variable may be unsafe. Consider using sprintf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\stdio.h(371) : 参见“sprintf”的声明
+     1>d:\libimagesource\cjson.c(361): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(105) : 参见“strcpy”的声明
+     1>d:\libimagesource\cjson.c(396): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(105) : 参见“strcpy”的声明
+     1>d:\libimagesource\cjson.c(495): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(105) : 参见“strcpy”的声明
+     1>d:\libimagesource\cjson.c(497): warning C4996: 'strcpy': This function or variable may be unsafe. Consider using strcpy_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 c:\program files (x86)\microsoft visual studio 10.0\vc\include\string.h(105) : 参见“strcpy”的声明
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _WINDOWS /D _USRDLL /D LIBIMAGESOURCE_EXPORTS /D SUPPORT_IPCAM /D _WINDLL /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp VideoSourceFFmpeg.cpp VideoSourceFordshow.cpp VideoSourceForRTSP.cpp VideoSourceForZqpkt.cpp
+         VideoSourceForZqpkt.cpp
+     1>d:\libimagesource\videosourceforzqpkt.h(3): fatal error C1083: 无法打开包括文件:“zonekey/zqpsource.h”: No such file or directory
+         VideoSourceForRTSP.cpp
+     1>d:\libimagesource\image_source.h(13): fatal error C1083: 无法打开包括文件:“libswscale/swscale.h”: No such file or directory
+         VideoSourceFordshow.cpp
+     1>d:\libimagesource\image_source.h(13): fatal error C1083: 无法打开包括文件:“libswscale/swscale.h”: No such file or directory
+         VideoSourceFFmpeg.cpp
+     1>d:\libimagesource\videosourcebase.h(5): fatal error C1083: 无法打开包括文件:“cc++/thread.h”: No such file or directory
+         main.cpp
+     1>d:\libimagesource\main.cpp(1): fatal error C1083: 无法打开包括文件:“cc++/thread.h”: No such file or directory
+         正在生成代码...
+     1>已完成生成项目“D:\libimagesource\libimagesource.vcxproj”(build 个目标)的操作 - 失败。
+
+生成失败。
+
+已用时间 00:00:01.24
