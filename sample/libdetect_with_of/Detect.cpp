@@ -49,10 +49,11 @@ void Detect::detect(const cv::Mat &origin, Detect::RCS &standups)
     origin_ = origin;
 
     //
-    if (masked_) {
-        cv::bitwise_and(origin, mask_, origin);
-    }
-
+    //if (masked_) {
+    //    cv::bitwise_and(origin, mask_, origin);
+    //}
+    //imwrite("bitwise.bmp", origin);
+    //printf("writed\n");
     //
     cv::cvtColor(origin, gray_curr_, cv::COLOR_BGR2GRAY);
     if (gray_prev_.cols == 0) {

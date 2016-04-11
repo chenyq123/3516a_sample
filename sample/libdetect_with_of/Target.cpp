@@ -34,9 +34,9 @@ bool Target::init(KVConfig *cfg, int id, const cv::Rect &roi, const cv::Mat &cur
 
     PTS pts;
     //cv::goodFeaturesToTrack(curr_gray(roi), pts, 300, 0.05, 1.5);
-    imwrite("save.bmp",curr_gray(roi));
+    //imwrite("save.bmp",curr_gray(roi));
     hi_goodFeaturesToTrack(curr_gray(roi), pts, 200, 0.05, 10);
-    imwrite("save.bmp",curr_gray(roi));
+    //imwrite("save.bmp",curr_gray(roi));
     printf("goodFeaturesToTrack\n");
 
     printf("pts.size:%d\n",pts.size());

@@ -33,7 +33,6 @@ HI_S32 hi_AllocCacheU8C1(IVE_IMAGE_S *pstImage, HI_U16 u16Stride,HI_U16 u16Width
     pstImage->u16Stride[0] = u16Stride;
     pstImage->u16Width = u16Width;
     pstImage->u16Height = u16Height;
-    //HI_S32 ret = HI_MPI_SYS_MmzAlloc_Cached(&pstImage->u32PhyAddr[0], (void**)&pstImage->pu8VirAddr[0], "user", HI_NULL, u16Stride * u16Height);
     HI_S32 ret = HI_MPI_SYS_MmzAlloc(&pstImage->u32PhyAddr[0], (void**)&pstImage->pu8VirAddr[0], "user", HI_NULL, u16Stride * u16Height);
     return ret;
 }
@@ -67,11 +66,7 @@ void hi_dilate(Mat Src, Mat &Dst, Mat element, Point anchor, int iterations)
                          0, 255, 255, 255, 0,
                          0, 255, 255, 255, 0,
                          0, 0,   0,   0,   0};
-    //HI_U8 mask3x3[25] = {0, 0,     255,   0, 0,
-    //                     0, 0,     255,   0, 0,
-    //                     255, 255, 255, 255, 255,
-    //                     0, 0,     255,   0, 0,
-    //                     0, 0,     255,   0, 0};
+
     IVE_SRC_IMAGE_S stSrc;
     IVE_DST_IMAGE_S stDst;
     IVE_IMAGE_S *pSrc, *pDst;
@@ -79,38 +74,39 @@ void hi_dilate(Mat Src, Mat &Dst, Mat element, Point anchor, int iterations)
     IVE_HANDLE IveHandle;
     HI_BOOL bInstant = HI_TRUE;
     HI_S32 ret;
-    //printf("line=%d,time=%d\n",__LINE__,GetTickCount1());
     memset(&stSrc, 0, sizeof(IVE_SRC_IMAGE_S));
     memset(&stDst, 0, sizeof(IVE_DST_IMAGE_S));
-   // printf("line=%d,time=%d\n",__LINE__,GetTickCount1());
+
     ret = hi_AllocCacheU8C1(&stSrc, Src.step[0], Src.cols, Src.rows);
     if(ret != HI_SUCCESS)
     {
         printf("hi_AllocCacheU8C1 with error code %#x\n",ret);
+        return;
     }
-    //printf("line=%d,time=%d\n",__LINE__,GetTickCount1());
 
     for(int i = 0; i < stSrc.u16Height; i++)
     {
         memcpy(stSrc.pu8VirAddr[0] + i * stSrc.u16Stride[0], Src.data + i * Src.step[0], stSrc.u16Width);
     }
-    //printf("line=%d,time=%d\n",__LINE__,GetTickCount1());
 
     ret = hi_AllocCacheU8C1(&stDst, Dst.step[0], Dst.cols, Dst.rows);
     if(ret != HI_SUCCESS)
     {
         printf("hi_AllocCacheU8C1 with error code %#x\n",ret);
+        goto DILATE_END2;
     }
 
     memcpy(stDilateCtrl.au8Mask, mask3x3, sizeof(HI_U8) * 25);
     pSrc = &stSrc;
     pDst = &stDst;
+
     for(int i = 0; i < iterations; i++)
     {
         ret = HI_MPI_IVE_Dilate(&IveHandle, pSrc, pDst, &stDilateCtrl, bInstant);
         if(ret != HI_SUCCESS)
         {
             printf("HI_MPI_IVE_Dilate with error code %#x\n",ret);
+            goto DILATE_END1;
         }
         HI_BOOL bFinish;
         ret = HI_MPI_IVE_Query(IveHandle, &bFinish, HI_TRUE);
@@ -120,18 +116,21 @@ void hi_dilate(Mat Src, Mat &Dst, Mat element, Point anchor, int iterations)
         }
         swap(pSrc, pDst);
     }
+
     swap(pSrc, pDst);
     for(int i = 0; i < stDst.u16Height; i++)
     {
         memcpy(Dst.data + i * Dst.step[0], pDst->pu8VirAddr[0] + i * pDst->u16Stride[0], pDst->u16Width);
     }
 
+DILATE_END1:
     ret = HI_MPI_SYS_MmzFree(stSrc.u32PhyAddr[0], stSrc.pu8VirAddr[0]);
     if(ret != HI_SUCCESS)
     {
         printf("HI_MPI_SYS_MmzFree with error code %#x\n",ret);
     }
 
+DILATE_END2:
     ret = HI_MPI_SYS_MmzFree(stDst.u32PhyAddr[0], stDst.pu8VirAddr[0]);
     if(ret != HI_SUCCESS)
     {
@@ -159,6 +158,7 @@ void hi_erode(Mat Src, Mat &Dst, Mat element, Point anchor, int iterations)
     if(ret != HI_SUCCESS)
     {
         printf("hi_AllocCacheU8C1 with error code %#x\n",ret);
+        return;
     }
 
     for(int i = 0; i < stSrc.u16Height; i++)
@@ -170,6 +170,7 @@ void hi_erode(Mat Src, Mat &Dst, Mat element, Point anchor, int iterations)
     if(ret != HI_SUCCESS)
     {
         printf("hi_AllocCacheU8C1 with error code %#x\n",ret);
+        goto ERODE_END2;
     }
 
     memcpy(stErodeCtrl.au8Mask, mask3x3, sizeof(HI_U8) * 25);
@@ -181,6 +182,7 @@ void hi_erode(Mat Src, Mat &Dst, Mat element, Point anchor, int iterations)
         if(ret != HI_SUCCESS)
         {
             printf("HI_MPI_IVE_Erode with error code %#x\n",ret);
+            goto ERODE_END1;
         }
         HI_BOOL bFinish;
         ret = HI_MPI_IVE_Query(IveHandle, &bFinish, HI_TRUE);
@@ -196,18 +198,21 @@ void hi_erode(Mat Src, Mat &Dst, Mat element, Point anchor, int iterations)
         memcpy(Dst.data + i * Dst.step[0], pDst->pu8VirAddr[0] + i * pDst->u16Stride[0], pDst->u16Width);
     }
 
+ERODE_END1:
     ret = HI_MPI_SYS_MmzFree(stSrc.u32PhyAddr[0], stSrc.pu8VirAddr[0]);
     if(ret != HI_SUCCESS)
     {
         printf("HI_MPI_SYS_MmzFree with error code %#x\n",ret);
     }
 
+ERODE_END2:
     ret = HI_MPI_SYS_MmzFree(stDst.u32PhyAddr[0], stDst.pu8VirAddr[0]);
     if(ret != HI_SUCCESS)
     {
         printf("HI_MPI_SYS_MmzFree with error code %#x\n",ret);
     }
 }
+
 void hi_absdiff(Mat src1, Mat src2, Mat &dst)
 {
     IVE_SRC_IMAGE_S stSrc1, stSrc2;
@@ -217,30 +222,38 @@ void hi_absdiff(Mat src1, Mat src2, Mat &dst)
     IVE_HANDLE IveHandle;
 
     dst = src1.clone();
+
     ret = hi_AllocCacheU8C1(&stSrc1, src1.step[0], src1.cols, src1.rows);
     if(ret != HI_SUCCESS)
     {
         printf("hi_AllocCacheU8C1 with error code %#x\n",ret);
+        return;
     }
 
     ret = hi_AllocCacheU8C1(&stSrc2, src2.step[0], src2.cols, src2.rows);
     if(ret != HI_SUCCESS)
     {
         printf("hi_AllocCacheU8C1 with error code %#x\n",ret);
+        goto ABSDIFF_END3;
     }
 
     ret = hi_AllocCacheU8C1(&stDst, dst.step[0], dst.cols, dst.rows);
     if(ret != HI_SUCCESS)
     {
         printf("hi_AllocCacheU8C1 with error code %#x\n",ret);
+        goto ABSDIFF_END2;
     }
+
     hi_CopyDataToIveImageU8C1(src1, &stSrc1);
     hi_CopyDataToIveImageU8C1(src2, &stSrc2);
+
     stSubCtrl.enMode = IVE_SUB_MODE_ABS;
+
     ret = HI_MPI_IVE_Sub(&IveHandle, &stSrc1, &stSrc2, &stDst, &stSubCtrl, HI_TRUE);
     if(ret != HI_SUCCESS)
     {
         printf("HI_MPI_IVE_Sub with error code %#x\n",ret);
+        goto ABSDIFF_END1;
     }
     HI_BOOL bFinish;
     ret = HI_MPI_IVE_Query(IveHandle, &bFinish, HI_TRUE);
@@ -250,19 +263,22 @@ void hi_absdiff(Mat src1, Mat src2, Mat &dst)
     }
     hi_CopyDataToMatU8C1(&stDst, dst);
 
-    ret = HI_MPI_SYS_MmzFree(stSrc1.u32PhyAddr[0], stSrc1.pu8VirAddr[0]);
+ABSDIFF_END1:
+    ret = HI_MPI_SYS_MmzFree(stDst.u32PhyAddr[0], stDst.pu8VirAddr[0]);
     if(ret != HI_SUCCESS)
     {
         printf("HI_MPI_SYS_MmzFree with error code %#x\n",ret);
     }
 
+ABSDIFF_END2:
     ret = HI_MPI_SYS_MmzFree(stSrc2.u32PhyAddr[0], stSrc2.pu8VirAddr[0]);
     if(ret != HI_SUCCESS)
     {
         printf("HI_MPI_SYS_MmzFree with error code %#x\n",ret);
     }
 
-    ret = HI_MPI_SYS_MmzFree(stDst.u32PhyAddr[0], stDst.pu8VirAddr[0]);
+ABSDIFF_END3:
+    ret = HI_MPI_SYS_MmzFree(stSrc1.u32PhyAddr[0], stSrc1.pu8VirAddr[0]);
     if(ret != HI_SUCCESS)
     {
         printf("HI_MPI_SYS_MmzFree with error code %#x\n",ret);
@@ -276,7 +292,8 @@ double hi_threshold(Mat src, Mat &dst, double thresh, double maxval, int type)
     HI_S32 ret;
     IVE_THRESH_CTRL_S stThrCtrl;
     IVE_HANDLE IveHandle;
-    double result;
+    double result = 0;
+
     ret = hi_AllocCacheU8C1(&stSrc, src.step[0], src.cols, src.rows);
     if(ret != HI_SUCCESS)
     {
@@ -287,6 +304,7 @@ double hi_threshold(Mat src, Mat &dst, double thresh, double maxval, int type)
     if(ret != HI_SUCCESS)
     {
         printf("hi_AllocCacheU8C1 with error code %#x\n",ret);
+        goto THRESHOLD_END2;
     }
 
     hi_CopyDataToIveImageU8C1(src, &stSrc);
@@ -326,10 +344,12 @@ double hi_threshold(Mat src, Mat &dst, double thresh, double maxval, int type)
         stThrCtrl.u8LowThr = thresh;
         stThrCtrl.u8MaxVal = 0;
     }
+
     ret = HI_MPI_IVE_Thresh(&IveHandle, &stSrc, &stDst, &stThrCtrl, HI_TRUE);
     if(ret != HI_SUCCESS)
     {
         printf("HI_MPI_IVE_Thresh with error code %#x\n",ret);
+        goto THRESHOLD_END1;
     }
 
     HI_BOOL bFinish;
@@ -340,12 +360,14 @@ double hi_threshold(Mat src, Mat &dst, double thresh, double maxval, int type)
     }
     hi_CopyDataToMatU8C1(&stDst, dst);
 
+THRESHOLD_END1:
     ret = HI_MPI_SYS_MmzFree(stSrc.u32PhyAddr[0], stSrc.pu8VirAddr[0]);
     if(ret != HI_SUCCESS)
     {
         printf("HI_MPI_SYS_MmzFree with error code %#x\n",ret);
     }
 
+THRESHOLD_END2:
     ret = HI_MPI_SYS_MmzFree(stDst.u32PhyAddr[0], stDst.pu8VirAddr[0]);
     if(ret != HI_SUCCESS)
     {
@@ -357,7 +379,7 @@ double hi_threshold(Mat src, Mat &dst, double thresh, double maxval, int type)
 
 
 //calcOpticalFlowPyrLK(pre_gray,cur_gray,prepoint,nextpoint,state,err,Size(sizewidth,sizeheight),0);//
-void calcLKOpticalFlow(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prepoint, vector<Point2f> &nextpoint, vector<uchar> &state)
+void hi_calcOpticalFlowPyrLK(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prepoint, vector<Point2f> &nextpoint, vector<uchar> &state)
 {
     IVE_HANDLE IveHandle;
     IVE_SRC_IMAGE_S stSrcPre[3];
@@ -389,12 +411,37 @@ void calcLKOpticalFlow(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prep
         if(ret != HI_SUCCESS)
         {
             printf("hi_CreateIveImageU8C1 with err code %#x\n", ret);
+            for(int i = s32Index - 1; i >= 0; i--)
+            {
+                ret = HI_MPI_SYS_MmzFree(stSrcPre[i].u32PhyAddr[0], stSrcPre[i].pu8VirAddr[0]);
+                if(ret != HI_SUCCESS)
+                {
+                    printf("HI_MPI_SYS_MmzFree failed with error code %#x\n",ret);
+                }
+            }
             return;
         }
+
         ret = hi_CreateIveImageU8C1(&stSrcCur[s32Index], width / s32DownIndex, height / s32DownIndex);
         if(ret != HI_SUCCESS)
         {
             printf("hi_CreateIveImageU8C1 with err code %#x\n", ret);
+            for(int i = s32Index; i >= 0; i--)
+            {
+                ret = HI_MPI_SYS_MmzFree(stSrcPre[i].u32PhyAddr[0], stSrcPre[i].pu8VirAddr[0]);
+                if(ret != HI_SUCCESS)
+                {
+                    printf("HI_MPI_SYS_MmzFree failed with error code %#x\n",ret);
+                }
+            }
+            for(int i = s32Index - 1; i >= 0; i--)
+            {
+                ret = HI_MPI_SYS_MmzFree(stSrcCur[i].u32PhyAddr[0], stSrcCur[i].pu8VirAddr[0]);
+                if(ret != HI_SUCCESS)
+                {
+                    printf("HI_MPI_SYS_MmzFree failed with error code %#x\n",ret);
+                }
+            }
             return;
         }
     }
@@ -406,23 +453,31 @@ void calcLKOpticalFlow(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prep
 
     for(s32Index = 0; s32Index < 3; s32Index++)
     {
-        ret = HI_MPI_SYS_MmzAlloc(&(stPoint[s32Index].u32PhyAddr), (void**)&(stPoint[s32Index].pu8VirAddr), "user", HI_NULL, stLkOptiFlowCtrl.u16CornerNum * sizeof(IVE_POINT_S25Q7_S));
+        stPoint[s32Index].u32Size = stLkOptiFlowCtrl.u16CornerNum * sizeof(IVE_POINT_S25Q7_S);
+        ret = HI_MPI_SYS_MmzAlloc(&(stPoint[s32Index].u32PhyAddr), (void**)&(stPoint[s32Index].pu8VirAddr), "user", HI_NULL, stPoint[s32Index].u32Size);
         if(ret != HI_SUCCESS)
         {
             printf("HI_MPI_SYS_MmzAlloc Cached failed with err code %#x\n",ret);
+            for(int i = s32Index - 1; i >= 0; i--)
+            {
+                ret = HI_MPI_SYS_MmzFree(stPoint[i].u32PhyAddr, stPoint[i].pu8VirAddr);
+                if(ret != HI_SUCCESS)
+                {
+                    printf("HI_MPI_SYS_MmzFree failed with error code %#x\n",ret);
+                }
+            }
             return;
         }
-        stPoint[s32Index].u32Size = stLkOptiFlowCtrl.u16CornerNum * sizeof(IVE_POINT_S25Q7_S);
     }
 
-    ret = HI_MPI_SYS_MmzAlloc(&stMv.u32PhyAddr, (void**)&stMv.pu8VirAddr, "user", HI_NULL, 200 * sizeof(IVE_MV_S9Q7_S));
+    stMv.u32Size = 200 * sizeof(IVE_MV_S9Q7_S);
+    ret = HI_MPI_SYS_MmzAlloc(&stMv.u32PhyAddr, (void**)&stMv.pu8VirAddr, "user", HI_NULL, stMv.u32Size);
     if(ret != HI_SUCCESS)
     {
         printf("HI_MPI_SYS_MmzAlloc Cached failed with err code %#x\n",ret);
-        return;
+        goto CALCLK_END1;
     }
-    memset(stMv.pu8VirAddr, 0, 200 * sizeof(IVE_MV_S9Q7_S));
-    stMv.u32Size = 200 * sizeof(IVE_MV_S9Q7_S);
+    memset(stMv.pu8VirAddr, 0, stMv.u32Size);
 
     for(int i = 2; i >= 0; i--)
     {
@@ -430,8 +485,6 @@ void calcLKOpticalFlow(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prep
         {
             if(i == 2)
             {
-                //((IVE_POINT_S25Q7_S*)stPoint[i].pu8VirAddr)[j].s25q7X = float_to_s25q7(prepoint[j].x);
-                //((IVE_POINT_S25Q7_S*)stPoint[i].pu8VirAddr)[j].s25q7Y = float_to_s25q7(prepoint[j].y);
                 ((IVE_POINT_S25Q7_S*)stPoint[i].pu8VirAddr)[j].s25q7X = (unsigned int)(prepoint[j].x * 128);
                 ((IVE_POINT_S25Q7_S*)stPoint[i].pu8VirAddr)[j].s25q7Y = (unsigned int)(prepoint[j].y * 128);
             }
@@ -445,7 +498,6 @@ void calcLKOpticalFlow(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prep
                 ((IVE_POINT_S25Q7_S*)stPoint[i].pu8VirAddr)[j].s25q7X = (((IVE_POINT_S25Q7_S*)stPoint[i + 1].pu8VirAddr)[j].s25q7X + 1) / 2;
                 ((IVE_POINT_S25Q7_S*)stPoint[i].pu8VirAddr)[j].s25q7Y = (((IVE_POINT_S25Q7_S*)stPoint[i + 1].pu8VirAddr)[j].s25q7Y + 1) / 2;
             }
-            //printf("point:%f,%f\n",(float)((IVE_POINT_S25Q7_S*)stPoint[i].pu8VirAddr)[j].s25q7X / (float)128.0, (float)((IVE_POINT_S25Q7_S*)stPoint[i].pu8VirAddr)[j].s25q7Y / (float)128.0);
         }
     }
 
@@ -457,11 +509,13 @@ void calcLKOpticalFlow(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prep
 
     for(int i = 0; i < 3; i++)
     {
-        for(int j = 0; j < stSrcPre[i].u16Height; j++)
-        {
-            memcpy(stSrcPre[i].pu8VirAddr[0] + j * stSrcPre[i].u16Stride[0], pyrimidsPre[i].data + j * pyrimidsPre[i].step[0], stSrcPre[i].u16Width);
-            memcpy(stSrcCur[i].pu8VirAddr[0] + j * stSrcCur[i].u16Stride[0], pyrimidsCur[i].data + j * pyrimidsCur[i].step[0], stSrcCur[i].u16Width);
-        }
+        hi_CopyDataToIveImageU8C1(pyrimidsPre[i], &stSrcPre[i]);
+        hi_CopyDataToIveImageU8C1(pyrimidsCur[i], &stSrcCur[i]);
+        //for(int j = 0; j < stSrcPre[i].u16Height; j++)
+        //{
+        //    memcpy(stSrcPre[i].pu8VirAddr[0] + j * stSrcPre[i].u16Stride[0], pyrimidsPre[i].data + j * pyrimidsPre[i].step[0], stSrcPre[i].u16Width);
+        //    memcpy(stSrcCur[i].pu8VirAddr[0] + j * stSrcCur[i].u16Stride[0], pyrimidsCur[i].data + j * pyrimidsCur[i].step[0], stSrcCur[i].u16Width);
+        //}
     }
 
 
@@ -472,7 +526,7 @@ void calcLKOpticalFlow(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prep
         if(ret != HI_SUCCESS)
         {
             printf("HI_MPI_IVE_LKOpticalFlow Cached failed with err code %#x\n",ret);
-            return;
+            goto CALCLK_END1;
         }
         HI_BOOL bFinish;
         ret = HI_MPI_IVE_Query(IveHandle, &bFinish, HI_TRUE);
@@ -501,7 +555,6 @@ CALCLK_END1:
         printf("HI_MPI_SYS_MmzFree failed with error code %#x\n",ret);
     }
 
-
 CALCLK_END2:
     for(int i = 0; i < 3; i++)
     {
@@ -511,6 +564,7 @@ CALCLK_END2:
             printf("HI_MPI_SYS_MmzFree failed with error code %#x\n",ret);
         }
     }
+
 CALCLK_END3:
     for(int i = 0; i < 3; i++)
     {
@@ -520,6 +574,7 @@ CALCLK_END3:
             printf("HI_MPI_SYS_MmzFree failed with error code %#x\n",ret);
         }
     }
+
 CALCLK_END4:
     for(int i = 0; i < 3; i++)
     {
@@ -529,6 +584,7 @@ CALCLK_END4:
             printf("HI_MPI_SYS_MmzFree failed with error code %#x\n",ret);
         }
     }
+
 }
 
 //cv::goodFeaturesToTrack(curr_gray(roi), pts, 300, 0.05, 1.5);
@@ -549,7 +605,6 @@ void hi_goodFeaturesToTrack(Mat image, vector<Point2f> &corners, int maxCorners,
     IVE_POINT_U16_S *pastCorner;
     IVE_ST_CORNER_INFO_S *pstCornerInfo;
     HI_BOOL bFinish;
-    printf("cols:%d,row:%d\n", width, height);
     ret = hi_CreateIveImageU8C1(&stSrc, width, height);
     if(ret != HI_SUCCESS)
     {
@@ -566,7 +621,6 @@ void hi_goodFeaturesToTrack(Mat image, vector<Point2f> &corners, int maxCorners,
     hi_CopyDataToIveImageU8C1(image, &stSrc);
 
     stStCandiCornerCtrl.u0q8QualityLevel = (unsigned int)(qulityLevel * 256);
-    printf("Level:%x\n",stStCandiCornerCtrl.u0q8QualityLevel);
 
     stStCandiCornerCtrl.stMem.u32Size = 4 * stSrc.u16Width * stSrc.u16Height + sizeof(IVE_ST_MAX_EIG_S);
     ret = HI_MPI_SYS_MmzAlloc(&stStCandiCornerCtrl.stMem.u32PhyAddr, (void**)&stStCandiCornerCtrl.stMem.pu8VirAddr, "user", HI_NULL, stStCandiCornerCtrl.stMem.u32Size);
@@ -599,8 +653,6 @@ void hi_goodFeaturesToTrack(Mat image, vector<Point2f> &corners, int maxCorners,
 
     stStCornerCtrl.u16MaxCornerNum = maxCorners;
     stStCornerCtrl.u16MinDist = minDistance;
-    printf("MaxCorner:%x\n",stStCornerCtrl.u16MaxCornerNum);
-    printf("Distance:%x\n",stStCornerCtrl.u16MinDist);
 
     ret = HI_MPI_IVE_STCorner(&stCandiCorner, &stCorner, &stStCornerCtrl);
     if(ret != HI_SUCCESS)
@@ -618,7 +670,7 @@ void hi_goodFeaturesToTrack(Mat image, vector<Point2f> &corners, int maxCorners,
     //cornernum = ((IVE_ST_CORNER_INFO_S *)stCorner.pu8VirAddr)->u16CornerNum;
     //pastCorner = ((IVE_ST_CORNER_INFO_S *)stCorner.pu8VirAddr)->astCorner;
     pstCornerInfo = (IVE_ST_CORNER_INFO_S *)stCorner.pu8VirAddr;
-    printf("u16CornerNum:%d\n",pstCornerInfo->u16CornerNum);
+
     for(int i = 0; i < pstCornerInfo->u16CornerNum; i++)
     {
         Point2f p;

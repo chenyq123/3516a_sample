@@ -1,21 +1,20 @@
 #include <iostream>
 #include <unistd.h>
-#include "StudentTrack.h"
-#include "libdetect_s.h"
-
+#include "DetectWithOf.h"
 #include "sample_comm.h"
 #include "hi_comm_ive.h"
 #include "hi_ive.h"
 #include "mpi_ive.h"
-
+#include "KVConfig.h"
+#include "Detect.h"
 #include "opencv2/opencv.hpp"
 #include "opencv2/legacy/legacy.hpp"
 
 #include "opencv2/video/tracking.hpp"
 #include "opencv2/highgui/highgui.hpp"
 
-#define IMG_WIDTH 480
-#define IMG_HEIGHT 360
+#define IMG_WIDTH 960
+#define IMG_HEIGHT 540
 
 using namespace std;
 using namespace cv;
@@ -23,19 +22,58 @@ int getframe_init(int width, int height, int ExtChn);
 int getframe(Mat *Img, int ExtChn);
 
 //const VI_CHN_ExtChn = VIU_EXT_CHN_START;
+
+static const char *build_result(const std::vector<cv::Rect> &rcs)
+{
+    // 构造 json 格式
+    std::stringstream ss;
+    const int _buf_size = 4096;
+    static char *_buf = (char*)malloc(_buf_size);
+    const char *_pre = "{ \"stamp\":12345, \"rect\":[";
+
+    strcpy(_buf, _pre);
+    bool first = true;
+    for (std::vector<cv::Rect>::const_iterator it = rcs.begin(); it != rcs.end(); ++it) {
+        if (!first) {
+            strcat(_buf, ",");
+        }
+        else {
+            first = false;
+        }
+
+        char tmp[128];
+        snprintf(tmp, sizeof(tmp), "{\"x\":%d, \"y\":%d, \"width\":%d, \"height\":%d}", it->x, it->y, it->width, it->height);
+        strcat(_buf, tmp);
+    }
+    strcat(_buf, " ]");
+
+    if (true) {
+        char tmp[64];
+        snprintf(tmp, sizeof(tmp), ", \"flipped_idx\": %d", -1);
+        strcat(_buf, tmp);
+    }
+
+    strcat(_buf, "}");
+
+    return _buf;
+}
+
 int  main()
 {
     int num = 0;
+    KVConfig cfg("student_detect_trace.config");
     getframe_init(IMG_WIDTH, IMG_HEIGHT, VIU_EXT_CHN_START);
-    det_open("student_detect_trace.config");
+    Detect *det = new DetectWithOf(&cfg);
+    Mat frame(IMG_HEIGHT, IMG_WIDTH, CV_8UC3, 0);
+    frame.create(IMG_HEIGHT, IMG_WIDTH, CV_8UC3);
     while(1)
     {
         printf("line=%d,time=%ld,num=%d\n", __LINE__, GetTickCount(),num++);
-        Mat Img(IMG_HEIGHT, IMG_WIDTH, CV_8UC3, 0);
-        Img.create(IMG_HEIGHT, IMG_WIDTH, CV_8UC3);
-        getframe(&Img, VIU_EXT_CHN_START);
-        const char *str = det_detect(NULL, Img);
-        printf("%s\n", str);
+        getframe(&frame, VIU_EXT_CHN_START);
+        std::vector<cv::Rect> standups;
+        det->detect(frame, standups);
+        const char *result = build_result(standups);
+        printf("%s\n", result);
     }
     return 0;
 }

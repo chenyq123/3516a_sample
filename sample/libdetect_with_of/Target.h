@@ -120,7 +120,8 @@ private:
     /// 返回一条路径的一部分　...
     PATH get_path(int idx, int from_layer, int to_layer) const
     {
-        assert(layers_.size() > to_layer && from_layer < to_layer && idx < layers_[0].size());
+        //printf("layers_.size=%d,to_layer=%d,from_layer:%d,layers[0]_.size:%d\n",layers_.size(), to_layer, from_layer, layers_[0].size());
+        //assert(layers_.size() > to_layer && from_layer < to_layer && idx < layers_[0].size());
 
         PTS path;
         for (int i = from_layer; i < to_layer; i++) {
