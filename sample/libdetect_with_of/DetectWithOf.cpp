@@ -113,6 +113,8 @@ void DetectWithOf::detect(Detect::RCS &motions, std::vector<Dir> &dirs)
         if (E_OK == rc) {
             if (debug_) {
                 cv::rectangle(img, it->pos(), cv::Scalar(0, 255, 0), 2);
+                //imwrite("save.bmp", img);
+                //printf("writed\n");
             }
 
             motions.push_back(pos);
@@ -172,7 +174,7 @@ void DetectWithOf::detect(Detect::RCS &motions, std::vector<Dir> &dirs)
         p2.x = 30 + near_width_, p2.y = p1.y;
         cv::line(img, p1, p2, cv::Scalar(255, 0, 0), 2);
 
-        cv::imshow("dwof", img);
+        //cv::imshow("dwof", img);
     }
 }
 

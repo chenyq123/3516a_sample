@@ -57,7 +57,7 @@ int socketconnect(int socketfd);
 int setParam(cJSON *json);
 void sendVersion(int connectfd);
 void sendSDKVersion(int connectfd);
-void sendConf(int connectfd, int blackboard_conf);
+void sendConf(int connectfd, int model);
 void sendModelandStatus(int connectfd);
 void recvResultfromSlave();
 void recvResultfromSlaveCleanup(void *arg);
@@ -832,19 +832,23 @@ void sendSDKVersion(int connectfd)
     cJSON_Delete(sendjson);
 }
 
-void sendConf(int connectfd, int blackboard_conf)
+void sendConf(int connectfd, int model)
 {
     cJSON *sendjson = cJSON_CreateObject();
     std::vector<std::string>::iterator iter;
     std::vector<std::string> cfg_keys;
     KVConfig *sendcfg_;
-    if(blackboard_conf == 0)
+    if(model == 0)
     {
-        sendcfg_ = new KVConfig("/home/teacher_detect_trace.config");
+        sendcfg_ = new KVConfig("teacher_detect_trace.config");
     }
-    else
+    else if(model = 1)
     {
-        sendcfg_ = new KVConfig("/home/bd_detect_trace.config");
+        sendcfg_ = new KVConfig("bd_detect_trace.config");
+    }
+    else if(model = 2 || model == 3)
+    {
+        sendcfg_ = new KVConfig("student_detect_trace.config");
     }
     cfg_keys = sendcfg_->keys();
     for(iter = cfg_keys.begin();iter != cfg_keys.end(); iter++)
