@@ -15,6 +15,7 @@ void hi_absdiff(Mat src1, Mat src2, Mat &dst);
 double hi_threshold(Mat src, Mat &dst, double thresh, double maxval, int type);
 void hi_calcOpticalFlowPyrLK(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prepoint, vector<Point2f> &nextpoint, vector<uchar> &state);
 void hi_goodFeaturesToTrack(Mat image, vector<Point2f> &corners, int maxCorners, double qulityLevel, double minDistance);
+void hi_bitwise_and_u8c1(Mat src1, Mat src2, Mat &dst);
 //unsigned long GetTickCount1()
 //{
 //    struct timespec ts;

@@ -377,6 +377,73 @@ THRESHOLD_END2:
     return result;
 }
 
+void hi_bitwise_and_u8c1(Mat src1, Mat src2, Mat &dst)
+{
+    IVE_HANDLE IveHandle;
+    IVE_SRC_IMAGE_S stSrc1, stSrc2;
+    IVE_DST_IMAGE_S stDst;
+    HI_S32 ret;
+
+    ret = hi_AllocCacheU8C1(&stSrc1, src1.step[0], src1.cols, src1.rows);
+    if(ret != HI_SUCCESS)
+    {
+        printf("hi_AllocCacheU8C1 with error code %#x\n",ret);
+    }
+
+    ret = hi_AllocCacheU8C1(&stSrc2, src2.step[0], src2.cols, src2.rows);
+    if(ret != HI_SUCCESS)
+    {
+        printf("hi_AllocCacheU8C1 with error code %#x\n",ret);
+        goto BITWISE_AND_END3;
+    }
+
+    ret = hi_AllocCacheU8C1(&stDst, dst.step[0], dst.cols, dst.rows);
+    if(ret != HI_SUCCESS)
+    {
+        printf("hi_AllocCacheU8C1 with error code %#x\n",ret);
+        goto BITWISE_AND_END2;
+    }
+
+    hi_CopyDataToIveImageU8C1(src1, &stSrc1);
+    hi_CopyDataToIveImageU8C1(src2, &stSrc2);
+    hi_CopyDataToIveImageU8C1(dst, &stDst);
+
+    ret = HI_MPI_IVE_And(&IveHandle, &stSrc1, &stSrc2, &stDst, HI_TRUE);
+    if(ret != HI_SUCCESS)
+    {
+        printf("HI_MPI_IVE_Thresh with error code %#x\n",ret);
+        goto BITWISE_AND_END1;
+    }
+
+    HI_BOOL bFinish;
+    ret = HI_MPI_IVE_Query(IveHandle, &bFinish, HI_TRUE);
+    if(ret != HI_SUCCESS)
+    {
+        printf("HI_MPI_IVE_Query with error code %#x\n",ret);
+    }
+    hi_CopyDataToMatU8C1(&stDst, dst);
+
+BITWISE_AND_END1:
+    ret = HI_MPI_SYS_MmzFree(stDst.u32PhyAddr[0], stDst.pu8VirAddr[0]);
+    if(ret != HI_SUCCESS)
+    {
+        printf("HI_MPI_SYS_MmzFree with error code %#x\n",ret);
+    }
+
+BITWISE_AND_END2:
+    ret = HI_MPI_SYS_MmzFree(stSrc2.u32PhyAddr[0], stSrc2.pu8VirAddr[0]);
+    if(ret != HI_SUCCESS)
+    {
+        printf("HI_MPI_SYS_MmzFree with error code %#x\n",ret);
+    }
+
+BITWISE_AND_END3:
+    ret = HI_MPI_SYS_MmzFree(stSrc1.u32PhyAddr[0], stSrc1.pu8VirAddr[0]);
+    if(ret != HI_SUCCESS)
+    {
+        printf("HI_MPI_SYS_MmzFree with error code %#x\n",ret);
+    }
+}
 
 //calcOpticalFlowPyrLK(pre_gray,cur_gray,prepoint,nextpoint,state,err,Size(sizewidth,sizeheight),0);//
 void hi_calcOpticalFlowPyrLK(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prepoint, vector<Point2f> &nextpoint, vector<uchar> &state)
