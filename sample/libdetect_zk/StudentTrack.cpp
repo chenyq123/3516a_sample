@@ -1495,7 +1495,7 @@ bool CStudentTrack::InitAndFlow()
     flowdownbw = cv::Mat::zeros(Size(imageArry.getWidth(),imageArry.getHeight()),CV_8UC1);
     flowupbw = cv::Mat::zeros(Size(imageArry.getWidth(),imageArry.getHeight()),CV_8UC1);//二值化
 
-    printf("prepointnum:%d\n",prepoint.size());
+    //printf("prepointnum:%d\n",prepoint.size());
     if(prepoint.size()>0){
         ret=true;
         int sizewidth=10;//稀疏光流法寻找的半径//8
@@ -1522,7 +1522,7 @@ bool CStudentTrack::InitAndFlow()
                 if(first_ == 1)
                 {
                     first_ = 0;
-                    printf("prepoint[0].x=%f,prepoint[0].y=%f,nextpoint[0].x=%f,nextpoint[0].y=%f\n",prepoint[0].x, prepoint[0].y, nextpoint[0].x, nextpoint[0].y);
+                    //printf("prepoint[0].x=%f,prepoint[0].y=%f,nextpoint[0].x=%f,nextpoint[0].y=%f\n",prepoint[0].x, prepoint[0].y, nextpoint[0].x, nextpoint[0].y);
                 }
                 if(abs(nextpoint[i].y-prepoint[i].y)>sizewidth || abs(nextpoint[i].x-prepoint[i].x)>sizewidth ||
                     nextpoint[i].y>imageArry.getHeight()-1 || nextpoint[i].x>imageArry.getWidth()-1 ||

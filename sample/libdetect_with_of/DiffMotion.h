@@ -66,8 +66,8 @@ private:
     std::vector<cv::Rect> sum_motions() const
     {
         printf("diffs.size:%d, cnt_:%d\n",diffs_.size(), cnt_);
-        assert(diffs_.size() == cnt_);
-        assert(cnt_ >= 1);
+        //assert(diffs_.size() == cnt_);
+        //assert(cnt_ >= 1);
 
         cv::Mat sum = diffs_[0];
         for (size_t i = 1; i < diffs_.size(); i++) {

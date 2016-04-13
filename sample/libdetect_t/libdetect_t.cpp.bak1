@@ -53,17 +53,6 @@ det_t *det_open(const char *cfg_name)
         ctx->stu_detect_->readconfig(filename);
         ctx->stu_detect_->start();
     }
-    else if(strcmp(cfg_name, "student_detect_trace_slave.config") == 0)
-    {
-        ctx->s_m = true;
-        ctx->stu_detect_ = new CStudentTrack();
-        char filename[200];
-        sprintf(filename, cfg_name);
-        ctx->stu_detect_->setdebug(false);
-        ctx->stu_detect_->setduration(30);
-        ctx->stu_detect_->readconfig(filename);
-        ctx->stu_detect_->start();
-    }
 
     return ctx;
 }
@@ -231,7 +220,7 @@ char *det_detect(det_t * ctx, cv::Mat &Img)
     //***************************教师探测****************************
     if(ctx->t_m)
     {
-#if 0
+#if 1
         Mat upbody_img;
         if(atoi(ctx->cfg_->get_value("t_upbody_detect", "0"))>0)
         {
@@ -333,6 +322,7 @@ char *det_detect(det_t * ctx, cv::Mat &Img)
             waitKey(1);
         }
 #endif
+#if 0
         //Mat upbody_img;
         //if(atoi(ctx->cfg_->get_value("t_upbody_detect", "0"))>0)
         //{
@@ -379,7 +369,7 @@ char *det_detect(det_t * ctx, cv::Mat &Img)
             }
         }
         vector_to_json_t(r, upbody, is_up_body, isrect, str);
-
+#endif
     }
 
     //***************************板书探测****************************
@@ -445,9 +435,9 @@ char *det_detect(det_t * ctx, cv::Mat &Img)
     else if(ctx->s_m)
     {
         const char *_pre = "{\"stamp\":1234567,\"rect\":[";
-        //printf("process begin:%ld\n",GetTickCount());
+        printf("process begin:%ld\n",GetTickCount());
         ctx->stu_detect_->process(Img);
-        //printf("process end:%ld\n",GetTickCount());
+        printf("process end:%ld\n",GetTickCount());
         strcpy(str, _pre);
         bool first = true;
         std::vector<upStudentTarget>::iterator it = ctx->stu_detect_->up_students.begin();

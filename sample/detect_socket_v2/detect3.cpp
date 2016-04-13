@@ -89,6 +89,11 @@ int main(void)
     system("cat /proc/umap/vi | grep \"Version\" | cut -b 17-49 > /home/sdkversion.txt");
     cfg_ = new KVConfig("teacher_detect_trace.config");
     signal(SIGPIPE, sig_pipe);
+    int ret = access("student_detect_trace_slave.config", F_OK);
+    if(ret == -1)
+    {
+        system("cp student_detect_trace.config student_detect_trace_slave.config");
+    }
     pthread_create(&pictid, NULL, (void*(*)(void*))AnalyzePic, NULL);
     pthread_create(&recvcmdtid, NULL, (void*(*)(void*))RecvCMD, NULL);
     while (1)
@@ -272,7 +277,9 @@ void AnalyzePic()
     while (1) {
         if(pdet != NULL)
         {
+            printf("close\n");
             det_close(pdet);
+            printf("closed\n");
             pdet = NULL;
         }
         //KVConfig *pcfg_ = new KVConfig("teacher_detect_trace.config");
@@ -306,23 +313,23 @@ void AnalyzePic()
             img_h = 360;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
 
-            srcStr = pdet->cfg_->get_value("local_corr_point");
-            dstStr = pdet->cfg_->get_value("external_corr_point");
-            getCorrPoint(srcStr, srcTri);
-            getCorrPoint(dstStr, srcTri);
-            warp_mat = getPerspectiveTransform(srcTri, dstTri);
-            pthread_create(&recvtid, NULL, (void*(*)(void*))recvResultfromSlave, NULL);
+            //srcStr = pdet->cfg_->get_value("local_corr_point");
+            //dstStr = pdet->cfg_->get_value("external_corr_point");
+            //getCorrPoint(srcStr, srcTri);
+            //getCorrPoint(dstStr, srcTri);
+            //warp_mat = getPerspectiveTransform(srcTri, dstTri);
+            //pthread_create(&recvtid, NULL, (void*(*)(void*))recvResultfromSlave, NULL);
         }
         else if(model == 3)
         {
             printf("student detect slave\n");
-            pdet = det_open("student_detect_trace.config");
+            pdet = det_open("student_detect_trace_slave.config");
 
             img_w = 480;
             img_h = 360;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
 
-            masterip = pdet->cfg_->get_value("student_master_ip", 0);
+            masterip = pdet->cfg_->get_value("student_master_ip", "10.1.2.124");
 
             memset(&address, 0, sizeof(struct sockaddr_in));
             address.sin_family = AF_INET;
@@ -337,14 +344,14 @@ void AnalyzePic()
             //printf("start_analysis:%ld\n",start_analysis);
             if(g_reset == 1)
             {
-                if(model == 3)
-                {
-                    close(slave_sockfd);
-                }
-                if(model == 2)
-                {
-                    pthread_cancel(recvtid);
-                }
+                //if(model == 3)
+                //{
+                //    close(slave_sockfd);
+                //}
+                //if(model == 2)
+                //{
+                //    pthread_cancel(recvtid);
+                //}
                 break;
             }
             if(start_analysis == 0)
@@ -360,23 +367,24 @@ void AnalyzePic()
             Mat Img(img_h, img_w, CV_8UC3, 0);
             Img.create(img_h, img_w, CV_8UC3);
             getframe(&Img, VIU_EXT_CHN_START);
-            //printf("detect begin:%ld\n",GetTickCount());
+           // printf("detect begin:%ld\n",GetTickCount());
             const char *str = det_detect(pdet, Img);
-            //printf("detect over:%ld\n",GetTickCount());
-            if(model == 2)
-            {
-                Point p = getPoint(str);
-                if(master_list.size() >= 5)
-                {
-                    list<Point>::iterator iter = master_list.begin();
-                    master_list.erase(iter);
-                }
-                master_list.push_back(p);
-            }
-            else if(model == 3)
+           // printf("detect over:%ld\n",GetTickCount());
+            //if(model == 2)
+            //{
+            //    Point p = getPoint(str);
+            //    if(master_list.size() >= 5)
+            //    {
+            //        list<Point>::iterator iter = master_list.begin();
+            //        master_list.erase(iter);
+            //    }
+            //    master_list.push_back(p);
+            //}
+            //else if(model == 3)
+            if(model == 3)
             {
                 int ret = sendto(slave_sockfd, str, strlen(str) + 1, 0, (struct sockaddr *)&address, sizeof(address));
-                printf("%s\n",str);
+                //printf("%s\n",str);
                 if(ret == -1)
                 {
                     perror("sendto");
@@ -741,14 +749,14 @@ int setParam(cJSON *json)
     if(json_model->valueint == 0)
     {
         m_cfg = cfg_;
-        strcpy(conf_file, "/home/teacher_detect_trace.config");
+        strcpy(conf_file, "teacher_detect_trace.config");
     }
     else if(json_model->valueint == 1)
     {
-        strcpy(conf_file, "/home/bd_detect_trace.config");
+        strcpy(conf_file, "bd_detect_trace.config");
         if(cfg_db == NULL)
         {
-            m_cfg = new KVConfig("/home/bd_detect_trace.config");
+            m_cfg = new KVConfig("bd_detect_trace.config");
             had_new = 1;
         }
         else
@@ -758,10 +766,23 @@ int setParam(cJSON *json)
     }
     else if(json_model->valueint == 2)
     {
-        strcpy(conf_file, "/home/student_detect_trace.config");
+        strcpy(conf_file, "student_detect_trace.config");
         if(cfg_stu == NULL)
         {
-            m_cfg = new KVConfig("/home/student_detect_trace.config");
+            m_cfg = new KVConfig("student_detect_trace.config");
+            had_new = 1;
+        }
+        else
+        {
+            m_cfg = cfg_db;
+        }
+    }
+    else if(json_model->valueint == 3)
+    {
+        strcpy(conf_file, "student_detect_trace_slave.config");
+        if(cfg_stu == NULL)
+        {
+            m_cfg = new KVConfig("student_detect_trace_slave.config");
             had_new = 1;
         }
         else
@@ -846,9 +867,13 @@ void sendConf(int connectfd, int model)
     {
         sendcfg_ = new KVConfig("bd_detect_trace.config");
     }
-    else if(model == 2 || model == 3)
+    else if(model == 2 )
     {
         sendcfg_ = new KVConfig("student_detect_trace.config");
+    }
+    else if(model == 3)
+    {
+        sendcfg_ = new KVConfig("student_detect_trace_slave.config");
     }
     cfg_keys = sendcfg_->keys();
     for(iter = cfg_keys.begin();iter != cfg_keys.end(); iter++)
