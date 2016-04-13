@@ -2,13 +2,28 @@
 #ifndef _detect_t_h_
 #define _detect_t_h_
 
-#include<opencv2/opencv1.hpp>
+//#include<opencv2/opencv.hpp>
+//#include "opencv2/core/core_c.h"
+//#include "opencv2/core/core.hpp"
+#include "opencv2/imgproc/imgproc_c.h"
+#include "opencv2/imgproc/imgproc.hpp"
+#include "opencv2/video/video.hpp"
+//#include "opencv2/features2d/features2d.hpp"
+//#include "opencv2/objdetect/objdetect.hpp"
+//#include "opencv2/calib3d/calib3d.hpp"
+//#include "opencv2/ml/ml.hpp"
+//#include "opencv2/highgui/highgui_c.h"
+//#include "opencv2/highgui/highgui.hpp"
+//#include "opencv2/contrib/contrib.hpp"
 #include<time.h>
-#include <cstdio>
 #include "KVConfig.h"
-#include "ct.h"
+#include <cstdio>
+#include <sys/time.h>
+//#include "ct.h"
 using namespace cv;
 using namespace std;
+
+void print_time(char *str);
 
 //计时结构体;
 struct Static_s
@@ -48,13 +63,18 @@ struct Fill_Bg
 	double second_interval;//距离蓝框外多少时进行更新;
 
 	double body_width;//人在图像中大概宽度(像素为单位);
+	//double w_max;//bg2中第一个矩形需要扩展的距离;
+	//double h_max;
 
 	//std::vector<Rect> fill_nowrect;//当前刚更新的矩形框（？？？？）;
 	std::vector<Rect> fist_fillrect;//扩展后蓝框;
+	//std::vector<Rect> fist_fillrect_noclear;
+	//std::vector<Rect> fist_fillrect_original;//第一个扩展后的矩形(未与整幅图像进行与的);
+	//std::vector<Rect> fist_fillrect_t;//第一个扩展后的矩形;
 	std::vector<Rect> rect_old;//背景减除获得的矩形;
 	Mat bg;//背景图;
 	//Static_s no_rect;
-	Static_s mog2_s; //时间判断;
+	Static_s mog2_s;//mog2算法的时间判断;
 
 };
 
@@ -118,7 +138,7 @@ struct Frame_struct
 struct Upbody_Update
 {
 	Mat upbody_bg;
-	Update_Bg bg_upbody;
+	Update_Bg bg_upbody;//&&&&&&&&&&;
 	int Y_value;
 	std::vector<cv::Rect> upbody_rect;
 	int min_area;
@@ -133,8 +153,8 @@ struct Upbody_Update
 
 class TeacherDetecting
 {
-	//BackgroundSubtractorMOG2 bg_model;//可更改一些内部参数;
-	//float mog_learn_rate;
+	BackgroundSubtractorMOG2 bg_model;//可更改一些内部参数;
+	float mog_learn_rate;
 
 	int video_width_;
 	int video_height_;
@@ -146,34 +166,31 @@ class TeacherDetecting
 	Update_Bg ud_bg_s;
 	Fill_Bg  fillbg_struct;
 
+
 	double min_area;
 	double min_rect_area;
 	double luv_u_max;
 	double luv_v_max;
 	double luv_L;
 
+	bool ismask_;
+	Mat img_mask_;//原来是原始大小掩码图像，后改成标定区掩码图像;
+
 public:
+	//bool ismask_;
+	//Mat img_mask_;//原来是原始大小掩码图像，后改成标定区掩码图像;
+	Upbody_Update up_update;
 	TeacherDetecting(KVConfig *cfg);
 	~TeacherDetecting(void);
-
 	bool one_frame_luv(Mat raw_img,Mat img, vector<Rect> &r,vector<Rect> &first_rect);
-	void upbody_bgupdate( Mat upbody_img);// +++
+	void upbody_bgupdate( Mat upbody_img);
     void get_upbody(Mat img_upbody );
 	void upbody_luv_method(const Mat &img );
 	void upbody_updatebg_slow(Mat img,Rect r,double learn_rate);
 	void mog_method(Mat img);
-	void do_mask(Mat &img, Mat img_mask);// +++
-
-	Upbody_Update up_update;
-
+	void do_mask(Mat &img);
 	cv::Rect masked_rect;
-	cv::Rect upbody_masked_rect;
-	cv::Rect screen_rect;// +++
-
-	bool ismask_;
-	Mat img_mask_; // 标定区掩码图像;// +++
-	bool is_up_mask_;// +++
-	Mat upbody_img_mask_; // +++
+	cv::Rect upbody_masked_rect;//&&&&&&&&&&&&;
 
 protected:
 	//人脸和ct;
@@ -195,36 +212,38 @@ protected:
 	void frame_updatebg(Mat image);
 	void reset(Update_Bg &bg);
 	void reset_upbody(Update_Bg &bg);//&&&&&&&&&&&&;
-	void updatebg_slow(Mat img, Rect r, double learn_rate);
+	void updatebg_slow(Mat img,Rect r,double learn_rate);
     void reset_static_region( Region &region );
 	void reset_region( Region &region );
-	void frame_updatebg(Mat raw_img, Mat image);
+	void frame_updatebg(Mat raw_img,Mat image);
 
 	//背景减除法;
 	void luv_method(const Mat &img);
 	void fillbg_LUV( Mat img);
-	void is_teacher_down(Mat raw_img, Mat img2);
-	void updatebg(Mat img, Rect r);
+	void is_teacher_down(Mat raw_img,Mat img2);
+	void updatebg(Mat img,Rect r);
 	void is_need_fillbg_twice(Mat img);
 	void update_bg_again(Mat img);
 	void norect_update_bg( Mat img);
 	void eliminate_longrect(Mat img );
 
 	//融合;
-	static int cmp_area(const Rect&a, const Rect&b);
-	Rect sort_rect(Rect a, Rect b);
-	vector<Rect> refineSegments2(Mat img, Mat& mask, Mat &dst, double interval, double min_area, double rect_area);
+	static int cmp_area(const Rect&a,const Rect&b);
+	Rect sort_rect(Rect a,Rect b);
+	vector<Rect> refineSegments2(Mat img, Mat& mask,Mat &dst,double interval,double min_area,double rect_area);
 	void rect_fusion2(vector<Rect> &seq,double interval);
-	std::vector < Rect > upbody_refineSegments2(Mat img, Mat & mask, Mat & dst, double interval, double marea, double mrect_area);
+	std::vector < Rect > upbody_refineSegments2(Mat img, Mat & mask,
+						       Mat & dst,
+						       double interval,double marea,double mrect_area);
 
 	//掩码;
-	bool build_mask_internal(const char *key, Mat& img, Rect mask_rc);// +++
-	bool build_mask(Mat &img_mask, Rect mask_rc, const char *key, const char *key2 = 0);// +++
+	bool build_mask_internal(const char *key, Mat& img);
+	Mat build_mask(const char *key,const char *key2 = 0);
 	std::vector<cv::Point> load_roi(const char *pts);
 	static int cmp_min_x(const Point & a, const Point & b);
 	static int cmp_min_y(const Point & a, const Point & b);
 	cv::Rect get_point_rect(std::vector<cv::Point> pt);
-	cv::Rect get_rect(Rect init_rect, const char* pt1, const char* pt2 = 0); // +++
+	cv::Rect get_rect(const char* pt1,const char* pt2);
 	void init_mask( );
 };
 

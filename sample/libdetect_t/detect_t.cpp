@@ -1,13 +1,5 @@
 #include"detect_t.h"
-
-void print_time(char *str)
-{
-    struct timeval struc_time;
-    long timel = 0;
-    gettimeofday(&struc_time, NULL);
-    timel = ((long)struc_time.tv_sec) * 1000 + (long)struc_time.tv_usec / 1000;
-    printf("%s:%ld\n",str, timel);
-}
+#include <cstdio>
 
 Static_s::Static_s()
 {
@@ -18,8 +10,8 @@ TeacherDetecting::TeacherDetecting(KVConfig * cfg)
  : cfg_(cfg)
 {
     //bg_model.set("var_Threshold",80);
-    bg_model.set("fTau",0.2);//阴影消除参数，0-1之间，默认为0.5，越小，阴影消除越厉害
-    mog_learn_rate = atof(cfg_->get_value("t_mog_learn_rate","0.05"));
+    //bg_model.set("fTau",0.2);//阴影消除参数，0-1之间，默认为0.5，越小，阴影消除越厉害
+    //mog_learn_rate = atof(cfg_->get_value("t_mog_learn_rate","0.05"));
     up_update.region_interval = atof(cfg_->get_value("t_upbody_region_interval","40"));
     up_update.frame_num = 0;
 
@@ -28,15 +20,18 @@ TeacherDetecting::TeacherDetecting(KVConfig * cfg)
 
     min_area = (video_width_/480.0)*atof(cfg_->get_value("min_area", "150"));
     min_rect_area = (video_width_/480.0)*atof(cfg_->get_value("min_rect_area", "300"));
-    up_update.min_area = (video_width_/480.0)*atof(cfg_->get_value("t_upbody_min_area", "200"));
-    up_update.min_rect_area = (video_width_/480.0)*atof(cfg_->get_value("t_upbody_min_rect_area", "300"));
+    //up_update.min_area = (video_width_/480.0)*atof(cfg_->get_value("t_upbody_min_area", "1000"));
+    up_update.min_rect_area = (video_width_/480.0)*atof(cfg_->get_value("upbody_min_rect_area", "1000"));
+
     up_update.is_upbody = false;
+
     luv_u_max = atof(cfg_->get_value("luv_u_max", "23"));
     luv_v_max = atof(cfg_->get_value("luv_v_max", "23"));
     luv_L = atof(cfg_->get_value("luv_L", "50"));
-    up_update.Y_value = atoi(cfg_->get_value("t_y_value", "33"));
-    up_update.upbody_u_max = atof(cfg_->get_value("t_u_max", "24"));
-    up_update.upbody_v_max = atof(cfg_->get_value("t_v_max", "24"));
+
+    up_update.Y_value = atoi(cfg_->get_value("upbody_L", "40"));
+    up_update.upbody_u_max = atof(cfg_->get_value("upbody_u_max", "23"));
+    up_update.upbody_v_max = atof(cfg_->get_value("upbody_v_max", "23"));
 
     init_fillbg_struct(fillbg_struct);
 
@@ -103,13 +98,7 @@ void TeacherDetecting::init_frame_struct(Frame_struct &frame_s)
 void TeacherDetecting::init_mask( )
 {
     ismask_ = false;
-    masked_rect = get_rect(cfg_->get_value("calibration_data", "0"),cfg_->get_value("calibration_data_2", "0"));
-    int expend_height = fillbg_struct.body_width;
-    cv::Rect upbody_rect = get_rect(cfg_->get_value("upbody_calibration_data", 0),cfg_->get_value("up_calibration_data_2", "0"));
-    //cv::Rect upbody_rect = Rect(masked_rect.x+100,masked_rect.y,masked_rect.width-200,masked_rect.height);
-    upbody_masked_rect = cv::Rect(upbody_rect.x,upbody_rect.y-3*expend_height,
-        upbody_rect.width,(3*expend_height + upbody_rect.height+expend_height));//&&&&&&&&&&&&&&;
-    upbody_masked_rect &= cv::Rect(0,0,video_width_,video_height_);
+    masked_rect = get_rect(Rect(0, 0, video_width_, video_height_), cfg_->get_value("calibration_data", "0"),cfg_->get_value("calibration_data_2", "0"));
     const char*cb_date,*cb_date_2;
     if(cfg_->get_value("calibration_data", "0"))
         cb_date = "calibration_data";
@@ -119,7 +108,37 @@ void TeacherDetecting::init_mask( )
         cb_date_2 = "calibration_data_2";
     else
         cb_date_2 = NULL;
-    img_mask_ = build_mask(cb_date,cb_date_2);
+    ismask_ = build_mask(img_mask_, masked_rect, cb_date, cb_date_2);
+
+    is_up_mask_ = false;
+    upbody_masked_rect = get_rect(Rect(0, 0, video_width_, video_height_), cfg_->get_value("upbody_calibration_data", 0));
+    const char *up_cb_date;
+    if(cfg_->get_value("upbody_calibration_data", "0"))
+        up_cb_date = "upbody_calibration_data";
+    else
+        up_cb_date = NULL;
+    is_up_mask_ = build_mask(upbody_img_mask_, upbody_masked_rect, up_cb_date);
+
+    screen_rect = get_rect(Rect(0, 0, 0, 0), cfg_->get_value("upbody_calibration_data_hollow", 0));
+    screen_rect = Rect(screen_rect.x, 0, screen_rect.width, video_height_); // 上下扩展 ...
+    //-----------------------------
+    //ismask_ = false;
+    //masked_rect = get_rect(cfg_->get_value("calibration_data", "0"),cfg_->get_value("calibration_data_2", "0"));
+    //int expend_height = fillbg_struct.body_width;
+    //cv::Rect upbody_rect = get_rect(cfg_->get_value("upbody_calibration_data", 0),cfg_->get_value("up_calibration_data_2", "0"));
+    //upbody_masked_rect = cv::Rect(upbody_rect.x,upbody_rect.y-3*expend_height,
+    //  upbody_rect.width,(3*expend_height + upbody_rect.height+expend_height));//&&&&&&&&&&&&&&;
+    //upbody_masked_rect &= cv::Rect(0,0,video_width_,video_height_);
+    //const char*cb_date,*cb_date_2;
+    //if(cfg_->get_value("calibration_data", "0"))
+    //  cb_date = "calibration_data";
+    //else
+    //  cb_date = NULL;
+    //if(cfg_->get_value("calibration_data_2", "0"))
+    //  cb_date_2 = "calibration_data_2";
+    //else
+    //  cb_date_2 = NULL;
+    //img_mask_ = build_mask(cb_date,cb_date_2);
 }
 
 
@@ -323,7 +342,7 @@ std::vector < Rect > TeacherDetecting::upbody_refineSegments2(Mat img, Mat & mas
             const vector < Point > &c = contours[idx];
             Rect t = boundingRect(Mat(c));
             double area = fabs(contourArea(Mat(c)));
-            if (area >= marea && (t.width*t.height)>=mrect_area)    //temp.rows*temp.cols/150)// &&
+            if (t.width*t.height >= mrect_area) //temp.rows*temp.cols/150)// &&
             {
                 contours_temp.push_back(contours[idx]);
                 right_rect.push_back(t);
@@ -508,11 +527,8 @@ void TeacherDetecting::upbody_luv_method(const Mat &img )
     Mat img_t; Mat bg_t;
     /*cvtColor(img, img_t, CV_BGR2Luv);
     cvtColor(fillbg_struct.bg, bg_t, CV_BGR2Luv);*/
-    //print_time("luv1");
     cvtColor(img, img_t, CV_BGR2YUV);
-    //print_time("luv2");
     cvtColor(up_update.upbody_bg, bg_t, CV_BGR2YUV);
-    //print_time("luv3");
 
     /*std::vector<Mat> img_t_vec;
     split(img_t,img_t_vec);
@@ -532,36 +548,28 @@ void TeacherDetecting::upbody_luv_method(const Mat &img )
     bitwise_or(luv0,luv1,luv_temp);
     bitwise_or(luv2,luv_temp,luv_m);*/
 
-    //printf("img.cols:%d,img.rows:%d\n",img.cols,img.rows);
+
     for (int i = 0; i < img.cols; i++)
     {
         for (int j = 0; j < img.rows; j++)
         {
             Vec3b bgr1 = img_t.at < Vec3b > (j, i);
             Vec3b bgr2 = bg_t.at < Vec3b > (j, i);
-            //double L =
-            int L =
+            double L =
                 (abs) (bgr1.val[0] - bgr2.val[0]);
-            //double U =
-            int U =
+            double U =
                 (abs) (bgr1.val[1] - bgr2.val[1]);
-            //double V =
-            int V =
+            double V =
                 (abs) ((bgr1.val[2] - bgr2.val[2]));
-            /*if(i == 10&&j == 10)
-            {
-                printf("L=%d,U=%d,V=%d\n",L,U,V);
-                printf("u_max=%lf,v_max=%lf\n",up_update.upbody_u_max,up_update.upbody_v_max);
-            }*/
-            if ((U >= (int)up_update.upbody_u_max || V >= (int)up_update.upbody_v_max)&&(L >= (int)up_update.Y_value))
+            if ((U >= up_update.upbody_u_max || V >= up_update.upbody_v_max)&&(L >= up_update.Y_value))
             {
                 luv_m.at < char >(j, i) = 255; luv_m_temp.at < Vec3b >(j, i) = Vec3b(0,0,0);
             }
-            else if ((U >= (int)up_update.upbody_u_max || V >= (int)up_update.upbody_v_max)&&(L < (int)up_update.Y_value))
+            else if ((U >= up_update.upbody_u_max || V >= up_update.upbody_v_max)&&(L < up_update.Y_value))
             {
                 luv_m.at < char >(j, i) = 255; luv_m_temp.at < Vec3b >(j, i) = Vec3b(0,0,255);
             }
-            else if ((U < (int)up_update.upbody_u_max && V < (int)up_update.upbody_v_max)&&(L > (int)up_update.Y_value))
+            else if ((U < up_update.upbody_u_max && V < up_update.upbody_v_max)&&(L > up_update.Y_value))
             {
                 luv_m.at < char >(j, i) = 255; luv_m_temp.at < Vec3b >(j, i) = Vec3b(255,0,0);
             }
@@ -573,16 +581,14 @@ void TeacherDetecting::upbody_luv_method(const Mat &img )
         }
     }
 
-//    print_time("luv4");
     up_update.upbody_rect =
         upbody_refineSegments2(img, luv_m, fgimg,
                 fillbg_struct.mog2_interval2,up_update.min_area,up_update.min_rect_area);
-//    print_time("luv5");
     if(atoi(cfg_->get_value("debug","0"))>0)
     {
         //imshow("upbody_fgimg",fgimg);
-        //imshow("upbody_luv_m_temp",luv_m_temp);
-        //waitKey(1);
+        imshow("upbody_luv_m_temp",luv_m_temp);
+        waitKey(1);
     }
 
 }
@@ -637,8 +643,8 @@ void TeacherDetecting::luv_method(const Mat &img )
     if(atoi(cfg_->get_value("debug","0"))>0)
     {
         //imshow("fgimg",fgimg);
-        //imshow("luv_m_temp",luv_m_temp);
-        //waitKey(1);
+        imshow("luv_m_temp",luv_m_temp);
+        waitKey(1);
     }
 
 }
@@ -752,9 +758,8 @@ void TeacherDetecting::two_frame_method(Mat img,Mat &silh)
     cvtColor(img,frame_s.buffer[1],CV_BGR2GRAY);
     absdiff(frame_s.buffer[1],frame_s.buffer[0],silh);
     threshold( silh, silh, frame_s.threshold_two, 255, CV_THRESH_BINARY );
-    IplImage silh_src(silh);
-    //silh_src = &IplImage(silh);
-    cvSmooth(&silh_src, &silh_src, CV_MEDIAN, 3, 0, 0, 0);
+    //cvSmooth(&(IplImage)silh,&(IplImage)silh,CV_MEDIAN,3,0,0,0);
+    medianBlur(silh, silh, 3);
     for(int i = 0;i<frame_s.N-1;i++)
     {
         frame_s.buffer[i] = frame_s.buffer[i+1].clone();
@@ -784,8 +789,10 @@ void TeacherDetecting::three_frame_method(Mat img,Mat &silh)
     absdiff(frame_s.buffer[2],frame_s.buffer[1],silh_two);
     threshold( silh_two, silh_two, frame_s.threshold_three, 255, CV_THRESH_BINARY );
 
-    cvAnd((IplImage*)&silh_one,(IplImage*)&silh_two,(IplImage*)&silh);
-    cvSmooth((IplImage*)&silh,(IplImage*)&silh,CV_MEDIAN,3,0,0,0);
+    //cvAnd(&(IplImage)silh_one,&(IplImage)silh_two,&(IplImage)silh);
+    bitwise_and(silh_one, silh_two, silh);
+    //cvSmooth(&(IplImage)silh,&(IplImage)silh,CV_MEDIAN,3,0,0,0);
+    medianBlur(silh, silh, 3);
     for(int i = 0;i<frame_s.N-1;i++)
     {
         frame_s.buffer[i] = frame_s.buffer[i+1].clone();
@@ -800,8 +807,7 @@ void TeacherDetecting:: frame_difference_method (Mat raw_image,std::vector<Rect>
     //全图像帧差法;(目的:判断教师是否走下讲台区);
     frame_s.frame_rect.clear();
     std::vector<Rect> rect_vector_t;
-    Mat silh;
-    silh.create(Size(raw_image.cols,raw_image.rows),CV_8UC1);
+    Mat silh;silh.create(Size(raw_image.cols,raw_image.rows),CV_8UC1);
     /*if(fillbg_struct.isfillok_end)
         frame_s.N = 3;
     if(frame_s.N == 3)
@@ -907,9 +913,7 @@ void TeacherDetecting::upbody_updatebg_slow(Mat img,Rect r,double learn_rate)
     Mat img_t = img.clone();
     Mat dst = Mat(Size(img.cols,img.rows),CV_8UC3);
     double rate = 1 - learn_rate;
-//    print_time("slow1");
     addWeighted(img_t,learn_rate,bg_t,rate,0,dst);
-//    print_time("slow2");
 
     Mat mask(img.rows, img.cols, CV_8UC3,Scalar(0, 0, 0));
     Mat specified(mask, r_temp);
@@ -1178,25 +1182,26 @@ void TeacherDetecting::frame_updatebg(Mat raw_img,Mat image)
 
 void TeacherDetecting::upbody_bgupdate( Mat upbody_img)
 {
+    // 根据红框更新身高探测区的背景 ...
     if(fillbg_struct.nframe >= 2 && fillbg_struct.rect_old.size() == 1)
     {
-        Rect t = fillbg_struct.rect_old[0];
-        if((t.x+masked_rect.x)>upbody_masked_rect.x &&(t.x+masked_rect.x)<=upbody_masked_rect.x+upbody_masked_rect.width)
+        Rect t = Rect(fillbg_struct.rect_old[0].x + masked_rect.x, fillbg_struct.rect_old[0].y + masked_rect.y,
+                           fillbg_struct.rect_old[0].width, fillbg_struct.rect_old[0].height);
+        t &= Rect(0, 0, video_width_, video_height_);
+
+        if(t.x > upbody_masked_rect.x && t.x < upbody_masked_rect.x + upbody_masked_rect.width)
         {
-            Rect temp = Rect(0,0,((t.x+masked_rect.x)-upbody_masked_rect.x),upbody_masked_rect.height);
-            upbody_updatebg_slow(upbody_img,temp,0.7);
+            Rect temp = Rect(0, 0, (t.x - upbody_masked_rect.x), upbody_masked_rect.height);
+            upbody_updatebg_slow(upbody_img, temp, 0.7);
             //rectangle(upbody_img, temp, Scalar(0, 0, 255), 2);
         }
-        if((t.x+masked_rect.x+t.width)<upbody_masked_rect.x+upbody_masked_rect.width &&
-            (t.x+masked_rect.x+t.width)>upbody_masked_rect.x)
+        if((t.x + t.width) < upbody_masked_rect.x + upbody_masked_rect.width && (t.x + t.width) > upbody_masked_rect.x)
         {
-            Rect temp = Rect(masked_rect.x+t.x+t.width-upbody_masked_rect.x,0,(upbody_masked_rect.x+upbody_masked_rect.width-
-                (t.x+masked_rect.x+t.width)),upbody_masked_rect.height);
-            upbody_updatebg_slow(upbody_img,temp,0.7);
+            Rect temp = Rect( t.x + t.width - upbody_masked_rect.x, 0, ((upbody_masked_rect.x + upbody_masked_rect.width) -
+                              (t.x + t.width)), upbody_masked_rect.height);
+            upbody_updatebg_slow(upbody_img, temp, 0.7);
             //rectangle(upbody_img, temp, Scalar(255, 0, 255), 2);
-
         }
-
     }
 }
 
@@ -1212,18 +1217,15 @@ void TeacherDetecting::get_upbody(Mat img_upbody )
     }
     if(!up_update.upbody_bg.empty())
     {
-//        print_time("get_upbody1");
-        upbody_bgupdate(img_upbody);
-//        print_time("get_upbody2");
         upbody_luv_method(img_upbody);
-//        print_time("get_upbody3");
+        upbody_bgupdate(img_upbody);
     }
     if (atoi(cfg_->get_value("debug", "0")) > 0)
     {
         if (!up_update.upbody_bg.empty())
         {
-            //imshow("bg_upbody", up_update.upbody_bg);
-            //waitKey(1);
+            imshow("bg_upbody", up_update.upbody_bg);
+            waitKey(1);
         }
     }
 }
@@ -1293,8 +1295,8 @@ bool TeacherDetecting::one_frame_luv(Mat raw_img, Mat img,vector < Rect > &r,
     {
         if (!fillbg_struct.bg.empty())
         {
-            //imshow("bg", fillbg_struct.bg);
-            //waitKey(1);
+            imshow("bg", fillbg_struct.bg);
+            waitKey(1);
         }
     }
     //两个目标相距一定距离时进行融合;(前面融合的大概是一个目标的距离);
@@ -1386,7 +1388,7 @@ bool TeacherDetecting::one_frame_luv(Mat raw_img, Mat img,vector < Rect > &r,
 //****************有效区域进行掩码操作***********************
 //************目的：尽量减少图像克隆，节省内存***************
 //填充二值化图像的掩码区 ;
-bool TeacherDetecting::build_mask_internal(const char *key, Mat& img)
+bool TeacherDetecting::build_mask_internal(const char *key, Mat& img, Rect mask_rc)
 {
     bool masked = false;
     const char *pts = cfg_->get_value(key, "0");
@@ -1399,7 +1401,7 @@ bool TeacherDetecting::build_mask_internal(const char *key, Mat& img)
             int x, y;
             if (sscanf(p, "%d,%d", &x, &y) == 2) {
                 CvPoint pt = { x, y };
-                pt.x = pt.x-masked_rect.x; pt.y = pt.y-masked_rect.y;//++++++++++++++++;
+                pt.x = pt.x-mask_rc.x; pt.y = pt.y - mask_rc.y;//++++++++++++++++;
                 points.push_back(pt);
             }
 
@@ -1423,32 +1425,33 @@ bool TeacherDetecting::build_mask_internal(const char *key, Mat& img)
 }
 
 //获得掩码二值化图像（这个应该在初始化时操作） ;
-Mat TeacherDetecting::build_mask(const char *key, const char *key2)
+bool TeacherDetecting::build_mask(Mat &img_mask, Rect mask_rc, const char *key, const char *key2)
 {
     /** 从 cfg 中的参数，创建 mask */
-    CvSize size = {masked_rect.width, masked_rect.height};
+    CvSize size = {mask_rc.width, mask_rc.height};
     Mat img; img.create(size,CV_8UC3);
 
-    if (!ismask_)
+    bool is_mask = false;
+    if (!is_mask)
         img.setTo(0);
 
     if (key) {
-        ismask_ = build_mask_internal(key, img);
+        is_mask = build_mask_internal(key, img, mask_rc);
     }
 
     if (key2) {
-        build_mask_internal(key2, img);
+        build_mask_internal(key2, img, mask_rc);
     }
-    return img;
+
+    img.copyTo(img_mask);
+
+    return is_mask;
 }
 
 //输入原始图像，返回掩码后的图像;
-void TeacherDetecting::do_mask(Mat &img)
+void TeacherDetecting::do_mask(Mat &img, Mat img_mask)
 {
-    if (ismask_)        //是否填充完毕 ;
-    {
-        bitwise_and(img, img_mask_, img);
-    }
+    bitwise_and(img, img_mask, img);
 }
 
 
@@ -1476,7 +1479,6 @@ std::vector<cv::Point> TeacherDetecting::load_roi(const char *pts)
             int x, y;
             if (sscanf(p, "%d,%d", &x, &y) == 2)
             {
-             //   printf("x=%d, y=%d\n", x, y);
                 CvPoint pt = { x, y };
                 points.push_back(pt);
             }
@@ -1520,7 +1522,7 @@ cv::Rect TeacherDetecting::get_point_rect(std::vector<cv::Point> pt)
     return rect;
 }
 
-cv::Rect TeacherDetecting::get_rect(const char*cb_date,const char*cb_date_2)
+cv::Rect TeacherDetecting::get_rect(Rect init_rect, const char*cb_date, const char*cb_date_2)
 {
     Rect masked;
     std::vector<cv::Point> pt_vector,pt_vector_1,pt_vector_2;
@@ -1546,9 +1548,9 @@ cv::Rect TeacherDetecting::get_rect(const char*cb_date,const char*cb_date_2)
             }
         }
     }
-    if(pt_vector_1.size()<3 && pt_vector_2.size()<3)
+    if(pt_vector_1.size() < 3 && pt_vector_2.size() < 3)
     {
-        masked = Rect(0,0,video_width_,video_height_);
+        masked = init_rect;
     }
     else
     {

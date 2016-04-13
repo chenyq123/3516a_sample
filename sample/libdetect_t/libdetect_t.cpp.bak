@@ -220,7 +220,7 @@ char *det_detect(det_t * ctx, cv::Mat &Img)
     //***************************教师探测****************************
     if(ctx->t_m)
     {
-#if 1
+#if 0
         Mat upbody_img;
         if(atoi(ctx->cfg_->get_value("t_upbody_detect", "0"))>0)
         {
@@ -322,7 +322,6 @@ char *det_detect(det_t * ctx, cv::Mat &Img)
             waitKey(1);
         }
 #endif
-#if 0
         //Mat upbody_img;
         //if(atoi(ctx->cfg_->get_value("t_upbody_detect", "0"))>0)
         //{
@@ -369,7 +368,7 @@ char *det_detect(det_t * ctx, cv::Mat &Img)
             }
         }
         vector_to_json_t(r, upbody, is_up_body, isrect, str);
-#endif
+
     }
 
     //***************************板书探测****************************
