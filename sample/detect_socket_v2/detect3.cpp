@@ -842,11 +842,11 @@ void sendConf(int connectfd, int model)
     {
         sendcfg_ = new KVConfig("teacher_detect_trace.config");
     }
-    else if(model = 1)
+    else if(model ==  1)
     {
         sendcfg_ = new KVConfig("bd_detect_trace.config");
     }
-    else if(model = 2 || model == 3)
+    else if(model == 2 || model == 3)
     {
         sendcfg_ = new KVConfig("student_detect_trace.config");
     }

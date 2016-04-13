@@ -1,4 +1,5 @@
 #include"detect_t.h"
+#include <cstdio>
 
 Static_s::Static_s()
 {
@@ -757,8 +758,7 @@ void TeacherDetecting::two_frame_method(Mat img,Mat &silh)
     cvtColor(img,frame_s.buffer[1],CV_BGR2GRAY);
     absdiff(frame_s.buffer[1],frame_s.buffer[0],silh);
     threshold( silh, silh, frame_s.threshold_two, 255, CV_THRESH_BINARY );
-    //cvSmooth((CvArr*)&silh,(CvArr*)&silh,CV_MEDIAN,3,0,0,0);
-    //cvSmooth((IplImage*)&silh,(IplImage*)&silh,CV_MEDIAN,3,0,0,0);
+    //cvSmooth(&(IplImage)silh,&(IplImage)silh,CV_MEDIAN,3,0,0,0);
     medianBlur(silh, silh, 3);
     for(int i = 0;i<frame_s.N-1;i++)
     {
@@ -789,11 +789,9 @@ void TeacherDetecting::three_frame_method(Mat img,Mat &silh)
     absdiff(frame_s.buffer[2],frame_s.buffer[1],silh_two);
     threshold( silh_two, silh_two, frame_s.threshold_three, 255, CV_THRESH_BINARY );
 
-    //cvAnd((CvArr*)&silh_one,(CvArr*)&silh_two,(CvArr*)&silh);
+    //cvAnd(&(IplImage)silh_one,&(IplImage)silh_two,&(IplImage)silh);
     bitwise_and(silh_one, silh_two, silh);
-    //cvAnd((IplImage*)&silh_one,(IplImage*)&silh_two,(IplImage*)&silh);
-    //cvSmooth((CvArr*)&silh,(CvArr*)&silh,CV_MEDIAN,3,0,0,0);
-    //cvSmooth((IplImage*)&silh,(IplImage*)&silh,CV_MEDIAN,3,0,0,0);
+    //cvSmooth(&(IplImage)silh,&(IplImage)silh,CV_MEDIAN,3,0,0,0);
     medianBlur(silh, silh, 3);
     for(int i = 0;i<frame_s.N-1;i++)
     {

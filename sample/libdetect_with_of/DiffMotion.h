@@ -26,11 +26,11 @@ public:
         cnt_ = atoi(cfg->get_value("dm_cnt", "3"));
         diff_threshold_ = atoi(cfg->get_value("dm_threshold", "28"));
 
-        log_file("DiffMotion config:\n");
-        log_file("\tdm_erode_size: %d, dm_dilate_size:%d\n", es, ds);
-        log_file("\tdm_cnt: %d\n", cnt_);
-        log_file("\tdm_threshold: %d\n", diff_threshold_);
-        log_file("\n");
+        //log_file("DiffMotion config:\n");
+        //log_file("\tdm_erode_size: %d, dm_dilate_size:%d\n", es, ds);
+        //log_file("\tdm_cnt: %d\n", cnt_);
+        //log_file("\tdm_threshold: %d\n", diff_threshold_);
+        //log_file("\n");
     }
 
     ~DiffMotion()
@@ -65,6 +65,7 @@ public:
 private:
     std::vector<cv::Rect> sum_motions() const
     {
+        printf("diffs.size:%d, cnt_:%d\n",diffs_.size(), cnt_);
         assert(diffs_.size() == cnt_);
         assert(cnt_ >= 1);
 
