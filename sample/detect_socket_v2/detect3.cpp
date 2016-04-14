@@ -33,7 +33,7 @@
 using namespace std;
 using namespace cv;
 
-const char *version = "v0.07";
+const char *version = "v0.08";
 
 const VI_CHN ExtChn = VIU_EXT_CHN_START;
 KVConfig *cfg_ = NULL;
