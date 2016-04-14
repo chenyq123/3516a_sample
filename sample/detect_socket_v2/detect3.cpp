@@ -33,7 +33,7 @@
 using namespace std;
 using namespace cv;
 
-const char *version = "v0.08";
+const char *version = "v0.09";
 
 const VI_CHN ExtChn = VIU_EXT_CHN_START;
 KVConfig *cfg_ = NULL;
@@ -45,7 +45,6 @@ KVConfig *cfg_db = NULL;
 det_t *pdet = NULL;
 int getframe_init(int width, int height, int ExtChn);
 int getframe(Mat *Img, int ExtChn);
-//void vector_to_json_t(std::vector < Rect > r, cv::Rect upbody_rect, bool is_upbody, bool is_rect, char *buf);
 void AnalyzePic();
 void RecvCMD();
 void sendPoi();
@@ -66,9 +65,9 @@ cv::Point getPoint(const char* message);
 cv::Point GetTransformPoint(cv::Point src, cv::Mat warp);
 
 
-int connfd;
-int socketfd;
-int disconnect = 1;
+int g_cmd_connect_fd;
+int g_cmd_socket_fd;
+int g_disconnect = 1;
 list<cv::Point> master_list;
 list<cv::Point> slave_list;
 //vector<cv::Point> master_vector;
@@ -80,7 +79,7 @@ cv::Mat warp_mat;
 
 int g_reset = 0;
 
-int start_analysis = 0;
+int g_start_analysis = 0;
 
 int main(void)
 {
@@ -266,28 +265,37 @@ void vector_to_json_t(std::vector < Rect > r, cv::Rect upbody_rect, bool is_upbo
 */
 void AnalyzePic()
 {
-    const char *masterip = NULL;
+    //const char *masterip = NULL;
+    const char *ip = NULL;
     struct sockaddr_in address;
-    int slave_sockfd;
+    //int slave_sockfd;
+    int result_send_fd;
     Point2f srcTri[4], dstTri[4];
     const char *srcStr = NULL;
     const char *dstStr = NULL;
     int img_w = 480,img_h = 360;
     pthread_t recvtid;
+
+    memset(&address, 0, sizeof(struct sockaddr_in));
+    address.sin_family = AF_INET;
+    //address.sin_addr.s_addr = inet_addr(ip);
+    address.sin_port = htons(9002);
+    result_send_fd = socket(AF_INET, SOCK_DGRAM, 0);
+
     while (1) {
         if(pdet != NULL)
         {
-            printf("close\n");
             det_close(pdet);
-            printf("closed\n");
             pdet = NULL;
         }
-        //KVConfig *pcfg_ = new KVConfig("teacher_detect_trace.config");
         cfg_->reload();
-        int model = atoi(cfg_->get_value("model"));
-        //delete pcfg_;
+
+        //ip = cfg_->get_value("send_result_ip", "10.1.2.124");
+
         g_reset = 0;
-        start_analysis = 1;
+        //g_start_analysis = 1;
+
+        int model = atoi(cfg_->get_value("model"));
         if(model == 0)
         {
             printf("teacher detect\n");
@@ -295,6 +303,7 @@ void AnalyzePic()
             img_w = 480;
             img_h = 270;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
+            ip = pdet->cfg_->get_value("send_result_ip", "10.1.2.124");
         }
         else if(model == 1)
         {
@@ -303,6 +312,7 @@ void AnalyzePic()
             img_w = 480;
             img_h = 270;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
+            ip = pdet->cfg_->get_value("send_result_ip", "10.1.2.124");
         }
         else if(model == 2)
         {
@@ -312,6 +322,7 @@ void AnalyzePic()
             img_w = 480;
             img_h = 360;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
+            ip = pdet->cfg_->get_value("send_result_ip", "10.1.2.124");
 
             //srcStr = pdet->cfg_->get_value("local_corr_point");
             //dstStr = pdet->cfg_->get_value("external_corr_point");
@@ -329,15 +340,15 @@ void AnalyzePic()
             img_h = 360;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
 
-            masterip = pdet->cfg_->get_value("student_master_ip", "10.1.2.124");
+            ip = pdet->cfg_->get_value("student_master_ip", "10.1.2.124");
 
-            memset(&address, 0, sizeof(struct sockaddr_in));
-            address.sin_family = AF_INET;
-            printf("masterip:%s\n",masterip);
-            address.sin_addr.s_addr = inet_addr(masterip);
-            address.sin_port = htons(9002);
-            slave_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+            //memset(&address, 0, sizeof(struct sockaddr_in));
+            //address.sin_family = AF_INET;
+            //address.sin_addr.s_addr = inet_addr(ip);
+            //address.sin_port = htons(9002);
+            //slave_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
         }
+        address.sin_addr.s_addr = inet_addr(ip);
         while(1)
         {
             //printf("begin:%ld\n",GetTickCount());
@@ -354,21 +365,26 @@ void AnalyzePic()
                 //}
                 break;
             }
-            if(start_analysis == 0)
+            if(g_start_analysis == 0)
             {
-                if(model == 3)
-                {
-                    start_analysis = 1;
-                    continue;
-                }
-                usleep(100);
+                //if(model == 3)
+                //{
+                //    g_start_analysis = 1;
+                //    continue;
+                //}
+                //usleep(100);
                 continue;
             }
             Mat Img(img_h, img_w, CV_8UC3, 0);
             Img.create(img_h, img_w, CV_8UC3);
             getframe(&Img, VIU_EXT_CHN_START);
-           // printf("detect begin:%ld\n",GetTickCount());
             const char *str = det_detect(pdet, Img);
+            int ret = sendto(result_send_fd, str, strlen(str) + 1, 0, (struct sockaddr *)&address, sizeof(address));
+            if(ret == -1)
+            {
+                perror("sendto");
+                g_start_analysis = 0;
+            }
            // printf("detect over:%ld\n",GetTickCount());
             //if(model == 2)
             //{
@@ -381,24 +397,23 @@ void AnalyzePic()
             //    master_list.push_back(p);
             //}
             //else if(model == 3)
-            if(model == 3)
-            {
-                int ret = sendto(slave_sockfd, str, strlen(str) + 1, 0, (struct sockaddr *)&address, sizeof(address));
-                //printf("%s\n",str);
-                if(ret == -1)
-                {
-                    perror("sendto");
-                    start_analysis = 0;
-                }
-            }
-            else
-            {
-                int ret = send(connfd, str, strlen(str) + 1, 0);
-                if (ret == -1)
-                {
-                    start_analysis = 0;
-                }
-            }
+            //if(model == 3)
+            //{
+            //    int ret = sendto(slave_sockfd, str, strlen(str) + 1, 0, (struct sockaddr *)&address, sizeof(address));
+            //    if(ret == -1)
+            //    {
+            //        perror("sendto");
+            //        g_start_analysis = 0;
+            //    }
+            //}
+            //else
+            //{
+            //    int ret = send(g_cmd_connect_fd, str, strlen(str) + 1, 0);
+            //    if (ret == -1)
+            //    {
+            //        g_start_analysis = 0;
+            //    }
+            //}
             //printf("end:%ld\n",GetTickCount());
         }
     }
@@ -411,7 +426,7 @@ void AnalyzeCMD(char *text)
     if (!json)
     {
         printf("Error before: [%s]\n", cJSON_GetErrorPtr());
-        return_failed(connfd);
+        return_failed(g_cmd_connect_fd);
     }
     else
     {
@@ -423,11 +438,11 @@ void AnalyzeCMD(char *text)
             case 1:
                 if (setParam(json) == 1)
                 {
-                    return_ok(connfd);
+                    return_ok(g_cmd_connect_fd);
                 }
                 else
                 {
-                    return_failed(connfd);
+                    return_failed(g_cmd_connect_fd);
                 }
                 break;
             case 2:
@@ -435,19 +450,19 @@ void AnalyzeCMD(char *text)
                 break;
             case 3:
                 json_filesize = cJSON_GetObjectItem(json, "size");
-                return_ok(connfd);
+                return_ok(g_cmd_connect_fd);
                 if (json_filesize != NULL)
                 {
                     upgrade(json_filesize->valueint);
                 }
                 else
-                    return_failed(connfd);
+                    return_failed(g_cmd_connect_fd);
                 break;
             case 4:
                 json_bd = cJSON_GetObjectItem(json, "model");
                 if(json_bd == NULL)
                 {
-                    return_failed(connfd);
+                    return_failed(g_cmd_connect_fd);
                     return;
                 }
                 //printf("model:%d\n",json_bd->valueint);
@@ -456,29 +471,29 @@ void AnalyzeCMD(char *text)
                 cfg_->save_as("teacher_detect_trace.config");
                 //g_teacher_cfg_changed = 1;
                 g_reset = 1;
-                return_ok(connfd);
+                return_ok(g_cmd_connect_fd);
                 break;
             case 5:
                 g_reset = 1;
-                start_analysis = 0;
-                return_ok(connfd);
+                g_start_analysis = 0;
+                return_ok(g_cmd_connect_fd);
                 break;
             case 6:
                 system("reboot");
                 break;
             case 100:
                 //printf("version\n");
-                sendVersion(connfd);
+                sendVersion(g_cmd_connect_fd);
                 break;
             case 101:
-                sendConf(connfd, cJSON_GetObjectItem(json, "model")->valueint);
+                sendConf(g_cmd_connect_fd, cJSON_GetObjectItem(json, "model")->valueint);
                 break;
             case 102:
-                sendModelandStatus(connfd);
+                sendModelandStatus(g_cmd_connect_fd);
                 break;
             case 103:
                 printf("103\n");
-                sendSDKVersion(connfd);
+                sendSDKVersion(g_cmd_connect_fd);
                 break;
             default:
                 break;
@@ -500,7 +515,7 @@ void RecvCMD()
     int keepAlive = 1;
     int reuse = 1;
 
-    if ((socketfd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
+    if ((g_cmd_socket_fd = socket(AF_INET, SOCK_STREAM, 0)) == -1)
     {
         perror("socket error ");
         exit(0);
@@ -511,43 +526,43 @@ void RecvCMD()
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
     servaddr.sin_port = htons(9001);
-    if (bind(socketfd, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1)
+    if (bind(g_cmd_socket_fd, (struct sockaddr*)&servaddr, sizeof(servaddr)) == -1)
     {
         perror("bind error");
         exit(0);
     }
-    if (listen(socketfd, 10) == -1)
+    if (listen(g_cmd_socket_fd, 10) == -1)
     {
         perror("listen error");
         exit(0);
     }
     while (1)
     {
-        connfd = accept(socketfd, (struct sockaddr*)NULL, NULL);
-        if (connfd == -1)
+        g_cmd_connect_fd = accept(g_cmd_socket_fd, (struct sockaddr*)NULL, NULL);
+        if (g_cmd_connect_fd == -1)
         {
             perror("accept error");
         }
-        disconnect = 0;
+        g_disconnect = 0;
         while (1)
         {
-            if (disconnect == 1)
+            if (g_disconnect == 1)
             {
-                close(connfd);
+                close(g_cmd_connect_fd);
                 break;
             }
             usleep(20);
-            n = recv(connfd, text, 1024, 0);
+            n = recv(g_cmd_connect_fd, text, 1024, 0);
             if (n > 0)
             {
                 AnalyzeCMD(text);
             }
             else
             {
-                if (0 == socketconnect(socketfd))
+                if (0 == socketconnect(g_cmd_socket_fd))
                 {
-                    start_analysis = 0;
-                    disconnect = 1;
+                    g_start_analysis = 0;
+                    g_disconnect = 1;
                 }
             }
         }
@@ -556,7 +571,7 @@ void RecvCMD()
 
 void sendPoi()
 {
-    start_analysis = 1;
+    g_start_analysis = 1;
 }
 void upgrade(int size)
 {
@@ -573,12 +588,12 @@ void upgrade(int size)
     while(1)
     {
         FD_ZERO(&set);
-        FD_SET(connfd, &set);
+        FD_SET(g_cmd_connect_fd, &set);
         struct timeval timeout = {1, 0};
-        select(connfd + 1, &set, NULL, NULL, &timeout);
-        if(FD_ISSET(connfd, &set))
+        select(g_cmd_connect_fd + 1, &set, NULL, NULL, &timeout);
+        if(FD_ISSET(g_cmd_connect_fd, &set))
         {
-            int n = recv(connfd, recvstr, sizeof(recvstr), 0);
+            int n = recv(g_cmd_connect_fd, recvstr, sizeof(recvstr), 0);
             if(n < 0)
             {
                 perror("recv");
@@ -590,7 +605,7 @@ void upgrade(int size)
             if(first_ == 1)
                 first_ = 0;
         }
-        else if(!FD_ISSET(connfd, &set) && first_ == 0)
+        else if(!FD_ISSET(g_cmd_connect_fd, &set) && first_ == 0)
         {
             break;
         }
@@ -605,7 +620,7 @@ void upgrade(int size)
     if (!json)
     {
         printf("Error before: [%s]\n", cJSON_GetErrorPtr());
-        return_failed(connfd);
+        return_failed(g_cmd_connect_fd);
         return ;
     }
     json_upgrade = cJSON_GetObjectItem(json, "upgrade");
@@ -632,7 +647,7 @@ void upgrade(int size)
         fwrite(bindata, num, 1, fp);
         fclose(fp);
         system("chmod +x /home/detect3");
-        return_ok(connfd);
+        return_ok(g_cmd_connect_fd);
         printf("ok\n");
         system("reboot");
     }
@@ -642,7 +657,7 @@ void upgrade(int size)
         //fwrite(json_upgrade->valuestring, strlen(json_upgrade->valuestring), 1, fp2);
         free(text);
         free(bindata);
-        return_failed(connfd);
+        return_failed(g_cmd_connect_fd);
     }
 }
 /*
@@ -688,7 +703,7 @@ void upgrade(int size)
             perror("send error");
         printf("failed!\n");
     }
-    disconnect = 1;
+    g_disconnect = 1;
 }
 */
 int return_ok(int connectfd)
@@ -715,7 +730,7 @@ int socketconnect(int socketfd)
 {
     struct tcp_info info;
     int len = sizeof(info);
-    getsockopt(socketfd, IPPROTO_TCP, TCP_INFO, &info, (socklen_t*)&len);
+    getsockopt(g_cmd_socket_fd, IPPROTO_TCP, TCP_INFO, &info, (socklen_t*)&len);
     if ((info.tcpi_state == TCP_ESTABLISHED))
     {
         return 1;
@@ -728,8 +743,8 @@ int socketconnect(int socketfd)
 
 void sig_pipe(int signo)
 {
-    start_analysis = 0;
-    disconnect = 1;
+    g_start_analysis = 0;
+    g_disconnect = 1;
 }
 
 int setParam(cJSON *json)
@@ -891,7 +906,7 @@ void sendModelandStatus(int connectfd)
 {
     cJSON *sendjson = cJSON_CreateObject();
     cJSON_AddStringToObject(sendjson, "model", cfg_->get_value("model"));
-    cJSON_AddStringToObject(sendjson, "status", start_analysis == 1 ? "1" : "0");
+    cJSON_AddStringToObject(sendjson, "status", g_start_analysis == 1 ? "1" : "0");
     char *sendstr = cJSON_Print(sendjson);
     int ret = send(connectfd, sendstr, strlen(sendstr) + 1, 0);
     cJSON_Delete(sendjson);
