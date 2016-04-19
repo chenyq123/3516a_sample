@@ -1,4 +1,5 @@
-include ../Makefile.param
+#include ../Makefile.param
+include /root/3516a/Hi3516A_SDK_V1.0.4.0/mpp/sample/Makefile.param
 
 APP := detect3
 

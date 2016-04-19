@@ -33,7 +33,7 @@
 using namespace std;
 using namespace cv;
 
-const char *version = "v0.09";
+const char *version = "v0.10";
 
 const VI_CHN ExtChn = VIU_EXT_CHN_START;
 KVConfig *cfg_ = NULL;
@@ -267,6 +267,7 @@ void AnalyzePic()
 {
     //const char *masterip = NULL;
     const char *ip = NULL;
+    int port;
     struct sockaddr_in address;
     //int slave_sockfd;
     int result_send_fd;
@@ -279,8 +280,9 @@ void AnalyzePic()
     memset(&address, 0, sizeof(struct sockaddr_in));
     address.sin_family = AF_INET;
     //address.sin_addr.s_addr = inet_addr(ip);
-    address.sin_port = htons(9002);
+    //address.sin_port = htons(9002);
     result_send_fd = socket(AF_INET, SOCK_DGRAM, 0);
+    port = 9002;
 
     while (1) {
         if(pdet != NULL)
@@ -304,6 +306,7 @@ void AnalyzePic()
             img_h = 270;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
             ip = pdet->cfg_->get_value("send_result_ip", "10.1.2.124");
+            port = atoi(pdet->cfg_->get_value("send_result_port","9002"));
         }
         else if(model == 1)
         {
@@ -313,6 +316,7 @@ void AnalyzePic()
             img_h = 270;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
             ip = pdet->cfg_->get_value("send_result_ip", "10.1.2.124");
+            port = atoi(pdet->cfg_->get_value("send_result_port","9002"));
         }
         else if(model == 2)
         {
@@ -323,6 +327,7 @@ void AnalyzePic()
             img_h = 360;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
             ip = pdet->cfg_->get_value("send_result_ip", "10.1.2.124");
+            port = atoi(pdet->cfg_->get_value("send_result_port","9002"));
 
             //srcStr = pdet->cfg_->get_value("local_corr_point");
             //dstStr = pdet->cfg_->get_value("external_corr_point");
@@ -349,6 +354,7 @@ void AnalyzePic()
             //slave_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
         }
         address.sin_addr.s_addr = inet_addr(ip);
+        address.sin_port = htons(port);
         while(1)
         {
             //printf("begin:%ld\n",GetTickCount());
@@ -492,7 +498,7 @@ void AnalyzeCMD(char *text)
                 sendModelandStatus(g_cmd_connect_fd);
                 break;
             case 103:
-                printf("103\n");
+                //printf("103\n");
                 sendSDKVersion(g_cmd_connect_fd);
                 break;
             default:
@@ -561,7 +567,7 @@ void RecvCMD()
             {
                 if (0 == socketconnect(g_cmd_socket_fd))
                 {
-                    g_start_analysis = 0;
+                    //g_start_analysis = 0;
                     g_disconnect = 1;
                 }
             }
