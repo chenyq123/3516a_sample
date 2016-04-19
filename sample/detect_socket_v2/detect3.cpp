@@ -817,13 +817,15 @@ int setParam(cJSON *json)
     }
 
     int num = cJSON_GetArraySize(json);
-    for (i = 2; i < num; i++)
+    for (i = 0; i < num; i++)
     {
         cJSON *p = cJSON_GetArrayItem(json, i);
+        if(!strcmp("cmd", p->string) || !strcmp("model", p->string))
+            continue;
 
         if (p->type == cJSON_Number)
         {
-            printf("%s\n",p->string);
+            //printf("%s\n",p->string);
             m_cfg->set_value(p->string, p->valueint);
         }
         else if(p->type == cJSON_String )
