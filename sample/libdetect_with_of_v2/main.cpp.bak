@@ -1,0 +1,154 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <cc++/socket.h>
+#include "DetectWithOf.h"
+#include "Source.h"
+
+static void send_dr(SOCKET sock, const char *ip, int port, const char *info)
+{
+	sockaddr_in remote;
+	remote.sin_family = AF_INET;
+	remote.sin_port = htons(port);
+	remote.sin_addr.s_addr = inet_addr(ip);
+
+	sendto(sock, info, (int)strlen(info) + 1, 0, (sockaddr*)&remote, sizeof(remote));   // 包含字符串0结束符
+}
+
+static const char *build_result(const std::vector<cv::Rect> &rcs)
+{
+	// 构造 json 格式
+	std::stringstream ss;
+	const int _buf_size = 4096;
+	static char *_buf = (char*)malloc(_buf_size);
+	const char *_pre = "{ \"stamp\":12345, \"rect\":[";
+
+	strcpy(_buf, _pre);
+	bool first = true;
+	for (std::vector<cv::Rect>::const_iterator it = rcs.begin(); it != rcs.end(); ++it) {
+		if (!first) {
+			strcat(_buf, ",");
+		}
+		else {
+			first = false;
+		}
+
+		char tmp[128];
+		snprintf(tmp, sizeof(tmp), "{\"x\":%d, \"y\":%d, \"width\":%d, \"height\":%d}", it->x, it->y, it->width, it->height);
+		strcat(_buf, tmp);
+	}
+	strcat(_buf, " ]");
+
+	if (true) {
+		char tmp[64] = { 0 };
+		snprintf(tmp, sizeof(tmp), ", \"flipped_idx\": %d", -1);
+		strcat(_buf, tmp);
+	}
+
+	strcat(_buf, "}");
+
+	return _buf;
+}
+
+int main(int argc, char **argv)
+{
+	const char *url = 0;
+	if (argc == 2) {
+		url = argv[1];
+	}
+
+	KVConfig cfg("student_detect_trace.config");
+
+	Source src(&cfg, url);
+	if (!src.is_opened()) {
+		std::cout << url << " can't open!!!\n";
+		return -1;
+	}
+	
+	int debug = atoi(cfg.get_value("debug", "0"));
+
+	if (debug) {
+		cv::namedWindow("origin");
+	}
+
+	const char *app_ip = cfg.get_value("app_ip", "127.0.0.1");
+	int app_port = atoi(cfg.get_value("app_port", "9000"));
+
+	SOCKET sock = socket(AF_INET, SOCK_DGRAM, 0);
+	if (sock == INVALID_SOCKET) {
+		fprintf(stderr, "ERR: can't create udp sock!!!\n");
+		return -1;
+	}
+
+	Detect *det = new DetectWithOf(&cfg);
+
+	bool quit = false;
+	bool pause = false;
+
+	cv::Mat frame;
+	while (!quit) {
+		if (!pause) {
+			frame = src.next();
+
+			if (frame.cols == 0) {
+				ost::Thread::sleep(10);
+				continue;
+			}
+
+#if 0
+			std::vector<cv::Rect> standups;
+			det->detect(frame, standups);
+
+			if (debug) {
+				for (size_t i = 0; i < standups.size(); i++) {
+					cv::rectangle(frame, standups[i], cv::Scalar(0, 0, 255), 2);
+				}
+			}
+
+			const char *result = build_result(standups);
+			send_dr(sock, app_ip, app_port, result);
+			fprintf(stderr, "INFO: %s\n", result);
+#else
+			std::vector<Detect::STANDUP> standups;
+			std::vector<cv::Rect> rcs;
+
+			det->detect(frame, standups);
+
+			if (debug) {
+				for (size_t i = 0; i < standups.size(); i++) {
+					cv::rectangle(frame, standups[i].pos, cv::Scalar(0, 0, 255), 2);
+					if (standups[i].enable_od) {
+						cv::rectangle(frame, standups[i].obj_pos, cv::Scalar(0, 255, 0), 2);
+					}
+				}
+			}
+
+			for (size_t i = 0; i < standups.size(); i++) {
+				rcs.push_back(standups[i].pos);
+			}
+
+			const char *result = build_result(rcs);
+			send_dr(sock, app_ip, app_port, result);
+			//fprintf(stderr, "INFO: %s\n", result);
+
+#endif
+		}
+
+		if (debug) {
+			cv::imshow("origin", frame);
+			int key = cv::waitKey(src.wait());
+			switch (key) {
+			case 27:
+			case 'q':
+			case 'Q':
+				quit = true;
+				break;
+
+			case ' ':
+				pause = !pause;
+				break;
+			}
+		}
+	}
+
+	return 0;
+}
