@@ -89,13 +89,16 @@ void DetectWithOf::detect(Detect::RCS &motions, std::vector<Dir> &dirs)
             it = targets_.erase(it);
         }
         else {
+            printf("track over\n");
             if (it->is_stopped()) {
+                printf("line=%d\n",__LINE__);
                 stopped.push_back(*it);
                 long_timed_targets_.push_back(*it); // 长时间跟踪对象 ...
                 it = targets_.erase(it);
             }
             else {
                 if (debug_) {
+                    printf("line=%d\n",__LINE__);
                     cv::Scalar s = cv::Scalar(0, 64, 0);
                     //it->debug_draw_paths(img, cv::Scalar(0, 64, 0));    // 暗绿色 ..
                     it->debug_draw_paths(img, s);    // 暗绿色 ..
@@ -105,6 +108,7 @@ void DetectWithOf::detect(Detect::RCS &motions, std::vector<Dir> &dirs)
         }
     }
 
+    printf("line=%d\n",__LINE__);
     // 处理停止活动的 ...
     for (std::vector<Target>::const_iterator it = stopped.begin(); it != stopped.end(); ++it) {
         cv::Rect pos;
@@ -134,8 +138,11 @@ void DetectWithOf::detect(Detect::RCS &motions, std::vector<Dir> &dirs)
         }
     }
 
+    printf("line=%d\n",__LINE__);
+
     // 新的来自不相交的帧差矩形可以创建新的跟着区域 ...
     RCS rcs = dm_.get_motions(gray_prev_, gray_curr_);
+    printf("line=%d\n",__LINE__);
     for (RCS::const_iterator it = rcs.begin(); it != rcs.end(); ++it) {
         if (too_small(*it)) {
             continue;
@@ -149,6 +156,7 @@ void DetectWithOf::detect(Detect::RCS &motions, std::vector<Dir> &dirs)
             }
         }
     }
+    printf("line=%d\n",__LINE__);
 
     if (debug_) {
         char info[64];
@@ -176,6 +184,7 @@ void DetectWithOf::detect(Detect::RCS &motions, std::vector<Dir> &dirs)
 
         //cv::imshow("dwof", img);
     }
+    printf("line=%d\n",__LINE__);
 }
 
 bool DetectWithOf::too_small(const cv::Rect &rc) const

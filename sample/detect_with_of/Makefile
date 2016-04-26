@@ -11,7 +11,7 @@ APP := $(OBJ:%.o=%)
 #LIBDETECT_TEACHER_PATH := /root/3516a/Hi3516A_SDK_V1.0.4.0/mpp/sample/libdetect_teacher
 #TEACHER_DET_SRC = $(wildcard $(LIBDETECT_TEACHER_PATH/*.cpp))
 #TEACHER_DET_OBJ = $(TEACHER_DET_SRC:%.cpp=%.o)
-LIBDETECT_WITH_OF_PATH := /root/3516a/Hi3516A_SDK_V1.0.4.0/mpp/sample/libdetect_with_of
+LIBDETECT_WITH_OF_PATH := /root/3516a/Hi3516A_SDK_V1.0.4.0/mpp/sample/libdetect_with_of_v2
 
 LIBDETECT_WITH_OF_SRC = $(wildcard $(LIBDETECT_WITH_OF_PATH)/*.cpp)
 LIBDETECT_WITH_OF_OBJ = $(LIBDETECT_WITH_OF_SRC:%.cpp=%.o)

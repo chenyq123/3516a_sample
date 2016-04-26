@@ -3,6 +3,7 @@
 #include <opencv2/opencv.hpp>
 #include "utils.h"
 #include "KVConfig.h"
+#include "hi_opencv.h"
 //#include "hi_ive.h"
 //#include "hi_comm_ive.h"
 //#include "mpi_ive.h"
@@ -103,8 +104,8 @@ private:
     /// 删除 idx 对应的路径 ...
     void remove_path(size_t idx)
     {
-        assert(layers_.size() > 0);
-        assert(idx < layers_[0].size());
+        //assert(layers_.size() > 0);
+        //assert(idx < layers_[0].size());
 
         for (std::vector<PTS>::iterator it = layers_.begin(); it != layers_.end(); ++it) {
             it->erase(it->begin() + idx);
@@ -140,9 +141,9 @@ private:
     /// 返回两层之间的路径 ...
     std::vector<PATH> get_sorted_paths(int from, int to) const
     {
-        assert(from < to);
-        assert(layers_.size() >= to);
-        assert(from >= 0);
+        //assert(from < to);
+        //assert(layers_.size() >= to);
+        //assert(from >= 0);
 
         std::vector<PATH> paths;
         int cnt = get_path_cnt();

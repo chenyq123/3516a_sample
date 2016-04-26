@@ -1,0 +1,104 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BUFSIZE	libdetect_t.cpp	80;"	d	file:
+BlackboardDetecting	blackboard_detect.cpp	/^BlackboardDetecting::BlackboardDetecting(KVConfig *cfg)$/;"	f	class:BlackboardDetecting
+BlackboardDetecting	blackboard_detect.h	/^class BlackboardDetecting$/;"	c
+CC	Makefile	/^CC := arm-hisiv300-linux-g++$/;"	m
+KVCAPI	KVConfig.h	17;"	d
+KVCAPI	KVConfig.h	19;"	d
+KVCAPI	KVConfig.h	22;"	d
+KVConfig	KVConfig.cpp	/^KVConfig::KVConfig(const char *filename)$/;"	f	class:KVConfig
+KVConfig	KVConfig.h	/^class KVCAPI KVConfig$/;"	c
+KVS	KVConfig.h	/^	typedef std::map<std::string, std::string> KVS;$/;"	t	class:KVConfig
+N	blackboard_detect.h	/^	int N;\/\/»˝÷°≤Ó∑÷∑®÷–buffer÷–µƒ∏ˆ ˝;$/;"	m	class:BlackboardDetecting
+OBJ	Makefile	/^OBJ = $(SRC:%.cpp=%.o)$/;"	m
+OPENCV_FLAGS	Makefile	/^OPENCV_FLAGS := -lpthread -lrt `pkg-config --libs --cflags hisiv100-opencv`$/;"	m
+SRC	Makefile	/^SRC = $(wildcard *.cpp)$/;"	m
+SUPPORT_YUANSDK	image_source.h	11;"	d
+__STDC_CONSTANT_MACROS	image_source.h	10;"	d
+_blackboard_detect_h_	blackboard_detect.h	3;"	d
+_libdetect_t_h_	libdetect_t.h	4;"	d
+b_m	libdetect_t.cpp	/^	bool b_m;$/;"	m	struct:det_t	file:
+bd_detect_	libdetect_t.cpp	/^	BlackboardDetecting *bd_detect_;$/;"	m	struct:det_t	file:
+bg_model	blackboard_detect.h	/^	BackgroundSubtractorMOG2 bg_model;$/;"	m	class:BlackboardDetecting
+buffer	blackboard_detect.h	/^	IplImage **buffer;$/;"	m	class:BlackboardDetecting
+buflen	blackboard_detect.h	/^	int buflen;\/\/À´÷°≤Ó∑÷∑®÷–buffer÷–µƒ∏ˆ ˝;$/;"	m	class:BlackboardDetecting
+build_mask	blackboard_detect.cpp	/^Mat BlackboardDetecting::build_mask(const char *key, const char *key2)$/;"	f	class:BlackboardDetecting
+build_mask_internal	blackboard_detect.cpp	/^bool BlackboardDetecting::build_mask_internal(const char *key, Mat& img)$/;"	f	class:BlackboardDetecting
+cfg_	blackboard_detect.h	/^	KVConfig *cfg_;$/;"	m	class:BlackboardDetecting
+cfg_	libdetect_t.cpp	/^	KVConfig *cfg_;$/;"	m	struct:det_t	file:
+clear	KVConfig.cpp	/^void KVConfig::clear()$/;"	f	class:KVConfig
+cmp_area	blackboard_detect.cpp	/^int BlackboardDetecting::cmp_area(const Rect & a, const Rect & b)$/;"	f	class:BlackboardDetecting
+cmp_min_x	blackboard_detect.cpp	/^int BlackboardDetecting::cmp_min_x(const Point & a, const Point & b)$/;"	f	class:BlackboardDetecting
+cmp_min_y	blackboard_detect.cpp	/^int BlackboardDetecting::cmp_min_y(const Point & a, const Point & b)$/;"	f	class:BlackboardDetecting
+data	image_source.h	/^	unsigned char *data[4];$/;"	m	struct:zifImage
+del_key	KVConfig.cpp	/^bool KVConfig::del_key(const char *key)$/;"	f	class:KVConfig
+det_close	libdetect_t.cpp	/^void det_close(det_t *ctx)$/;"	f
+det_detect	libdetect_t.cpp	/^char *det_detect(det_t * ctx, int height,int width,char *imgdata)\/\/imgdata  YUV$/;"	f
+det_open	libdetect_t.cpp	/^det_t *det_open(const char *cfg_name)\/\/ÂàùÂßãÂåñ$/;"	f
+det_t	libdetect_t.cpp	/^struct det_t$/;"	s	file:
+det_t	libdetect_t.h	/^typedef struct det_t det_t;$/;"	t	typeref:struct:det_t
+diff_threshold	blackboard_detect.h	/^	double  diff_threshold;$/;"	m	class:BlackboardDetecting
+diff_threshold_three	blackboard_detect.h	/^	double  diff_threshold_three;$/;"	m	class:BlackboardDetecting
+do_mask	blackboard_detect.cpp	/^void BlackboardDetecting::do_mask(Mat &img)$/;"	f	class:BlackboardDetecting
+file_name	KVConfig.h	/^	const char *file_name() const { return filename_.c_str(); }$/;"	f	class:KVConfig
+filename_	KVConfig.h	/^	std::string filename_;$/;"	m	class:KVConfig
+fmt	image_source.h	/^	PixelFormat fmt;$/;"	m	struct:imgsrc_format
+fmt_type	image_source.h	/^	PixelFormat fmt_type;$/;"	m	struct:zifImage
+fps	image_source.h	/^	double fps;$/;"	m	struct:imgsrc_format
+get_point_rect	blackboard_detect.cpp	/^cv::Rect BlackboardDetecting::get_point_rect(std::vector<cv::Point> pt)$/;"	f	class:BlackboardDetecting
+get_rect	blackboard_detect.cpp	/^cv::Rect BlackboardDetecting::get_rect(const char*cb_date,const char*cb_date_2)$/;"	f	class:BlackboardDetecting
+get_value	KVConfig.cpp	/^const char *KVConfig::get_value(const char *key, const char *def)$/;"	f	class:KVConfig
+has_key	KVConfig.cpp	/^bool KVConfig::has_key(const char *key)$/;"	f	class:KVConfig
+height	image_source.h	/^	int height;$/;"	m	struct:imgsrc_format
+height	image_source.h	/^	int height;$/;"	m	struct:zifImage
+img_mask_	blackboard_detect.h	/^	Mat img_mask_;$/;"	m	class:BlackboardDetecting
+imgsrc_format	image_source.h	/^typedef struct imgsrc_format$/;"	s
+imgsrc_format	image_source.h	/^} imgsrc_format;$/;"	t	typeref:struct:imgsrc_format
+imgsrc_t	image_source.h	/^typedef struct imgsrc_t imgsrc_t;$/;"	t	typeref:struct:imgsrc_t
+internal_ptr	image_source.h	/^	void *internal_ptr;$/;"	m	struct:zifImage
+ismask_	blackboard_detect.h	/^	bool ismask_;$/;"	m	class:BlackboardDetecting
+keys	KVConfig.cpp	/^std::vector<std::string> KVConfig::keys()$/;"	f	class:KVConfig
+kvs_	KVConfig.h	/^	KVS kvs_;$/;"	m	class:KVConfig
+learning_rate	blackboard_detect.h	/^	double learning_rate;$/;"	m	class:BlackboardDetecting
+load_from_file	KVConfig.cpp	/^void KVConfig::load_from_file(const char *filename)$/;"	f	class:KVConfig
+load_roi	blackboard_detect.cpp	/^std::vector<cv::Point> BlackboardDetecting::load_roi(const char *pts)$/;"	f	class:BlackboardDetecting
+luv_L	blackboard_detect.h	/^	int luv_L;$/;"	m	class:BlackboardDetecting
+luv_method	blackboard_detect.cpp	/^void BlackboardDetecting::luv_method(const Mat &img,Mat bg,std::vector<Rect> &r)$/;"	f	class:BlackboardDetecting
+luv_u_max	blackboard_detect.h	/^	int luv_u_max;$/;"	m	class:BlackboardDetecting
+luv_u_min	blackboard_detect.h	/^	int luv_u_min;$/;"	m	class:BlackboardDetecting
+luv_v_max	blackboard_detect.h	/^	int luv_v_max;$/;"	m	class:BlackboardDetecting
+luv_v_min	blackboard_detect.h	/^	int luv_v_min;$/;"	m	class:BlackboardDetecting
+masked_	libdetect_t.cpp	/^	IplImage *masked_;$/;"	m	struct:det_t	file:
+masked_rect	blackboard_detect.h	/^	cv::Rect masked_rect;$/;"	m	class:BlackboardDetecting
+masked_rect_vec	blackboard_detect.h	/^	std::vector<Rect> masked_rect_vec;$/;"	m	class:BlackboardDetecting
+max_area	blackboard_detect.h	/^	double max_area;$/;"	m	class:BlackboardDetecting
+merge_interval	blackboard_detect.h	/^	double merge_interval;$/;"	m	class:BlackboardDetecting
+min_area	blackboard_detect.h	/^	double min_area;$/;"	m	class:BlackboardDetecting
+mog_threshold	blackboard_detect.h	/^	double mog_threshold;$/;"	m	class:BlackboardDetecting
+one_frame_bd	blackboard_detect.cpp	/^bool BlackboardDetecting::one_frame_bd(Mat img, vector < Rect > &r)$/;"	f	class:BlackboardDetecting
+rect_fusion2	blackboard_detect.cpp	/^void BlackboardDetecting::rect_fusion2(vector < Rect > &seq, double interval)$/;"	f	class:BlackboardDetecting
+refineSegments2	blackboard_detect.cpp	/^std::vector < Rect > BlackboardDetecting::refineSegments2(Mat img, Mat & mask,$/;"	f	class:BlackboardDetecting
+reload	KVConfig.cpp	/^int KVConfig::reload()$/;"	f	class:KVConfig
+result_str	libdetect_t.cpp	/^	std::string result_str;	\/\/ FIXME: Â∏åÊúõË∂≥Â§ü‰∫Ü;$/;"	m	struct:det_t	file:
+save_as	KVConfig.cpp	/^int KVConfig::save_as(const char *filename)$/;"	f	class:KVConfig
+set_value	KVConfig.cpp	/^int KVConfig::set_value(const char *key, const char *value)$/;"	f	class:KVConfig
+set_value	KVConfig.cpp	/^int KVConfig::set_value(const char *key, int v)$/;"	f	class:KVConfig
+sort_rect	blackboard_detect.cpp	/^Rect BlackboardDetecting::sort_rect(Rect a, Rect b)$/;"	f	class:BlackboardDetecting
+stamp	image_source.h	/^	double stamp;$/;"	m	struct:zifImage
+stride	image_source.h	/^	int stride[4];$/;"	m	struct:zifImage
+t_m	libdetect_t.cpp	/^	bool t_m;$/;"	m	struct:det_t	file:
+vector_to_json	libdetect_t.cpp	/^void vector_to_json(std::vector < Rect > r, char *buf, int area)$/;"	f
+video_height_	blackboard_detect.h	/^	int video_height_;$/;"	m	class:BlackboardDetecting
+video_width_	blackboard_detect.h	/^	int video_width_;$/;"	m	class:BlackboardDetecting
+width	image_source.h	/^	int width;$/;"	m	struct:imgsrc_format
+width	image_source.h	/^	int width;$/;"	m	struct:zifImage
+zifImage	image_source.h	/^typedef struct zifImage$/;"	s
+zifImage	image_source.h	/^} zifImage;$/;"	t	typeref:struct:zifImage
+zifImage	libdetect_t.h	/^typedef struct zifImage zifImage;$/;"	t	typeref:struct:zifImage
+~BlackboardDetecting	blackboard_detect.cpp	/^BlackboardDetecting::~BlackboardDetecting()$/;"	f	class:BlackboardDetecting
+~KVConfig	KVConfig.cpp	/^KVConfig::~KVConfig(void)$/;"	f	class:KVConfig

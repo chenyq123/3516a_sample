@@ -60,6 +60,7 @@ static const char *build_result(const std::vector<cv::Rect> &rcs)
 
 int  main()
 {
+#if 1
     int num = 0;
     KVConfig cfg("student_detect_trace.config");
     getframe_init(IMG_WIDTH, IMG_HEIGHT, VIU_EXT_CHN_START);
@@ -76,6 +77,29 @@ int  main()
         printf("%s\n", result);
     }
     return 0;
+#endif
+#if 0
+    Mat frame;
+    KVConfig cfg("student_detect_trace.config");
+    VideoCapture cp;
+    cp.open("/app/test.avi");
+    if(!cp.isOpened())
+    {
+        cout << "fail to open!"<<endl;
+        return 0;
+    }
+    Detect *det = new DetectWithOf(&cfg);
+    while(1)
+    {
+        cp >> frame;
+        vector<cv::Rect> standups;
+        Mat img;
+        resize(frame, img, Size(960, 540));
+        det->detect(img, standups);
+        const char *result = build_result(standups);
+        printf("%s\n", result);
+    }
+#endif
 }
 
 int getframe_init(int width, int height, int ExtChn)

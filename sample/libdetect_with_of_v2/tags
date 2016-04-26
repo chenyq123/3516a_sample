@@ -1,0 +1,226 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+CC	Makefile	/^CC := arm-hisiv300-linux-g++$/;"	m
+Cluster	cluster.h	/^	struct Cluster$/;"	s	class:cluster_builder
+ClusterPair	cluster.h	/^	struct ClusterPair$/;"	s	class:cluster_builder
+DOWN	Detect.h	/^    DOWN,$/;"	e	enum:Dir
+Detect	Detect.cpp	/^Detect::Detect(KVConfig *cfg)$/;"	f	class:Detect
+Detect	Detect.h	/^class Detect$/;"	c
+DetectWithOf	DetectWithOf.cpp	/^DetectWithOf::DetectWithOf(KVConfig *cfg)$/;"	f	class:DetectWithOf
+DetectWithOf	DetectWithOf.h	/^class DetectWithOf : public Detect$/;"	c
+DiffMotion	DiffMotion.h	/^    explicit DiffMotion(KVConfig *cfg)$/;"	f	class:DiffMotion
+DiffMotion	DiffMotion.h	/^class DiffMotion$/;"	c
+Dir	Detect.h	/^enum Dir$/;"	g
+DirDesc	Detect.h	/^static const char *DirDesc[] =$/;"	v
+E_NotEnoughDistance	DetectWithOf.h	/^        E_NotEnoughDistance,$/;"	e	enum:DetectWithOf::__anon1
+E_NotEnoughLayers	DetectWithOf.h	/^        E_NotEnoughLayers,$/;"	e	enum:DetectWithOf::__anon1
+E_NotEnoughPaths	DetectWithOf.h	/^        E_NotEnoughPaths,$/;"	e	enum:DetectWithOf::__anon1
+E_OK	DetectWithOf.h	/^        E_OK,$/;"	e	enum:DetectWithOf::__anon1
+GetTickCount	utils.h	/^inline unsigned long GetTickCount()$/;"	f
+HI_OPENCV_H	hi_opencv.h	2;"	d
+INC_PATH	Makefile	/^INC_PATH := \/root\/3516a\/Hi3516A_SDK_V1.0.4.0\/mpp\/include\/$/;"	m
+IVE_LIBS	Makefile	/^IVE_LIBS := $(REL_LIB)\/libive.a$/;"	m
+KVCAPI	KVConfig.h	17;"	d
+KVCAPI	KVConfig.h	19;"	d
+KVCAPI	KVConfig.h	22;"	d
+KVConfig	KVConfig.cpp	/^KVConfig::KVConfig(const char *filename)$/;"	f	class:KVConfig
+KVConfig	KVConfig.h	/^class KVCAPI KVConfig$/;"	c
+KVS	KVConfig.h	/^	typedef std::map<std::string, std::string> KVS;$/;"	t	class:KVConfig
+LEFT	Detect.h	/^    LEFT,$/;"	e	enum:Dir
+MPI_LIBS	Makefile	/^MPI_LIBS := $(REL_LIB)\/libmpi.a$/;"	m
+NONE	Detect.h	/^    NONE,$/;"	e	enum:Dir
+OBJ	Makefile	/^OBJ = $(SRC:%.cpp=%.o)$/;"	m
+OPENCV_FLAGS	Makefile	/^OPENCV_FLAGS := -lpthread -lrt `pkg-config --libs --cflags hisiv100-opencv`$/;"	m
+ObjectDetect	ObjectDetect.cpp	/^ObjectDetect::ObjectDetect(KVConfig *cfg)$/;"	f	class:ObjectDetect
+ObjectDetect	ObjectDetect.h	/^class ObjectDetect$/;"	c
+PATH	Target.h	/^    typedef PTS PATH;$/;"	t	class:Target
+PTS	Target.h	/^    typedef std::vector<cv::Point2f> PTS;   \/\/ 相对一层的特征点 ...$/;"	t	class:Target
+RCS	Detect.h	/^    typedef std::vector<cv::Rect> RCS;$/;"	t	class:Detect
+REL_LIB	Makefile	/^REL_LIB := \/root\/3516a\/Hi3516A_SDK_V1.0.4.0\/mpp\/lib$/;"	m
+RIGHT	Detect.h	/^    RIGHT,$/;"	e	enum:Dir
+SRC	Makefile	/^SRC = $(wildcard *.cpp)$/;"	m
+STANDUP	Detect.h	/^    struct STANDUP$/;"	s	class:Detect
+STANDUPS	Detect.h	/^    typedef std::vector<Standup> STANDUPS;$/;"	t	class:Detect
+Standup	Detect.h	/^    struct Standup$/;"	s	class:Detect
+Target	Target.cpp	/^Target::Target()$/;"	f	class:Target
+Target	Target.h	/^class Target$/;"	c
+UP	Detect.h	/^    UP,$/;"	e	enum:Dir
+_USE_MATH_DEFINES	DetectWithOf.h	3;"	d
+a_dis_	DetectWithOf.h	/^    double a_dis_[4], b_dis_[4];    \/\/$/;"	m	class:DetectWithOf
+a_width_	DetectWithOf.h	/^    double a_width_, b_width_;      \/\/ 宽度的直线方程系数 ...$/;"	m	class:DetectWithOf
+b_dis_	DetectWithOf.h	/^    double a_dis_[4], b_dis_[4];    \/\/$/;"	m	class:DetectWithOf
+b_width_	DetectWithOf.h	/^    double a_width_, b_width_;      \/\/ 宽度的直线方程系数 ...$/;"	m	class:DetectWithOf
+brc_	Target.h	/^    cv::Rect brc_;  \/\/ 轨迹外框 ...$/;"	m	class:Target
+build_each_clusters	cluster.cpp	/^void cluster_builder::build_each_clusters(const std::vector<cluster_builder::Cluster> &clusters, std::vector<cluster_builder::ClusterPair> &cluster_pairs)$/;"	f	class:cluster_builder
+build_mask	Detect.h	/^    bool build_mask(cv::Mat &mask)$/;"	f	class:Detect
+c0	cluster.h	/^		Cluster c0, c1;$/;"	m	struct:cluster_builder::ClusterPair
+c1	cluster.h	/^		Cluster c0, c1;$/;"	m	struct:cluster_builder::ClusterPair
+calc	cluster.cpp	/^void cluster_builder::calc(const std::vector<cv::Point2f> &pts0, std::vector<std::vector<cv::Point2f> > &result)$/;"	f	class:cluster_builder
+calcLKOpticalFlow	hi_opencv.cpp	/^void calcLKOpticalFlow(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prepoint, vector<Point2f> &nextpoint, vector<uchar> &state)$/;"	f
+calc_angle	DetectWithOf.h	/^    inline double calc_angle(const cv::Point2f &p1, const cv::Point2f &p2) const$/;"	f	class:DetectWithOf
+calc_mean	cluster.h	/^		inline void calc_mean()$/;"	f	struct:cluster_builder::Cluster
+cc_	ObjectDetect.h	/^	cv::CascadeClassifier cc_;$/;"	m	class:ObjectDetect
+cfg_	Detect.h	/^    KVConfig *cfg_;$/;"	m	class:Detect
+cfg_	ObjectDetect.h	/^	KVConfig *cfg_;$/;"	m	class:ObjectDetect
+cfg_	Target.h	/^    KVConfig *cfg_;$/;"	m	class:Target
+check_alone_pts	Target.cpp	/^bool Target::check_alone_pts(const Target::PTS &pts, std::vector<bool> &status) const$/;"	f	class:Target
+check_larger_	DetectWithOf.h	/^    bool check_larger_; \/\/ 是否检查超大活动区域 ...$/;"	m	class:DetectWithOf
+check_paths	Target.cpp	/^bool Target::check_paths(double stamp)$/;"	f	class:Target
+clear	KVConfig.cpp	/^void KVConfig::clear()$/;"	f	class:KVConfig
+cluster_builder	cluster.cpp	/^cluster_builder::cluster_builder(int dis)$/;"	f	class:cluster_builder
+cluster_builder	cluster.h	/^class cluster_builder$/;"	c
+cnt_	Detect.h	/^    size_t cnt_;$/;"	m	class:Detect
+cnt_	DiffMotion.h	/^    int cnt_;$/;"	m	class:DiffMotion
+cut	Target.h	/^    bool cut()$/;"	f	class:Target
+debug_	Detect.h	/^    bool debug_;$/;"	m	class:Detect
+debug_draw_path	Target.cpp	/^void Target::debug_draw_path(cv::Mat &rgb, const Target::PATH &path, cv::Scalar &color) const$/;"	f	class:Target
+debug_draw_paths	Target.cpp	/^void Target::debug_draw_paths(cv::Mat &rgb, cv::Scalar &color, int n) const$/;"	f	class:Target
+debug_img_	DetectWithOf.h	/^    cv::Mat debug_img_;     \/\/ 显示调试信息 ..$/;"	m	class:DetectWithOf
+debug_save_motion	DetectWithOf.cpp	/^void DetectWithOf::debug_save_motion(const Target &target, const cv::Rect &pos, Dir &dir) const$/;"	f	class:DetectWithOf
+del_key	KVConfig.cpp	/^bool KVConfig::del_key(const char *key)$/;"	f	class:KVConfig
+descr	Target.h	/^    std::string descr() const$/;"	f	class:Target
+detect	Detect.cpp	/^void Detect::detect(const cv::Mat &origin, Detect::RCS &standups)$/;"	f	class:Detect
+detect	Detect.cpp	/^void Detect::detect(const cv::Mat &origin, std::vector<Detect::STANDUP> &ups)$/;"	f	class:Detect
+detect	DetectWithOf.cpp	/^void DetectWithOf::detect(Detect::RCS &motions, std::vector<Dir> &dirs)$/;"	f	class:DetectWithOf
+detect	ObjectDetect.cpp	/^std::vector<cv::Rect> ObjectDetect::detect(const cv::Mat &gray, const cv::Rect &roi)$/;"	f	class:ObjectDetect
+detect2	Detect.h	/^    virtual void detect2(RCS &standups) {}$/;"	f	class:Detect
+detect2	DetectWithOf.cpp	/^void DetectWithOf::detect2(Detect::RCS &standups)$/;"	f	class:DetectWithOf
+diff_threshold_	DiffMotion.h	/^    int diff_threshold_;$/;"	m	class:DiffMotion
+diffs_	DiffMotion.h	/^    std::deque<cv::Mat> diffs_;$/;"	m	class:DiffMotion
+dis	cluster.h	/^		double dis;$/;"	m	struct:cluster_builder::ClusterPair
+distance	Target.h	/^    static inline double distance(const PATH &path)$/;"	f	class:Target
+distance	utils.h	/^inline double distance(const cv::Point2f &p1, const cv::Point2f &p2)$/;"	f
+dm_	DetectWithOf.h	/^    DiffMotion dm_;$/;"	m	class:DetectWithOf
+draw_pts	Target.cpp	/^static void draw_pts(cv::Mat &rgb, const std::vector<cv::Point2f> &pts, cv::Scalar &color)$/;"	f	file:
+enable_od	Detect.h	/^        bool enable_od;         \/\/ 是否启用了识别$/;"	m	struct:Detect::STANDUP
+enable_od	Detect.h	/^        bool enable_od;     \/\/ 是否启用对象识别 ...$/;"	m	struct:Detect::Standup
+enabled	ObjectDetect.h	/^	bool enabled() const$/;"	f	class:ObjectDetect
+estimate	DetectWithOf.cpp	/^int DetectWithOf::estimate(const Target &target, cv::Rect &pos, Dir &dir) const$/;"	f	class:DetectWithOf
+face	Detect.h	/^        cv::Rect face;      \/\/ 如果启用对象识别，则为 ...$/;"	m	struct:Detect::Standup
+far_dis_	DetectWithOf.h	/^    float far_dis_[4], near_dis_[4];    \/\/ 四个方向的距离阈值 ...$/;"	m	class:DetectWithOf
+far_width_	DetectWithOf.h	/^    float far_width_, near_width_;  \/\/ 帧差矩形的中心y的宽度阈值，如果小于该值，则认为帧差矩形太小了 ...$/;"	m	class:DetectWithOf
+far_y_	DetectWithOf.h	/^    float far_y_, near_y_;  \/\/ 根据 y 轴 ...$/;"	m	class:DetectWithOf
+feature_quality_level_	DetectWithOf.h	/^    double feature_quality_level_;  \/\/ goodFeaturesToTrack() 的 quality level 参数 ..$/;"	m	class:DetectWithOf
+file_name	KVConfig.h	/^	const char *file_name() const { return filename_.c_str(); }$/;"	f	class:KVConfig
+filename_	KVConfig.h	/^	std::string filename_;$/;"	m	class:KVConfig
+find_cluster	cluster.h	/^	inline std::vector<Cluster>::iterator find_cluster(std::vector<Cluster> &clusters, int cid) const$/;"	f	class:cluster_builder
+find_crossed_target	Detect.h	/^    STANDUPS::iterator find_crossed_target(const cv::Rect &motion)$/;"	f	class:Detect
+find_matched_target	DetectWithOf.h	/^    inline std::vector<Target>::iterator find_matched_target(const cv::Rect &rc)$/;"	f	class:DetectWithOf
+find_matched_target_from	DetectWithOf.h	/^    inline std::vector<Target>::iterator find_matched_target_from(const cv::Rect &rc, std::vector<Target> &targets)$/;"	f	class:DetectWithOf
+find_matched_target_from_ltt	DetectWithOf.h	/^    inline std::vector<Target>::iterator find_matched_target_from_ltt(const cv::Rect &rc)$/;"	f	class:DetectWithOf
+find_nearest_cluster	cluster.cpp	/^std::vector<cluster_builder::Cluster>::iterator cluster_builder::find_nearest_cluster(const cv::Point2f &pt,$/;"	f	class:cluster_builder
+first_rc_	Target.h	/^    cv::Rect first_rc_, last_rc_;   \/\/ 起始位置，最后一层的跟踪点的外接 ...$/;"	m	class:Target
+g2l	Target.h	/^    inline void g2l(PTS &pts, const cv::Point &tl) const$/;"	f	class:Target
+get_motions	DiffMotion.h	/^    std::vector<cv::Rect> get_motions(const cv::Mat &prev_gray, const cv::Mat &next_gray)$/;"	f	class:DiffMotion
+get_path	Target.h	/^    inline PATH get_path(int idx) const$/;"	f	class:Target
+get_path	Target.h	/^    inline PATH get_path(int idx, int from_layer, int to_layer) const$/;"	f	class:Target
+get_path_cnt	Target.h	/^    inline int get_path_cnt() const$/;"	f	class:Target
+get_sorted_paths	Target.h	/^    std::vector<PATH> get_sorted_paths() const$/;"	f	class:Target
+get_sorted_paths	Target.h	/^    std::vector<PATH> get_sorted_paths(int from, int to) const$/;"	f	class:Target
+get_value	KVConfig.cpp	/^const char *KVConfig::get_value(const char *key, const char *def)$/;"	f	class:KVConfig
+gray_curr_	Detect.h	/^    cv::Mat gray_prev_, gray_curr_;     \/\/ 两帧灰度图，便于使用帧差法 ...$/;"	m	class:Detect
+gray_prev_	Detect.h	/^    cv::Mat gray_prev_, gray_curr_;     \/\/ 两帧灰度图，便于使用帧差法 ...$/;"	m	class:Detect
+has_key	KVConfig.cpp	/^bool KVConfig::has_key(const char *key)$/;"	f	class:KVConfig
+hi_AllocCacheU8C1	hi_opencv.cpp	/^HI_S32 hi_AllocCacheU8C1(IVE_IMAGE_S *pstImage, HI_U16 u16Stride,HI_U16 u16Width, HI_U16 u16Height)$/;"	f
+hi_CopyDataToIveImageU8C1	hi_opencv.cpp	/^void hi_CopyDataToIveImageU8C1(Mat Src, IVE_IMAGE_S *pstDst)$/;"	f
+hi_CopyDataToMatU8C1	hi_opencv.cpp	/^void hi_CopyDataToMatU8C1(IVE_IMAGE_S *pstSrc, Mat &Dst)$/;"	f
+hi_CreateIveImageU8C1	hi_opencv.cpp	/^HI_S32 hi_CreateIveImageU8C1(IVE_IMAGE_S *pstImage, HI_U16 u16width, HI_U16 u16height)$/;"	f
+hi_absdiff	hi_opencv.cpp	/^void hi_absdiff(Mat src1, Mat src2, Mat &dst)$/;"	f
+hi_dilate	hi_opencv.cpp	/^void hi_dilate(Mat Src, Mat &Dst, Mat element, Point anchor, int iterations)$/;"	f
+hi_erode	hi_opencv.cpp	/^void hi_erode(Mat Src, Mat &Dst, Mat element, Point anchor, int iterations)$/;"	f
+hi_goodFeaturesToTrack	hi_opencv.cpp	/^void hi_goodFeaturesToTrack(Mat img, vector<Point2f> &corners, int maxCorners, double qulityLevel, double minDistance)$/;"	f
+hi_threshold	hi_opencv.cpp	/^double hi_threshold(Mat src, Mat &dst, double thresh, double maxval, int type)$/;"	f
+id	cluster.h	/^		int id;	\/\/ 唯一 ... 方便合并 ...$/;"	m	struct:cluster_builder::Cluster
+id_	Target.h	/^    int id_;$/;"	m	class:Target
+init	Target.cpp	/^bool Target::init(KVConfig *cfg, int id, const cv::Rect &roi, const cv::Mat &curr_gray,$/;"	f	class:Target
+is_crossed	Target.cpp	/^bool Target::is_crossed(const cv::Rect &rc) const$/;"	f	class:Target
+is_stopped	Target.cpp	/^bool Target::is_stopped() const$/;"	f	class:Target
+ker_dilate_	DiffMotion.h	/^    cv::Mat ker_erode_, ker_dilate_;$/;"	m	class:DiffMotion
+ker_erode_	DiffMotion.h	/^    cv::Mat ker_erode_, ker_dilate_;$/;"	m	class:DiffMotion
+keys	KVConfig.cpp	/^std::vector<std::string> KVConfig::keys()$/;"	f	class:KVConfig
+kvs_	KVConfig.h	/^	KVS kvs_;$/;"	m	class:KVConfig
+l2g	Target.h	/^    inline void l2g(PTS &pts, const cv::Point &tl) const$/;"	f	class:Target
+large_threshold_	DetectWithOf.h	/^    int large_threshold_;   \/\/$/;"	m	class:DetectWithOf
+last_rc_	Target.h	/^    cv::Rect first_rc_, last_rc_;   \/\/ 起始位置，最后一层的跟踪点的外接 ...$/;"	m	class:Target
+layers	Target.h	/^    inline int layers() const$/;"	f	class:Target
+layers_	Target.h	/^    std::vector<PTS> layers_;               \/\/ 对应多层的特征点 ...$/;"	m	class:Target
+load_from_file	KVConfig.cpp	/^void KVConfig::load_from_file(const char *filename)$/;"	f	class:KVConfig
+loaded_	ObjectDetect.h	/^	bool loaded_;$/;"	m	class:ObjectDetect
+log	Detect.h	/^    void(*log)(const char *fmt, ...);$/;"	m	class:Detect
+log_dummy	utils.h	/^inline void log_dummy(const char *fmt, ...)$/;"	f
+log_file	utils.h	/^inline void log_file(const char *fmt, ...)$/;"	f
+log_init	Detect.h	/^    void(*log_init)(const char *fname);$/;"	m	class:Detect
+log_init_dummy	utils.h	/^inline void log_init_dummy(const char *fname = 0)$/;"	f
+log_init_file	utils.h	/^inline void log_init_file(const char *fname = 0)$/;"	f
+mask_	Detect.h	/^    cv::Mat mask_;$/;"	m	class:Detect
+masked_	Detect.h	/^    bool masked_;$/;"	m	class:Detect
+max_duration_	Detect.h	/^    double max_duration_;   \/\/ “站立”目标最大持续时间，超时，则强制认为坐下 ...$/;"	m	class:Detect
+max_feature_pts_	DetectWithOf.h	/^    int max_feature_pts_;           \/\/ 初始找特征点的数目 ...$/;"	m	class:DetectWithOf
+mean_pt	cluster.h	/^		cv::Point2f mean_pt;$/;"	m	struct:cluster_builder::Cluster
+merge_clusters	cluster.cpp	/^void cluster_builder::merge_clusters(std::vector<cluster_builder::Cluster> &clusters)$/;"	f	class:cluster_builder
+min_dis_5frames_	Target.h	/^    double min_dis_5frames_;    \/\/ 前五帧，有效特征点至少的累计距离 ...$/;"	m	class:Target
+min_pts_	Target.h	/^    int min_pts_;               \/\/ 有效特征点的数目$/;"	m	class:Target
+n_paths_for_stats_	DetectWithOf.h	/^    int n_paths_for_stats_; \/\/ 默认 8，不能超过 10$/;"	m	class:DetectWithOf
+near_dis_	DetectWithOf.h	/^    float far_dis_[4], near_dis_[4];    \/\/ 四个方向的距离阈值 ...$/;"	m	class:DetectWithOf
+near_width_	DetectWithOf.h	/^    float far_width_, near_width_;  \/\/ 帧差矩形的中心y的宽度阈值，如果小于该值，则认为帧差矩形太小了 ...$/;"	m	class:DetectWithOf
+near_y_	DetectWithOf.h	/^    float far_y_, near_y_;  \/\/ 根据 y 轴 ...$/;"	m	class:DetectWithOf
+next_cid_	cluster.h	/^	int next_cid_;$/;"	m	class:cluster_builder
+next_tid_	DetectWithOf.h	/^    int next_tid_;      \/\/ Target ID$/;"	m	class:DetectWithOf
+now	Detect.h	/^    double now() const$/;"	f	class:Detect
+obj_pos	Detect.h	/^        cv::Rect obj_pos;       \/\/ 如果启用了识别，检测到目标的位置 ..$/;"	m	struct:Detect::STANDUP
+od_	Detect.h	/^    ObjectDetect *od_;$/;"	m	class:Detect
+once	cluster.cpp	/^void cluster_builder::once(std::vector<cv::Point2f> &pts, std::vector<cluster_builder::Cluster> &clusters, double threshold)$/;"	f	class:cluster_builder
+op_bigger_dis	Target.h	/^    static inline bool op_bigger_dis(const PATH &p1, const PATH &p2)$/;"	f	class:Target
+op_dis_small_cluster	cluster.h	/^	inline static bool op_dis_small_cluster(const ClusterPair &cp0, const ClusterPair &cp1)$/;"	f	class:cluster_builder
+op_more_pts	Target.cpp	/^static bool op_more_pts(const std::vector<cv::Point2f> &ps1, const std::vector<cv::Point2f> &ps2)$/;"	f	file:
+origin_	Detect.h	/^    cv::Mat origin_;$/;"	m	class:Detect
+outer_	Target.h	/^    cv::Rect outer_;    \/\/ 全局外边框 ...$/;"	m	class:Target
+polyfit_line	DetectWithOf.h	/^    inline void polyfit_line(const cv::Point2f &p1, const cv::Point2f &p2, double &a, double &b) const$/;"	f	class:DetectWithOf
+pos	Detect.h	/^        cv::Rect pos;           \/\/ 站立位置$/;"	m	struct:Detect::STANDUP
+pos	Detect.h	/^        cv::Rect pos;       \/\/$/;"	m	struct:Detect::Standup
+pos	Target.h	/^    inline cv::Rect pos() const$/;"	f	class:Target
+pos2str	utils.h	/^inline std::string pos2str(const cv::Rect &rc)$/;"	f
+process_diff_motions	DetectWithOf.cpp	/^void DetectWithOf::process_diff_motions()$/;"	f	class:DetectWithOf
+pts	cluster.h	/^		std::vector<cv::Point2f> pts;$/;"	m	struct:cluster_builder::Cluster
+reload	KVConfig.cpp	/^int KVConfig::reload()$/;"	f	class:KVConfig
+reload	ObjectDetect.cpp	/^bool ObjectDetect::reload()$/;"	f	class:ObjectDetect
+remove_cluster	cluster.h	/^	inline void remove_cluster(std::vector<Cluster> &clusters, int cid) const$/;"	f	class:cluster_builder
+remove_path	Target.h	/^    inline void remove_path(size_t idx)$/;"	f	class:Target
+reset	Detect.cpp	/^void Detect::reset()$/;"	f	class:Detect
+reset	DetectWithOf.cpp	/^void DetectWithOf::reset()$/;"	f	class:DetectWithOf
+reset	DiffMotion.h	/^    void reset()$/;"	f	class:DiffMotion
+save_as	KVConfig.cpp	/^int KVConfig::save_as(const char *filename)$/;"	f	class:KVConfig
+set_value	KVConfig.cpp	/^int KVConfig::set_value(const char *key, const char *value)$/;"	f	class:KVConfig
+set_value	KVConfig.cpp	/^int KVConfig::set_value(const char *key, int v)$/;"	f	class:KVConfig
+stamp	Detect.h	/^        double stamp;       \/\/ 确认时间戳 ...$/;"	m	struct:Detect::Standup
+stamp_	Detect.h	/^    double stamp_;$/;"	m	class:Detect
+stamp_	Target.h	/^    double stamp_;$/;"	m	class:Target
+stamp_begin	Detect.h	/^        double stamp_begin;     \/\/ 起始时间$/;"	m	struct:Detect::STANDUP
+standups_	Detect.h	/^    STANDUPS standups_;$/;"	m	class:Detect
+standups_	DetectWithOf.h	/^    std::vector<Target> standups_;  \/\/ 站立的目标 ...$/;"	m	class:DetectWithOf
+stopped_dis_	Target.h	/^    double stopped_dis_;        \/\/ 被认为是“停止”的距离 ...$/;"	m	class:Target
+sum_motions	DiffMotion.h	/^    std::vector<cv::Rect> sum_motions() const$/;"	f	class:DiffMotion
+support_detect2	Detect.h	/^    virtual bool support_detect2() const$/;"	f	class:Detect
+support_detect2	DetectWithOf.h	/^    virtual bool support_detect2() const$/;"	f	class:DetectWithOf
+support_long_time_tracking_	DetectWithOf.h	/^    bool support_long_time_tracking_;   \/\/ 是否支持长时间跟踪，就是说，检测到站立后，继续跟踪，直到取消站立状态 ...$/;"	m	class:DetectWithOf
+target_min_dis_5frames_	DetectWithOf.h	/^    double target_min_dis_5frames_; \/\/ 一个目标的有效特征点，在前5帧内，必须至少移动的距离，如果前5帧几乎没有活动，可以认为这些特征点找错了 ...$/;"	m	class:DetectWithOf
+target_min_pts_	DetectWithOf.h	/^    int target_min_pts_;            \/\/ 一个有效目标，至少拥有的特征点数目 ...$/;"	m	class:DetectWithOf
+targets_	DetectWithOf.h	/^    std::vector<Target> targets_;   \/\/ 活动目标 ...$/;"	m	class:DetectWithOf
+threshold_	cluster.h	/^	int threshold_;$/;"	m	class:cluster_builder
+too_small	DetectWithOf.cpp	/^bool DetectWithOf::too_small(const cv::Rect &rc) const$/;"	f	class:DetectWithOf
+track	Target.cpp	/^bool Target::track(const cv::Mat &prev, const cv::Mat &curr, double stamp)$/;"	f	class:Target
+track_targets	DetectWithOf.cpp	/^std::vector<Target> DetectWithOf::track_targets()$/;"	f	class:DetectWithOf
+up_angle_	DetectWithOf.h	/^    int up_angle_;      \/\/$/;"	m	class:DetectWithOf
+waiting	Detect.h	/^        bool waiting;       \/\/ 等待以避免后续的误判 ...$/;"	m	struct:Detect::Standup
+waiting_	Detect.h	/^    double waiting_;        \/\/ 目标坐下后，等待一段时间，再相应此处的活动 ...$/;"	m	class:Detect
+~Detect	Detect.cpp	/^Detect::~Detect()$/;"	f	class:Detect
+~DetectWithOf	DetectWithOf.cpp	/^DetectWithOf::~DetectWithOf()$/;"	f	class:DetectWithOf
+~DiffMotion	DiffMotion.h	/^    ~DiffMotion()$/;"	f	class:DiffMotion
+~KVConfig	KVConfig.cpp	/^KVConfig::~KVConfig(void)$/;"	f	class:KVConfig
+~ObjectDetect	ObjectDetect.cpp	/^ObjectDetect::~ObjectDetect()$/;"	f	class:ObjectDetect
+~Target	Target.cpp	/^Target::~Target()$/;"	f	class:Target
+~cluster_builder	cluster.cpp	/^cluster_builder::~cluster_builder()$/;"	f	class:cluster_builder

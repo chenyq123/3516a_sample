@@ -87,9 +87,11 @@ void DetectWithOf::detect(Detect::RCS &motions, std::vector<Dir> &dirs)
         debug_img_ = cv::Mat::zeros(origin_.rows, origin_.cols, origin_.type());
     }
 
+    printf("DetectWithof line:%d,time:%ld\n", __LINE__, GetTickCount());
     // 跟踪老的 ...
     std::vector<Target> stopped = track_targets();
 
+    printf("DetectWithof line:%d,time:%ld\n", __LINE__, GetTickCount());
     // 处理停止活动的 ...
     for (std::vector<Target>::const_iterator it = stopped.begin(); it != stopped.end(); ++it) {
         cv::Rect pos;
@@ -121,8 +123,10 @@ void DetectWithOf::detect(Detect::RCS &motions, std::vector<Dir> &dirs)
         }
     }
 
+    printf("DetectWithof line:%d,time:%ld\n", __LINE__, GetTickCount());
     // 新的来自不相交的帧差矩形可以创建新的跟着区域 ...
     process_diff_motions();
+    printf("DetectWithof line:%d,time:%ld\n", __LINE__, GetTickCount());
 
     if (debug_) {
         char info[64];
@@ -212,7 +216,9 @@ void DetectWithOf::detect2(Detect::RCS &standups)
 
 void DetectWithOf::process_diff_motions()
 {
+    printf("DetectWithof line:%d,time:%ld\n", __LINE__, GetTickCount());
     RCS rcs = dm_.get_motions(gray_prev_, gray_curr_);
+    printf("DetectWithof line:%d,time:%ld\n", __LINE__, GetTickCount());
     for (RCS::const_iterator it = rcs.begin(); it != rcs.end(); ++it) {
         if (too_small(*it)) {
             continue;
@@ -227,6 +233,7 @@ void DetectWithOf::process_diff_motions()
             }
         }
     }
+    printf("DetectWithof line:%d,time:%ld\n", __LINE__, GetTickCount());
 
 
 }
@@ -323,6 +330,7 @@ std::vector<Target> DetectWithOf::track_targets()
 {
     std::vector<Target> stopped;
     for (std::vector<Target>::iterator it = targets_.begin(); it != targets_.end();) {
+        printf("DetectWithof line:%d,time:%ld\n", __LINE__, GetTickCount());
         if (!it->track(gray_prev_, gray_curr_, stamp_)) {
             log("WRN: %u: target 跟踪失败，放弃: %s\n", cnt_, it->descr().c_str());
             it = targets_.erase(it);
@@ -350,6 +358,7 @@ std::vector<Target> DetectWithOf::track_targets()
                 }
             }
         }
+        printf("DetectWithof line:%d,time:%ld\n", __LINE__, GetTickCount());
     }
 
     return stopped;

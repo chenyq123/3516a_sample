@@ -67,7 +67,7 @@ void Detect::detect(const cv::Mat &origin, Detect::RCS &standups)
 
     cv::swap(gray_prev_, gray_curr_);
 
-    assert(dirs.size() == motions.size());
+    //assert(dirs.size() == motions.size());
 
     if (dirs.size() > 0) {
         int a = 0;

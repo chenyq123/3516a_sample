@@ -1,6 +1,6 @@
 #pragma once
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/opencv1.hpp>
 #include <deque>
 #include "KVConfig.h"
 #include "utils.h"
@@ -79,7 +79,10 @@ private:
         hi_erode(sum, sum, ker_erode_);
         //cv::dilate(sum, sum, ker_dilate_);
         Point p;
+        printf("Diffmotion line:%d,time:%ld\n", __LINE__, GetTickCount());
+        //cv::dilate(sum, sum, ker_dilate_);
         hi_dilate(sum, sum, ker_dilate_, p, 5);
+        printf("Diffmotion line:%d,time:%ld\n", __LINE__, GetTickCount());
 
         std::vector<std::vector<cv::Point> > contours;
         cv::findContours(sum, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);

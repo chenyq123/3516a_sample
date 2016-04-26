@@ -59,22 +59,28 @@ void Detect::detect(const cv::Mat &origin, Detect::RCS &standups)
     cnt_++;
     origin_ = origin;
 
-    if (masked_) {
-        cv::bitwise_and(origin, mask_, origin);
-    }
-
+    //if (masked_) {
+    //    cv::bitwise_and(origin, mask_, origin);
+    //}
+    printf("line:%d,time:%ld\n", __LINE__, GetTickCount());
     cv::cvtColor(origin, gray_curr_, cv::COLOR_BGR2GRAY);
+    printf("line:%d,time:%ld\n", __LINE__, GetTickCount());
     if (gray_prev_.cols == 0) {
         gray_prev_ = gray_curr_.clone();
     }
+    printf("line:%d,time:%ld\n", __LINE__, GetTickCount());
 
     if (support_detect2()) {
+        printf("line:%d,time:%ld\n", __LINE__, GetTickCount());
         detect2(standups);
+        printf("line:%d,time:%ld\n", __LINE__, GetTickCount());
     }
     else {
         RCS motions;
         std::vector<Dir> dirs;
+        printf("line:%d,time:%ld\n", __LINE__, GetTickCount());
         detect(motions, dirs);
+        printf("line:%d,time:%ld\n", __LINE__, GetTickCount());
 
         cv::swap(gray_prev_, gray_curr_);
 
@@ -93,7 +99,9 @@ void Detect::detect(const cv::Mat &origin, Detect::RCS &standups)
                         // 在 motions[i].pos 的上半部分进行头肩识别 ...
                         cv::Rect roi = motions[i];
                         roi.height /= 2;    // FIXME:
+                        printf("line:%d,time:%ld\n", __LINE__, GetTickCount());
                         faces = od_->detect(gray_curr_, roi);
+                        printf("line:%d,time:%ld\n", __LINE__, GetTickCount());
                         if (faces.empty()) {
                             log("WRN: %u: 新目标：%s, 但是找不到头肩，失败\n", cnt_, pos2str(motions[i]).c_str());
                             continue;
@@ -127,6 +135,7 @@ void Detect::detect(const cv::Mat &origin, Detect::RCS &standups)
                 log("INFO: %u: 目标消失，进入Waiting，%s: pos=%s\n", cnt_, DirDesc[dirs[i]], pos2str(it->pos).c_str());
             }
         }
+        printf("line:%d,time:%ld\n", __LINE__, GetTickCount());
 
         // 检查超时 ...
         for (STANDUPS::iterator it = standups_.begin(); it != standups_.end();) {
@@ -149,6 +158,7 @@ void Detect::detect(const cv::Mat &origin, Detect::RCS &standups)
                 ++it;
             }
         }
+        printf("line:%d,time:%ld\n", __LINE__, GetTickCount());
     }
 }
 

@@ -9,6 +9,7 @@ ifeq ($(WDR),)
 WDR :=n
 endif
 
+SAMPLE_PATH = $(PWD)
 
 ################# select sensor type for your sample ####################
 #SENSOR_TYPE ?= SONY_IMX122_DC_1080P_30FPS
@@ -139,12 +140,12 @@ SENSOR_LIBS += $(REL_LIB)/lib_iniparser.a
 #########################################################################
 
 COMMON_DIR:=$(PWD)/../common
-TEST_COMM_DIR :=$(PWD)/../test_comm
+#TEST_COMM_DIR :=$(PWD)/../test_comm
 CJSON_COMM_DIR := /root/cJSON
 
 INC_FLAGS := -I$(COMMON_DIR)
 INC_FLAGS += -I$(REL_INC)
-INC_FLAGS += -I$(TEST_COMM_DIR)
+#INC_FLAGS += -I$(TEST_COMM_DIR)
 INC_FLAGS += -I$(CJSON_COMM_DIR)
 INC_FLAGS += -I$(SDK_PATH)/mpp/component/acodec
 
@@ -210,8 +211,8 @@ COMM_SRC := $(wildcard $(COMMON_DIR)/*.c)
 
 COMM_OBJ := $(COMM_SRC:%.c=%.o)
 
-TEST_COMM_SRC := $(wildcard $(TEST_COMM_DIR)/*.c)
-TEST_COMM_OBJ := $(TEST_COMM_SRC:%.c=%.o)
+#TEST_COMM_SRC := $(wildcard $(TEST_COMM_DIR)/*.c)
+#TEST_COMM_OBJ := $(TEST_COMM_SRC:%.c=%.o)
 
 
 CJSON_COMM_SRC := $(wildcard $(CJSON_COMM_DIR)/*.c)

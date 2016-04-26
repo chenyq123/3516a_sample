@@ -1,7 +1,7 @@
 #ifndef HI_OPENCV_H
 #define HI_OPENCV_H
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/opencv1.hpp>
 #include "hi_comm_ive.h"
 #include "hi_ive.h"
 #include "mpi_ive.h"

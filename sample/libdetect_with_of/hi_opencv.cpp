@@ -21,7 +21,7 @@ HI_S32 hi_CreateIveImageU8C1(IVE_IMAGE_S *pstImage, HI_U16 u16width, HI_U16 u16h
     //pstImage->u16Stride[0] = u16stride;
     //pstImage->u16Width = u16stride;
     pstImage->u16Height = u16height;
-    HI_S32 ret = HI_MPI_SYS_MmzAlloc_Cached(&pstImage->u32PhyAddr[0], (void**)&pstImage->pu8VirAddr[0], "user", HI_NULL, u16width * u16height);
+    HI_S32 ret = HI_MPI_SYS_MmzAlloc(&pstImage->u32PhyAddr[0], (void**)&pstImage->pu8VirAddr[0], "user", HI_NULL, u16width * u16height);
     memset(pstImage->pu8VirAddr[0], 0, pstImage->u16Stride[0] * pstImage->u16Height);
     return ret;
 }
@@ -40,13 +40,10 @@ HI_S32 hi_AllocCacheU8C1(IVE_IMAGE_S *pstImage, HI_U16 u16Stride,HI_U16 u16Width
 
 void hi_CopyDataToIveImageU8C1(Mat Src, IVE_IMAGE_S *pstDst)
 {
-    //printf("Src.cols=%d,Src.rows=%d\n",Src.cols, Src.rows);
     if(Src.data == NULL || pstDst->pu8VirAddr == NULL)
         return ;
-    //for(int i = 0; i < pstDst->u16Height; i++)
     for(int i = 0; i < Src.rows; i++)
     {
-        //memcpy(pstDst->pu8VirAddr[0] + i * pstDst->u16Stride[0], Src.data + i * Src.step[0], pstDst->u16Width);
         memcpy(pstDst->pu8VirAddr[0] + i * pstDst->u16Stride[0], Src.data + i * Src.step[0], Src.cols);
     }
 }
@@ -379,19 +376,19 @@ void calcLKOpticalFlow(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prep
     memset(stSrcPre, 0, sizeof(IVE_SRC_IMAGE_S) * 3);
     memset(stSrcCur, 0, sizeof(IVE_SRC_IMAGE_S) * 3);
 
-    pyrimidsCur[2] = cur_gray;
-    pyrimidsPre[2] = pre_gray;
+    pyrimidsCur[2] = cur_gray.clone();
+    pyrimidsPre[2] = pre_gray.clone();
 
     for(s32Index = 0, s32DownIndex = 8; s32Index < 3; s32Index++)
     {
         s32DownIndex /= 2;
-        ret = hi_CreateIveImageU8C1(&stSrcPre[s32Index], width / s32DownIndex, height / s32DownIndex);
+        ret = hi_CreateIveImageU8C1(&stSrcPre[s32Index], width / s32DownIndex + 1, height / s32DownIndex + 1);
         if(ret != HI_SUCCESS)
         {
             printf("hi_CreateIveImageU8C1 with err code %#x\n", ret);
             return;
         }
-        ret = hi_CreateIveImageU8C1(&stSrcCur[s32Index], width / s32DownIndex, height / s32DownIndex);
+        ret = hi_CreateIveImageU8C1(&stSrcCur[s32Index], width / s32DownIndex + 1, height / s32DownIndex + 1);
         if(ret != HI_SUCCESS)
         {
             printf("hi_CreateIveImageU8C1 with err code %#x\n", ret);
@@ -457,12 +454,20 @@ void calcLKOpticalFlow(cv::Mat pre_gray, cv::Mat cur_gray, vector<Point2f> &prep
 
     for(int i = 0; i < 3; i++)
     {
-        for(int j = 0; j < stSrcPre[i].u16Height; j++)
-        {
-            memcpy(stSrcPre[i].pu8VirAddr[0] + j * stSrcPre[i].u16Stride[0], pyrimidsPre[i].data + j * pyrimidsPre[i].step[0], stSrcPre[i].u16Width);
-            memcpy(stSrcCur[i].pu8VirAddr[0] + j * stSrcCur[i].u16Stride[0], pyrimidsCur[i].data + j * pyrimidsCur[i].step[0], stSrcCur[i].u16Width);
-        }
+        char str[50]={};
+        hi_CopyDataToIveImageU8C1(pyrimidsPre[i], &stSrcPre[i]);
+        hi_CopyDataToIveImageU8C1(pyrimidsCur[i], &stSrcCur[i]);
+        //Mat tmp(stSrcCur[i].u16Height, stSrcCur[i].u16Width, CV_8UC1, 0);
+        //tmp.data = stSrcCur[i].pu8VirAddr[0];
+        //sprintf(str ,"tmp%d.bmp",i);
+        //imwrite(str, tmp);
+        //for(int j = 0; j < stSrcPre[i].u16Height; j++)
+        //{
+        //    memcpy(stSrcPre[i].pu8VirAddr[0] + j * stSrcPre[i].u16Stride[0], pyrimidsPre[i].data + j * pyrimidsPre[i].step[0], stSrcPre[i].u16Width);
+        //    memcpy(stSrcCur[i].pu8VirAddr[0] + j * stSrcCur[i].u16Stride[0], pyrimidsCur[i].data + j * pyrimidsCur[i].step[0], stSrcCur[i].u16Width);
+        //}
     }
+    //printf("writed.\n");
 
 
     memset(stMv.pu8VirAddr, 0, stLkOptiFlowCtrl.u16CornerNum * sizeof(IVE_MV_S9Q7_S));
@@ -532,7 +537,7 @@ CALCLK_END4:
 }
 
 //cv::goodFeaturesToTrack(curr_gray(roi), pts, 300, 0.05, 1.5);
-void hi_goodFeaturesToTrack(Mat image, vector<Point2f> &corners, int maxCorners, double qulityLevel, double minDistance)
+void hi_goodFeaturesToTrack(Mat &img, vector<Point2f> &corners, int maxCorners, double qulityLevel, double minDistance)
 {
     IVE_HANDLE IveHandle;
     IVE_SRC_IMAGE_S stSrc;
@@ -543,13 +548,14 @@ void hi_goodFeaturesToTrack(Mat image, vector<Point2f> &corners, int maxCorners,
     HI_BOOL bInstant = HI_TRUE;
     HI_S32 ret;
     HI_U16 width, height;
+    Mat image = img.clone();
     width = image.cols;
     height = image.rows;
     int cornernum;
     IVE_POINT_U16_S *pastCorner;
     IVE_ST_CORNER_INFO_S *pstCornerInfo;
     HI_BOOL bFinish;
-    printf("cols:%d,row:%d\n", width, height);
+    //printf("cols:%d,row:%d\n", width, height);
     ret = hi_CreateIveImageU8C1(&stSrc, width, height);
     if(ret != HI_SUCCESS)
     {
@@ -566,7 +572,7 @@ void hi_goodFeaturesToTrack(Mat image, vector<Point2f> &corners, int maxCorners,
     hi_CopyDataToIveImageU8C1(image, &stSrc);
 
     stStCandiCornerCtrl.u0q8QualityLevel = (unsigned int)(qulityLevel * 256);
-    printf("Level:%x\n",stStCandiCornerCtrl.u0q8QualityLevel);
+    //printf("Level:%x\n",stStCandiCornerCtrl.u0q8QualityLevel);
 
     stStCandiCornerCtrl.stMem.u32Size = 4 * stSrc.u16Width * stSrc.u16Height + sizeof(IVE_ST_MAX_EIG_S);
     ret = HI_MPI_SYS_MmzAlloc(&stStCandiCornerCtrl.stMem.u32PhyAddr, (void**)&stStCandiCornerCtrl.stMem.pu8VirAddr, "user", HI_NULL, stStCandiCornerCtrl.stMem.u32Size);
@@ -599,8 +605,8 @@ void hi_goodFeaturesToTrack(Mat image, vector<Point2f> &corners, int maxCorners,
 
     stStCornerCtrl.u16MaxCornerNum = maxCorners;
     stStCornerCtrl.u16MinDist = minDistance;
-    printf("MaxCorner:%x\n",stStCornerCtrl.u16MaxCornerNum);
-    printf("Distance:%x\n",stStCornerCtrl.u16MinDist);
+    //printf("MaxCorner:%x\n",stStCornerCtrl.u16MaxCornerNum);
+    //printf("Distance:%x\n",stStCornerCtrl.u16MinDist);
 
     ret = HI_MPI_IVE_STCorner(&stCandiCorner, &stCorner, &stStCornerCtrl);
     if(ret != HI_SUCCESS)
@@ -618,7 +624,7 @@ void hi_goodFeaturesToTrack(Mat image, vector<Point2f> &corners, int maxCorners,
     //cornernum = ((IVE_ST_CORNER_INFO_S *)stCorner.pu8VirAddr)->u16CornerNum;
     //pastCorner = ((IVE_ST_CORNER_INFO_S *)stCorner.pu8VirAddr)->astCorner;
     pstCornerInfo = (IVE_ST_CORNER_INFO_S *)stCorner.pu8VirAddr;
-    printf("u16CornerNum:%d\n",pstCornerInfo->u16CornerNum);
+    //printf("u16CornerNum:%d\n",pstCornerInfo->u16CornerNum);
     for(int i = 0; i < pstCornerInfo->u16CornerNum; i++)
     {
         Point2f p;

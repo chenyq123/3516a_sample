@@ -33,13 +33,14 @@ bool Target::init(KVConfig *cfg, int id, const cv::Rect &roi, const cv::Mat &cur
     id_ = id;
 
     PTS pts;
-    //cv::goodFeaturesToTrack(curr_gray(roi), pts, 300, 0.05, 1.5);
+    printf("goodFeaturesToTrack begin\n");
+    cv::goodFeaturesToTrack(curr_gray(roi), pts, 300, 0.01, 1.5);
     //imwrite("save.bmp",curr_gray(roi));
-    hi_goodFeaturesToTrack(curr_gray(roi), pts, 200, 0.05, 10);
+    //hi_goodFeaturesToTrack(curr_gray(roi), pts, 200, 0.01, 10);
     //imwrite("save.bmp",curr_gray(roi));
     printf("goodFeaturesToTrack\n");
 
-    printf("pts.size:%d\n",pts.size());
+    //printf("pts.size:%d\n",pts.size());
     if (pts.size() < 15) {
         return false;
     }
@@ -60,6 +61,7 @@ bool Target::track(const cv::Mat &prev, const cv::Mat &curr, double stamp)
     // FIXME: 简单的四周扩展 ...
     // 第一次得到的特征点，总有部分不在活动目标上，所以应该在N帧之后，扔掉这些点，让“跟踪点”真正落在目标上 ...
 
+    printf("begin\n");
     int exp = 60;   // 不知道这个距离是否合理 ...
     cv::Rect search_roi = last_rc_;
     search_roi.x -= exp;
@@ -75,8 +77,8 @@ bool Target::track(const cv::Mat &prev, const cv::Mat &curr, double stamp)
     vector<unsigned char> states;
     //cv::calcOpticalFlowPyrLK(prev(search_roi), curr(search_roi), last_pts, curr_pts, status, err);
     printf("calc begin\n");
-    cv::calcOpticalFlowPyrLK(prev(search_roi), curr(search_roi), last_pts, curr_pts, status, err);
-    //calcLKOpticalFlow(prev(search_roi), curr(search_roi), last_pts, curr_pts, states);
+    //cv::calcOpticalFlowPyrLK(prev(search_roi), curr(search_roi), last_pts, curr_pts, states, err);
+    calcLKOpticalFlow(prev(search_roi), curr(search_roi), last_pts, curr_pts, states);
     printf("calc end\n");
 
     //for (int r = 0; r < status.rows; r++) {
@@ -95,6 +97,7 @@ bool Target::track(const cv::Mat &prev, const cv::Mat &curr, double stamp)
 
     /// 删除错误点对应的轨迹 ...
     PTS valid_pts;
+    printf("line=%d\n",__LINE__);
     for (int i = (int)curr_pts.size() - 1; i >= 0; i--) {
         if (curr_pts[i].x < -5000) {
             remove_path(i);
@@ -103,20 +106,28 @@ bool Target::track(const cv::Mat &prev, const cv::Mat &curr, double stamp)
             valid_pts.push_back(curr_pts[i]);
         }
     }
+    printf("line=%d\n",__LINE__);
 
     if (valid_pts.size() < 10) {
         return false;
     }
 
+    printf("line=%d\n",__LINE__);
     std::reverse(valid_pts.begin(), valid_pts.end());   // 需要反序 ...
 
+    printf("line=%d\n",__LINE__);
     l2g(valid_pts, search_roi.tl());
 
+    printf("line=%d\n",__LINE__);
     layers_.push_back(valid_pts);
+    printf("line=%d\n",__LINE__);
     last_rc_ = cv::boundingRect(valid_pts);
+    printf("line=%d\n",__LINE__);
     brc_ |= last_rc_;
+    printf("line=%d\n",__LINE__);
 
     check_paths(stamp);
+    printf("line=%d\n",__LINE__);
 
     return true;
 }

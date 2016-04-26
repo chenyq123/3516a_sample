@@ -40,17 +40,24 @@ public:
     std::vector<cv::Rect> get_motions(const cv::Mat &prev_gray, const cv::Mat &next_gray)
     {
         cv::Mat diff;
+        printf("get_motions line:%d\n",__LINE__);
         //
         //cv::absdiff(prev_gray, next_gray, diff);
         hi_absdiff(prev_gray, next_gray, diff);
+        printf("get_motions line:%d\n",__LINE__);
         //
         //cv::threshold(diff, diff, diff_threshold_, 255, cv::THRESH_BINARY);
         hi_threshold(diff, diff, diff_threshold_, 255, cv::THRESH_BINARY);
+        printf("get_motions line:%d\n",__LINE__);
 
         diffs_.push_back(diff);
+        printf("get_motions line:%d\n",__LINE__);
         while ((int)diffs_.size() > cnt_) {
+            printf("diffs.size:%d, cnt_:%d\n",diffs_.size(), cnt_);
             diffs_.pop_front();
+            printf("get_motions line:%d\n",__LINE__);
         }
+        printf("get_motions line:%d\n",__LINE__);
 
         return sum_motions();
     }
@@ -65,29 +72,35 @@ public:
 private:
     std::vector<cv::Rect> sum_motions() const
     {
-        printf("diffs.size:%d, cnt_:%d\n",diffs_.size(), cnt_);
+        //printf("diffs.size:%d, cnt_:%d\n",diffs_.size(), cnt_);
         //assert(diffs_.size() == cnt_);
         //assert(cnt_ >= 1);
 
         cv::Mat sum = diffs_[0];
+        printf("get_motions line:%d\n",__LINE__);
         for (size_t i = 1; i < diffs_.size(); i++) {
             cv::bitwise_or(sum, diffs_[i], sum);
         }
+        printf("get_motions line:%d\n",__LINE__);
 
         //
         //cv::erode(sum, sum, ker_erode_);
         hi_erode(sum, sum, ker_erode_);
+        printf("get_motions line:%d\n",__LINE__);
         //
         //cv::dilate(sum, sum, ker_dilate_);
         hi_dilate(sum, sum, ker_dilate_);
+        printf("get_motions line:%d\n",__LINE__);
 
         std::vector<std::vector<cv::Point> > contours;
         cv::findContours(sum, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_NONE);
+        printf("get_motions line:%d\n",__LINE__);
 
         std::vector<cv::Rect> rcs;
         for (size_t i = 0; i < contours.size(); i++) {
             rcs.push_back(cv::boundingRect(contours[i]));
         }
+        printf("get_motions line:%d\n",__LINE__);
 
         return rcs;
     }

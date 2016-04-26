@@ -1,6 +1,6 @@
 #pragma once
 
-#include <opencv2/opencv.hpp>
+#include <opencv2/opencv1.hpp>
 #include "utils.h"
 #include "KVConfig.h"
 #include "hi_opencv.h"
