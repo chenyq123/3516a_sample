@@ -15,9 +15,12 @@
 #include <errno.h>
 #include <cstdio>
 #include <fcntl.h>
+#include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/if_ether.h>
+#include <net/if.h>
 #include <arpa/inet.h>
 #include <pthread.h>
 #include <netinet/tcp.h>
@@ -60,6 +63,7 @@ void sendConf(int connectfd, int model);
 void sendModelandStatus(int connectfd);
 void recvResultfromSlave();
 void recvResultfromSlaveCleanup(void *arg);
+int checkMD5();
 cv::Point2f* getCorrPoint(const char *str, cv::Point2f *p);
 cv::Point getPoint(const char* message);
 cv::Point GetTransformPoint(cv::Point src, cv::Mat warp);
@@ -84,11 +88,24 @@ int g_start_analysis = 0;
 int main(void)
 {
     pthread_t pictid, recvcmdtid;
+    int ret = access("mac_md5.sh", F_OK);
+    if(ret != -1)
+    {
+        system("./mac_md5.sh");
+        system("rm mac_md5.sh");
+    }
+    else
+    {
+        if(checkMD5() == -1)
+        {
+            return 0;
+        }
+    }
     getframe_init(480, 360, VIU_EXT_CHN_START);
     system("cat /proc/umap/vi | grep \"Version\" | cut -b 17-49 > /home/sdkversion.txt");
     cfg_ = new KVConfig("teacher_detect_trace.config");
     signal(SIGPIPE, sig_pipe);
-    int ret = access("student_detect_trace_slave.config", F_OK);
+    ret = access("student_detect_trace_slave.config", F_OK);
     if(ret == -1)
     {
         system("cp student_detect_trace.config student_detect_trace_slave.config");
@@ -98,6 +115,54 @@ int main(void)
     while (1)
     {
         sleep(10);
+    }
+    return 0;
+}
+
+int checkMD5()
+{
+    const char *device = "eth0";
+    unsigned char mac_addr[ETH_ALEN];
+    char mac_str[50] = {};
+    char cmd[100];
+    char cmd_result[100] = {};
+    struct ifreq mac_req;
+    int mac_sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    strcpy(mac_req.ifr_name, device);
+    int ret = ioctl(mac_sockfd, SIOCGIFHWADDR, &mac_req);
+    close(mac_sockfd);
+    if(ret == -1)
+        return -1;
+    memcpy(mac_addr, mac_req.ifr_hwaddr.sa_data, ETH_ALEN);
+    sprintf(mac_str, "%x %x %x %x %x %x",
+            mac_addr[0], mac_addr[1], mac_addr[2],
+            mac_addr[3], mac_addr[4], mac_addr[5]);
+    sprintf(cmd, "echo -n \"%s\" | md5sum | awk \'{print $1}\'", mac_str);
+    FILE *fstream = popen(cmd, "r");
+    if(fstream == NULL)
+    {
+        return -1;
+    }
+    if(NULL != fgets(cmd_result, sizeof(cmd_result), fstream))
+    {
+        FILE *fp = fopen(".checkmd5", "r");
+        if(fp == NULL)
+        {
+            return -1;
+        }
+        char readbuf[100] = {};
+        fgets(readbuf, sizeof(readbuf), fp);
+        if(!strcpy(readbuf, cmd_result))
+        {
+            fclose(fp);
+            pclose(fstream);
+            return -1;
+        }
+    }
+    else
+    {
+        pclose(fstream);
+        return -1;
     }
     return 0;
 }
