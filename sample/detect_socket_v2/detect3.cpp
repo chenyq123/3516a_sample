@@ -33,7 +33,7 @@
 using namespace std;
 using namespace cv;
 
-const char *version = "v0.10";
+const char *version = "v0.13";
 
 const VI_CHN ExtChn = VIU_EXT_CHN_START;
 KVConfig *cfg_ = NULL;
@@ -305,6 +305,7 @@ void AnalyzePic()
             img_w = 480;
             img_h = 270;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
+            sleep(1);
             ip = pdet->cfg_->get_value("send_result_ip", "10.1.2.124");
             port = atoi(pdet->cfg_->get_value("send_result_port","9002"));
         }
@@ -315,6 +316,7 @@ void AnalyzePic()
             img_w = 480;
             img_h = 270;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
+            sleep(1);
             ip = pdet->cfg_->get_value("send_result_ip", "10.1.2.124");
             port = atoi(pdet->cfg_->get_value("send_result_port","9002"));
         }
@@ -326,6 +328,7 @@ void AnalyzePic()
             img_w = 480;
             img_h = 360;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
+            sleep(1);
             ip = pdet->cfg_->get_value("send_result_ip", "10.1.2.124");
             port = atoi(pdet->cfg_->get_value("send_result_port","9002"));
 
@@ -344,7 +347,7 @@ void AnalyzePic()
             img_w = 480;
             img_h = 360;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
-
+            sleep(1);
             ip = pdet->cfg_->get_value("student_master_ip", "10.1.2.124");
 
             //memset(&address, 0, sizeof(struct sockaddr_in));
