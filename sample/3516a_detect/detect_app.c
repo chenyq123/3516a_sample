@@ -68,37 +68,37 @@ int main(int argc, char const *argv[])
     HI_S32 s32Ret = HI_SUCCESS;
     pthread_t pictid, recvcmdtid;
 
-	stExtChnAttr.enPixFormat = PIXEL_FORMAT_YUV_SEMIPLANAR_420;
-	stExtChnAttr.s32BindChn = ViChn;
-	stExtChnAttr.stDestSize.u32Width = WIDTH;
-	stExtChnAttr.stDestSize.u32Height = HEIGHT;
-	stExtChnAttr.s32DstFrameRate = -1;
-	stExtChnAttr.s32SrcFrameRate = -1;
-	stExtChnAttr.enCompressMode = COMPRESS_MODE_NONE;
+    stExtChnAttr.enPixFormat = PIXEL_FORMAT_YUV_SEMIPLANAR_420;
+    stExtChnAttr.s32BindChn = ViChn;
+    stExtChnAttr.stDestSize.u32Width = WIDTH;
+    stExtChnAttr.stDestSize.u32Height = HEIGHT;
+    stExtChnAttr.s32DstFrameRate = -1;
+    stExtChnAttr.s32SrcFrameRate = -1;
+    stExtChnAttr.enCompressMode = COMPRESS_MODE_NONE;
 
     HI_MPI_VI_DisableChn(ExtChn);
 
    // printf("---------------------v0.01-----------------------");
-	s32Ret = HI_MPI_VI_SetExtChnAttr(ExtChn, &stExtChnAttr);
-	if (HI_SUCCESS != s32Ret)
-	{
-		printf("HI_MPI_VI_SetExtChnAttr failed with err code %#x\n", s32Ret);
-		return -1;
-	}
+    s32Ret = HI_MPI_VI_SetExtChnAttr(ExtChn, &stExtChnAttr);
+    if (HI_SUCCESS != s32Ret)
+    {
+        printf("HI_MPI_VI_SetExtChnAttr failed with err code %#x\n", s32Ret);
+        return -1;
+    }
 
-	s32Ret = HI_MPI_VI_SetFrameDepth(ExtChn, 1);
-	if (HI_SUCCESS != s32Ret)
-	{
-		printf("HI_MPI_VI_SetFrameDepth failed with err code %#x\n", s32Ret);
-		return -1;
-	}
+    s32Ret = HI_MPI_VI_SetFrameDepth(ExtChn, 1);
+    if (HI_SUCCESS != s32Ret)
+    {
+        printf("HI_MPI_VI_SetFrameDepth failed with err code %#x\n", s32Ret);
+        return -1;
+    }
 
-	s32Ret = HI_MPI_VI_EnableChn(ExtChn);
-	if (HI_SUCCESS != s32Ret)
-	{
-		printf("HI_MPI_VI_EnableChn failed with err code %#x\n", s32Ret);
-		return -1;
-	}
+    s32Ret = HI_MPI_VI_EnableChn(ExtChn);
+    if (HI_SUCCESS != s32Ret)
+    {
+        printf("HI_MPI_VI_EnableChn failed with err code %#x\n", s32Ret);
+        return -1;
+    }
     signal(SIGPIPE, sig_pipe);
     pthread_create(&pictid, NULL, AnalyzePic, NULL);
     pthread_create(&recvcmdtid, NULL, RecvCMD, NULL);
@@ -214,8 +214,8 @@ void AnalyzePic()
         {
             printf("HI_MPI_VI_GetFrame failed with err code %#x!\n",s32Ret);
         }
-		size = FrameInfo.stVFrame.u32Stride[0] * FrameInfo.stVFrame.u32Height;
-		pImg = (char*)HI_MPI_SYS_Mmap(FrameInfo.stVFrame.u32PhyAddr[0], size);
+        size = FrameInfo.stVFrame.u32Stride[0] * FrameInfo.stVFrame.u32Height;
+        pImg = (char*)HI_MPI_SYS_Mmap(FrameInfo.stVFrame.u32PhyAddr[0], size);
         str = JSMyTest(pImg, str1);
         if(str != NULL)
         {

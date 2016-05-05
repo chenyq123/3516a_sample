@@ -10,7 +10,7 @@ OBJ  := $(APP).o
 TARGET := $(APP)
 
 #LIBDETECT_DET_WITH_OF_PATH := /root/3516a/Hi3516A_SDK_V1.0.4.0/mpp/sample/libdetect_with_of_v2
-LIBDETECT_DET_WITH_OF_PATH := $(MPP_PATH)/sample/libdetect_with_of_v2
+LIBDETECT_DET_WITH_OF_PATH := $(MPP_PATH)/sample/libdetect_with_of_v3
 LIBDETECT_DET_WITH_OF_OBJ := $(wildcard $(LIBDETECT_DET_WITH_OF_PATH)/*.o)
 
 

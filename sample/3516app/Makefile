@@ -1,14 +1,16 @@
-# Hisilicon Hi3516 sample Makefile
 
 include ../Makefile.param
-#ifeq ($(SAMPLE_PARAM_FILE), )
-#     SAMPLE_PARAM_FILE:=../Makefile.param
-#     include $(SAMPLE_PARAM_FILE)
-#endif
+#SRC  := $(wildcard *.c) 
+#OBJ  := $(SRC:%.c=%.o)
 
-# target source
-SRC  := $(wildcard *.c) 
-OBJ  := $(SRC:%.c=%.o)
+SRC := 3516a.c
+OBJ := $(SRC:%.c=%.o)
+
+TEST_COMM_PATH := $(MPP_PATH)/sample/test_comm
+TEST_COMM_SRC := $(wildcard $(TEST_COMM_PATH)/*.c)
+TEST_COMM_OBJ := $(TEST_COMM_SRC:%.c=%.o)
+
+CFLAGS += -I $(TEST_COMM_PATH)
 
 TARGET := $(OBJ:%.o=%)
 .PHONY : clean all
@@ -19,10 +21,10 @@ MPI_LIBS := $(REL_LIB)/libmpi.a
 IVE_LIBS := $(REL_LIB)/libive.a
 OPENCV_FLAGS := -lpthread -lrt `pkg-config --libs --cflags hisiv100-opencv`
 
-$(OBJ): %.o: %.c
+$(OBJ): $(SRC)
 	$(CC) $(CFLAGS)  -lpthread -lmath -lm -c -o $@ $^ $(MPI_LIBS) $(AUDIO_LIBA) $(SENSOR_LIBS)  -lstdc++
 
-$(TARGET):%:%.o $(COMM_OBJ) $(TEST_COMM_OBJ) 
+$(TARGET): $(OBJ) $(COMM_OBJ) $(TEST_COMM_OBJ)
 	$(CC) $(CFLAGS)  -lpthread -lm -o $@ $^ $(MPI_LIBS) $(AUDIO_LIBA) $(SENSOR_LIBS) $(IVE_LIBS) -lstdc++
 
 clean:
@@ -30,8 +32,5 @@ clean:
 	@rm -f $(OBJ)
 	@rm -f $(COMM_OBJ)
 
-cleanstream:
-	@rm -f *.h264
-	@rm -f *.jpg
-	@rm -f *.mjp
-	@rm -f *.mp4
+echo:
+	@echo $()

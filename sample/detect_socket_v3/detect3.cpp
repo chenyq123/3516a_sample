@@ -36,6 +36,9 @@
 using namespace std;
 using namespace cv;
 
+#define STU_IMG_WIDTH 480
+#define STU_IMG_HEIGHT 360
+
 const char *version = "v0.10";
 
 const VI_CHN ExtChn = VIU_EXT_CHN_START;
@@ -231,14 +234,14 @@ int getframe(Mat *Img, int ExtChn)
     stDst.enType = IVE_IMAGE_TYPE_U8C3_PACKAGE;
     stCscCtrl.enMode = IVE_CSC_MODE_PIC_BT709_YUV2RGB;
 
-    printf("line:%d\n",__LINE__);
+    //printf("line:%d\n",__LINE__);
     s32Ret = HI_MPI_VI_GetFrame(ExtChn, &FrameInfo, -1);
     if (HI_SUCCESS != s32Ret)
     {
         printf("HI_MPI_VI_GetFrame failed with err code %#x!\n", s32Ret);
         return -1;
     }
-    printf("line:%d\n",__LINE__);
+    //printf("line:%d\n",__LINE__);
 
     u32DstBlkSize = FrameInfo.stVFrame.u32Stride[0] * FrameInfo.stVFrame.u32Height * 3;
     s32Ret = HI_MPI_SYS_MmzAlloc(&stDst.u32PhyAddr[0], (void**)&stDst.pu8VirAddr[0], "user", HI_NULL, u32DstBlkSize);
@@ -247,7 +250,7 @@ int getframe(Mat *Img, int ExtChn)
         printf("HI_MPI_SYS_MmzAlloc_Cached failed with err code %#x!\n", s32Ret);
     }
     HI_MPI_SYS_MmzFlushCache(stDst.u32PhyAddr[0], (void**)stDst.pu8VirAddr[0], u32DstBlkSize);
-    printf("line:%d\n",__LINE__);
+    //printf("line:%d\n",__LINE__);
 
     stDst.pu8VirAddr[0] = (HI_U8*) HI_MPI_SYS_Mmap(stDst.u32PhyAddr[0], u32DstBlkSize);
     stDst.u16Stride[0] = FrameInfo.stVFrame.u32Stride[0];
@@ -275,27 +278,27 @@ int getframe(Mat *Img, int ExtChn)
     {
         printf("HI_MPI_IVE_CSC failed with error code %#x\n", s32Ret);
     }
-    printf("line:%d\n",__LINE__);
+    //printf("line:%d\n",__LINE__);
 
     s32Ret = HI_MPI_IVE_Query(IveHandle, &bFinish, HI_TRUE);
     if (s32Ret != HI_SUCCESS)
     {
         printf("HI_MPI_IVE_Query failed with error code %#x\n", s32Ret);
     }
-    printf("line:%d\n",__LINE__);
+    //printf("line:%d\n",__LINE__);
 
-    printf("Img.cols:%d,Img.rows:%d,Img.step[0]:%d,u32DstBlkSize:%d\n",Img->cols, Img->rows, Img->step[0], u32DstBlkSize);
+    //printf("Img.cols:%d,Img.rows:%d,Img.step[0]:%d,u32DstBlkSize:%d\n",Img->cols, Img->rows, Img->step[0], u32DstBlkSize);
     memcpy((void*)(Img->data), (void*)stDst.pu8VirAddr[0], u32DstBlkSize);
-    printf("line:%d\n",__LINE__);
+    //printf("line:%d\n",__LINE__);
 
     HI_MPI_SYS_Munmap(stDst.pu8VirAddr[0], u32DstBlkSize);
-    printf("line:%d\n",__LINE__);
+    //printf("line:%d\n",__LINE__);
     HI_MPI_SYS_Munmap(stSrc.pu8VirAddr[0], u32DstBlkSize / 2);
-    printf("line:%d\n",__LINE__);
+    //printf("line:%d\n",__LINE__);
     HI_MPI_SYS_MmzFree(stDst.u32PhyAddr[0], stDst.pu8VirAddr[0]);
-    printf("line:%d\n",__LINE__);
+    //printf("line:%d\n",__LINE__);
     HI_MPI_VI_ReleaseFrame(ExtChn, &FrameInfo);
-    printf("line:%d\n",__LINE__);
+    //printf("line:%d\n",__LINE__);
 }
 /*
 void vector_to_json_t(std::vector < Rect > r, cv::Rect upbody_rect, bool is_upbody, bool is_rect, char *buf)
@@ -404,8 +407,8 @@ void AnalyzePic()
             printf("student detect\n");
             pdet = det_open("student_detect_trace.config");
 
-            img_w = 960;
-            img_h = 540;
+            img_w = STU_IMG_WIDTH;
+            img_h = STU_IMG_HEIGHT;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
             sleep(1);
             ip = pdet->cfg_->get_value("send_result_ip", "10.1.2.124");
@@ -423,8 +426,8 @@ void AnalyzePic()
             printf("student detect slave\n");
             pdet = det_open("student_detect_trace_slave.config");
 
-            img_w = 960;
-            img_h = 540;
+            img_w = STU_IMG_WIDTH;
+            img_h = STU_IMG_HEIGHT;
             getframe_resize(img_w, img_h, VIU_EXT_CHN_START);
             sleep(1);
             ip = pdet->cfg_->get_value("student_master_ip", "10.1.2.124");
@@ -441,6 +444,8 @@ void AnalyzePic()
         {
             //printf("begin:%ld\n",GetTickCount());
             //printf("start_analysis:%ld\n",start_analysis);
+            printf("\n");
+            printf("--------------time:%d------------------\n",GetTickCount());
             if(g_reset == 1)
             {
                 //if(model == 3)
@@ -502,7 +507,6 @@ void AnalyzePic()
             //        g_start_analysis = 0;
             //    }
             //}
-            //printf("end:%ld\n",GetTickCount());
         }
     }
 }
