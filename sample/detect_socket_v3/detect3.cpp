@@ -108,6 +108,7 @@ int main(void)
     }
 #endif
     getframe_init(480, 360, VIU_EXT_CHN_START);
+    //获取当前SDK版本号
     system("cat /proc/umap/vi | grep \"Version\" | cut -b 17-49 > /home/sdkversion.txt");
     cfg_ = new KVConfig("teacher_detect_trace.config");
     signal(SIGPIPE, sig_pipe);
@@ -173,6 +174,12 @@ int checkMD5()
     return 0;
 }
 
+/**
+	初始化3516a硬件，获取图片前使用
+	width：图片的宽
+	height：图片的高
+	ExtChn：从vi的ExtChn中获取图片
+**/
 int getframe_init(int width, int height, int ExtChn)
 {
     VI_CHN Vichn = 0;
@@ -212,12 +219,22 @@ int getframe_init(int width, int height, int ExtChn)
     return 1;
 }
 
-
+/**
+	改变需要获取图片的分辨率
+	width：图片的宽
+	height：图片的高
+	ExtChn：从vi的ExtChn中获取图片
+**/
 int getframe_resize(int width, int height, int ExtChn)
 {
     getframe_init(width, height, ExtChn);
 }
 
+/**
+	获取一帧图片
+	*Img：获取到的图片指针，格式为opencv的Mat
+	ExtChn：从vi的ExtChn中获取图片
+**/
 int getframe(Mat *Img, int ExtChn)
 {
     HI_S32 s32Ret;
@@ -285,20 +302,14 @@ int getframe(Mat *Img, int ExtChn)
     {
         printf("HI_MPI_IVE_Query failed with error code %#x\n", s32Ret);
     }
-    //printf("line:%d\n",__LINE__);
 
-    //printf("Img.cols:%d,Img.rows:%d,Img.step[0]:%d,u32DstBlkSize:%d\n",Img->cols, Img->rows, Img->step[0], u32DstBlkSize);
     memcpy((void*)(Img->data), (void*)stDst.pu8VirAddr[0], u32DstBlkSize);
-    //printf("line:%d\n",__LINE__);
-
+   
     HI_MPI_SYS_Munmap(stDst.pu8VirAddr[0], u32DstBlkSize);
-    //printf("line:%d\n",__LINE__);
     HI_MPI_SYS_Munmap(stSrc.pu8VirAddr[0], u32DstBlkSize / 2);
-    //printf("line:%d\n",__LINE__);
     HI_MPI_SYS_MmzFree(stDst.u32PhyAddr[0], stDst.pu8VirAddr[0]);
-    //printf("line:%d\n",__LINE__);
     HI_MPI_VI_ReleaseFrame(ExtChn, &FrameInfo);
-    //printf("line:%d\n",__LINE__);
+
 }
 /*
 void vector_to_json_t(std::vector < Rect > r, cv::Rect upbody_rect, bool is_upbody, bool is_rect, char *buf)
@@ -345,6 +356,10 @@ void vector_to_json_t(std::vector < Rect > r, cv::Rect upbody_rect, bool is_upbo
     strcat(buf, "}");
 }
 */
+
+/**
+	分析图片的线程函数
+**/
 void AnalyzePic()
 {
     //const char *masterip = NULL;
@@ -379,6 +394,7 @@ void AnalyzePic()
         g_reset = 0;
         //g_start_analysis = 1;
 
+        //获取当前model，根据不同的model创建不同的监控对象。
         int model = atoi(cfg_->get_value("model"));
         if(model == 0)
         {
@@ -444,8 +460,8 @@ void AnalyzePic()
         {
             //printf("begin:%ld\n",GetTickCount());
             //printf("start_analysis:%ld\n",start_analysis);
-            printf("\n");
-            printf("--------------time:%d------------------\n",GetTickCount());
+            //printf("\n");
+            //printf("--------------time:%d------------------\n",GetTickCount());
             if(g_reset == 1)
             {
                 //if(model == 3)
@@ -511,6 +527,11 @@ void AnalyzePic()
     }
 }
 
+
+/**
+	从JSON格式的字符串获取控制命令
+	text：JSON格式的字符串
+**/
 void AnalyzeCMD(char *text)
 {
     cJSON *json, *json_cmd, *json_filesize, *json_bd;
@@ -596,7 +617,9 @@ void AnalyzeCMD(char *text)
 
 }
 
-
+/**
+	接收JSON字符串的线程函数。
+**/
 void RecvCMD()
 {
     struct sockaddr_in servaddr;
@@ -661,10 +684,18 @@ void RecvCMD()
     }
 }
 
+/**
+	开启监测
+**/
 void sendPoi()
 {
     g_start_analysis = 1;
 }
+
+/**
+	程序更新
+	size：更新文件大小
+**/
 void upgrade(int size)
 {
     cJSON *json, *json_upgrade;
@@ -798,6 +829,11 @@ void upgrade(int size)
     g_disconnect = 1;
 }
 */
+
+/**
+	向socket的client端返回"result"="ok"字符串
+	connetct：accept返回的文件描述符
+**/
 int return_ok(int connectfd)
 {
     cJSON *sendjson = cJSON_CreateObject();
@@ -808,6 +844,11 @@ int return_ok(int connectfd)
     return ret;
 }
 
+
+/**
+	向socket的client端返回"result"="failed"字符串
+	connetct：accept返回的文件描述符
+**/
 int return_failed(int connectfd)
 {
     cJSON *sendjson = cJSON_CreateObject();
@@ -818,6 +859,11 @@ int return_failed(int connectfd)
     return ret;
 }
 
+
+/**
+	监测socket是否连接
+	socketfd：socket的文件描述符
+**/
 int socketconnect(int socketfd)
 {
     struct tcp_info info;
@@ -833,12 +879,19 @@ int socketconnect(int socketfd)
     }
 }
 
+/**
+	网络不可写信号处理函数
+**/
 void sig_pipe(int signo)
 {
     g_start_analysis = 0;
     g_disconnect = 1;
 }
 
+
+/**
+	设置参数函数
+**/
 int setParam(cJSON *json)
 {
     //循环读取json里面的数据
@@ -936,6 +989,12 @@ int setParam(cJSON *json)
 */
     return 1;
 }
+
+
+/**
+	向socket的client发送当前软件版本号
+	connetct：accept返回的文件描述符
+**/
 void sendVersion(int connectfd)
 {
     cJSON *sendjson = cJSON_CreateObject();
@@ -944,6 +1003,12 @@ void sendVersion(int connectfd)
     int ret = send(connectfd, sendstr, strlen(sendstr) + 1, 0);
     cJSON_Delete(sendjson);
 }
+
+
+/**
+	向socket的client发送当前SDK版本号
+	connetct：accept返回的文件描述符
+**/
 void sendSDKVersion(int connectfd)
 {
     FILE *fp = fopen("/home/sdkversion.txt","r");
@@ -962,6 +1027,13 @@ void sendSDKVersion(int connectfd)
     cJSON_Delete(sendjson);
 }
 
+
+
+/**
+	向socket的client发送当前model的配置参数
+	model：需要查询的模式
+	connetct：accept返回的文件描述符
+**/
 void sendConf(int connectfd, int model)
 {
     cJSON *sendjson = cJSON_CreateObject();
@@ -996,6 +1068,11 @@ void sendConf(int connectfd, int model)
     cJSON_Delete(sendjson);
     delete sendcfg_;
 }
+
+/**
+	向socket的client发送当前model和工作状态。
+	connetct：accept返回的文件描述符
+**/
 void sendModelandStatus(int connectfd)
 {
     cJSON *sendjson = cJSON_CreateObject();
@@ -1006,6 +1083,10 @@ void sendModelandStatus(int connectfd)
     cJSON_Delete(sendjson);
 }
 
+
+/**
+	
+**/
 cv::Point GetTransformPoint(cv::Point src, cv::Mat warp)
 {
     Point ret;
@@ -1014,6 +1095,10 @@ cv::Point GetTransformPoint(cv::Point src, cv::Mat warp)
     return ret;
 }
 
+
+/**
+
+**/
 void recvResultfromSlave()
 {
     int master_recv_sockfd;
@@ -1052,11 +1137,19 @@ void recvResultfromSlave()
     pthread_cleanup_pop(0);
 }
 
+
+/**
+
+**/
 void recvResultfromSlaveCleanup(void *arg)
 {
     close((int)arg);
 }
 
+
+/**
+
+**/
 cv::Point2f* getCorrPoint(const char *str, cv::Point2f *point)
 {
     char *data = strdup(str);
@@ -1076,6 +1169,9 @@ cv::Point2f* getCorrPoint(const char *str, cv::Point2f *point)
     return point;
 }
 
+/**
+
+**/
 cv::Point getPoint(const char* message)
 {
     Point p;
