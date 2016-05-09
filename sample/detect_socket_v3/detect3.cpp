@@ -175,10 +175,10 @@ int checkMD5()
 }
 
 /**
-	初始化3516a硬件，获取图片前使用
-	width：图片的宽
-	height：图片的高
-	ExtChn：从vi的ExtChn中获取图片
+    初始化3516a硬件，获取图片前使用
+    width：图片的宽
+    height：图片的高
+    ExtChn：从vi的ExtChn中获取图片
 **/
 int getframe_init(int width, int height, int ExtChn)
 {
@@ -220,10 +220,10 @@ int getframe_init(int width, int height, int ExtChn)
 }
 
 /**
-	改变需要获取图片的分辨率
-	width：图片的宽
-	height：图片的高
-	ExtChn：从vi的ExtChn中获取图片
+    改变需要获取图片的分辨率
+    width：图片的宽
+    height：图片的高
+    ExtChn：从vi的ExtChn中获取图片
 **/
 int getframe_resize(int width, int height, int ExtChn)
 {
@@ -231,9 +231,9 @@ int getframe_resize(int width, int height, int ExtChn)
 }
 
 /**
-	获取一帧图片
-	*Img：获取到的图片指针，格式为opencv的Mat
-	ExtChn：从vi的ExtChn中获取图片
+    获取一帧图片
+    *Img：获取到的图片指针，格式为opencv的Mat
+    ExtChn：从vi的ExtChn中获取图片
 **/
 int getframe(Mat *Img, int ExtChn)
 {
@@ -251,14 +251,12 @@ int getframe(Mat *Img, int ExtChn)
     stDst.enType = IVE_IMAGE_TYPE_U8C3_PACKAGE;
     stCscCtrl.enMode = IVE_CSC_MODE_PIC_BT709_YUV2RGB;
 
-    //printf("line:%d\n",__LINE__);
     s32Ret = HI_MPI_VI_GetFrame(ExtChn, &FrameInfo, -1);
     if (HI_SUCCESS != s32Ret)
     {
         printf("HI_MPI_VI_GetFrame failed with err code %#x!\n", s32Ret);
         return -1;
     }
-    //printf("line:%d\n",__LINE__);
 
     u32DstBlkSize = FrameInfo.stVFrame.u32Stride[0] * FrameInfo.stVFrame.u32Height * 3;
     s32Ret = HI_MPI_SYS_MmzAlloc(&stDst.u32PhyAddr[0], (void**)&stDst.pu8VirAddr[0], "user", HI_NULL, u32DstBlkSize);
@@ -267,7 +265,6 @@ int getframe(Mat *Img, int ExtChn)
         printf("HI_MPI_SYS_MmzAlloc_Cached failed with err code %#x!\n", s32Ret);
     }
     HI_MPI_SYS_MmzFlushCache(stDst.u32PhyAddr[0], (void**)stDst.pu8VirAddr[0], u32DstBlkSize);
-    //printf("line:%d\n",__LINE__);
 
     stDst.pu8VirAddr[0] = (HI_U8*) HI_MPI_SYS_Mmap(stDst.u32PhyAddr[0], u32DstBlkSize);
     stDst.u16Stride[0] = FrameInfo.stVFrame.u32Stride[0];
@@ -295,7 +292,6 @@ int getframe(Mat *Img, int ExtChn)
     {
         printf("HI_MPI_IVE_CSC failed with error code %#x\n", s32Ret);
     }
-    //printf("line:%d\n",__LINE__);
 
     s32Ret = HI_MPI_IVE_Query(IveHandle, &bFinish, HI_TRUE);
     if (s32Ret != HI_SUCCESS)
@@ -304,7 +300,7 @@ int getframe(Mat *Img, int ExtChn)
     }
 
     memcpy((void*)(Img->data), (void*)stDst.pu8VirAddr[0], u32DstBlkSize);
-   
+
     HI_MPI_SYS_Munmap(stDst.pu8VirAddr[0], u32DstBlkSize);
     HI_MPI_SYS_Munmap(stSrc.pu8VirAddr[0], u32DstBlkSize / 2);
     HI_MPI_SYS_MmzFree(stDst.u32PhyAddr[0], stDst.pu8VirAddr[0]);
@@ -358,7 +354,7 @@ void vector_to_json_t(std::vector < Rect > r, cv::Rect upbody_rect, bool is_upbo
 */
 
 /**
-	分析图片的线程函数
+    分析图片的线程函数
 **/
 void AnalyzePic()
 {
@@ -529,8 +525,8 @@ void AnalyzePic()
 
 
 /**
-	从JSON格式的字符串获取控制命令
-	text：JSON格式的字符串
+    从JSON格式的字符串获取控制命令
+    text：JSON格式的字符串
 **/
 void AnalyzeCMD(char *text)
 {
@@ -618,7 +614,7 @@ void AnalyzeCMD(char *text)
 }
 
 /**
-	接收JSON字符串的线程函数。
+    接收JSON字符串的线程函数。
 **/
 void RecvCMD()
 {
@@ -685,7 +681,7 @@ void RecvCMD()
 }
 
 /**
-	开启监测
+    开启监测
 **/
 void sendPoi()
 {
@@ -693,8 +689,8 @@ void sendPoi()
 }
 
 /**
-	程序更新
-	size：更新文件大小
+    程序更新
+    size：更新文件大小
 **/
 void upgrade(int size)
 {
@@ -831,8 +827,8 @@ void upgrade(int size)
 */
 
 /**
-	向socket的client端返回"result"="ok"字符串
-	connetct：accept返回的文件描述符
+    向socket的client端返回"result"="ok"字符串
+    connetct：accept返回的文件描述符
 **/
 int return_ok(int connectfd)
 {
@@ -846,8 +842,8 @@ int return_ok(int connectfd)
 
 
 /**
-	向socket的client端返回"result"="failed"字符串
-	connetct：accept返回的文件描述符
+    向socket的client端返回"result"="failed"字符串
+    connetct：accept返回的文件描述符
 **/
 int return_failed(int connectfd)
 {
@@ -861,8 +857,8 @@ int return_failed(int connectfd)
 
 
 /**
-	监测socket是否连接
-	socketfd：socket的文件描述符
+    监测socket是否连接
+    socketfd：socket的文件描述符
 **/
 int socketconnect(int socketfd)
 {
@@ -880,7 +876,7 @@ int socketconnect(int socketfd)
 }
 
 /**
-	网络不可写信号处理函数
+    网络不可写信号处理函数
 **/
 void sig_pipe(int signo)
 {
@@ -890,7 +886,7 @@ void sig_pipe(int signo)
 
 
 /**
-	设置参数函数
+    设置参数函数
 **/
 int setParam(cJSON *json)
 {
@@ -992,8 +988,8 @@ int setParam(cJSON *json)
 
 
 /**
-	向socket的client发送当前软件版本号
-	connetct：accept返回的文件描述符
+    向socket的client发送当前软件版本号
+    connetct：accept返回的文件描述符
 **/
 void sendVersion(int connectfd)
 {
@@ -1006,8 +1002,8 @@ void sendVersion(int connectfd)
 
 
 /**
-	向socket的client发送当前SDK版本号
-	connetct：accept返回的文件描述符
+    向socket的client发送当前SDK版本号
+    connetct：accept返回的文件描述符
 **/
 void sendSDKVersion(int connectfd)
 {
@@ -1030,9 +1026,9 @@ void sendSDKVersion(int connectfd)
 
 
 /**
-	向socket的client发送当前model的配置参数
-	model：需要查询的模式
-	connetct：accept返回的文件描述符
+    向socket的client发送当前model的配置参数
+    model：需要查询的模式
+    connetct：accept返回的文件描述符
 **/
 void sendConf(int connectfd, int model)
 {
@@ -1070,8 +1066,8 @@ void sendConf(int connectfd, int model)
 }
 
 /**
-	向socket的client发送当前model和工作状态。
-	connetct：accept返回的文件描述符
+    向socket的client发送当前model和工作状态。
+    connetct：accept返回的文件描述符
 **/
 void sendModelandStatus(int connectfd)
 {
@@ -1085,7 +1081,7 @@ void sendModelandStatus(int connectfd)
 
 
 /**
-	
+
 **/
 cv::Point GetTransformPoint(cv::Point src, cv::Mat warp)
 {
